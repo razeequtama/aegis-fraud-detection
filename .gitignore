@@ -2,4 +2,4 @@
 ps.csv
 
 # Environment Variables
-.env.example
+.env
