@@ -40,7 +40,7 @@ This document defines the complete end-to-end API specification and communicatio
 
 - `page` (integer, optional): Page number for pagination (default: 1).
 - `limit` (integer, optional): Number of items per page (default: 20).
-- `status` (string, optional): Filter by decision status (approve, review, decline).
+- `status` (string, optional): Filter by decision status (approve, review, declined).
 - `min_amount` (numeric, optional): Minimum transaction amount filter.
 - `max_amount` (numeric, optional): Maximum transaction amount filter.
 - `search` (string, optional): Search keyword for transaction ID, account ID, or device ID.
