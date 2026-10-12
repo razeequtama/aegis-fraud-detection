@@ -1,2 +1,5 @@
 # All .csv files
 ps.csv
+
+# Environment Variables
+.env.example
