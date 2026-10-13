@@ -19,6 +19,7 @@ export function App() {
           <Route path="investigation" element={<Investigation />} />
           <Route path="investigation/:transactionId" element={<Investigation />} />
           <Route path="network" element={<Network />} />
+          <Route path="network/:entityType/:entityId" element={<Network />} />
           <Route path="assessment" element={<RiskAssessment />} />
           <Route path="model-lab" element={<ModelLab />} />
           <Route path="health" element={<SystemHealth />} />

@@ -16,14 +16,53 @@ class FraudGraphAnalyzer:
             account_id = tx.get("account_id")
             device_id = tx.get("device_id")
             session_id = tx.get("session_id")
+            suspicious = self._is_suspicious(
+                tx.get("is_fraud", tx.get("label", tx.get("is_flagged_fraud")))
+            )
 
             # Add nodes and edges representing relationships
             if account_id and device_id:
-                self.graph.add_edge(f"Account:{account_id}", f"Device:{device_id}", relation="uses_device")
+                account_node = f"Account:{account_id}"
+                device_node = f"Device:{device_id}"
+                self.graph.add_node(account_node, type="account", suspicious=False)
+                self.graph.nodes[account_node]["suspicious"] = (
+                    self.graph.nodes[account_node]["suspicious"] or suspicious
+                )
+                self.graph.add_node(device_node, type="device")
+                self.graph.add_edge(account_node, device_node, relation="uses_device")
             if account_id and session_id:
-                self.graph.add_edge(f"Account:{account_id}", f"Session:{session_id}", relation="has_session")
+                account_node = f"Account:{account_id}"
+                self.graph.add_node(account_node, type="account", suspicious=False)
+                self.graph.nodes[account_node]["suspicious"] = (
+                    self.graph.nodes[account_node]["suspicious"] or suspicious
+                )
+                self.graph.add_node(f"Session:{session_id}", type="session")
+                self.graph.add_edge(account_node, f"Session:{session_id}", relation="has_session")
             if tx_id and account_id:
-                self.graph.add_edge(f"Transaction:{tx_id}", f"Account:{account_id}", relation="performed_by")
+                account_node = f"Account:{account_id}"
+                self.graph.add_node(account_node, type="account", suspicious=False)
+                self.graph.nodes[account_node]["suspicious"] = (
+                    self.graph.nodes[account_node]["suspicious"] or suspicious
+                )
+                transaction_node = f"Transaction:{tx_id}"
+                self.graph.add_node(transaction_node, type="transaction")
+                self.graph.add_edge(transaction_node, account_node, relation="performed_by")
+
+    @staticmethod
+    def _is_suspicious(value: Any) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, (int, float)):
+            return value != 0
+        return str(value).strip().lower() in {
+            "1",
+            "true",
+            "t",
+            "yes",
+            "fraud",
+            "confirmed_fraud",
+            "decline",
+        }
 
     def get_entity_neighborhood(self, entity_id: str, radius: int = 2) -> Dict[str, Any]:
         """
@@ -35,7 +74,23 @@ class FraudGraphAnalyzer:
 
         subgraph = nx.ego_graph(self.graph, entity_id, radius=radius)
         
-        nodes = [{"id": node, "label": node} for node in subgraph.nodes()]
+        nodes = []
+        for node, attributes in subgraph.nodes(data=True):
+            node_type = attributes.get("type", node.split(":", 1)[0].lower())
+            shared = node_type == "device" and sum(
+                1
+                for neighbor in self.graph.neighbors(node)
+                if self.graph.nodes[neighbor].get("type") == "account"
+            ) > 1
+            nodes.append(
+                {
+                    "id": node,
+                    "label": node,
+                    "type": node_type,
+                    "suspicious": bool(attributes.get("suspicious", False)),
+                    "shared": shared,
+                }
+            )
         edges = [
             {"source": u, "target": v, "relation": data.get("relation", "connected")}
             for u, v, data in subgraph.edges(data=True)
