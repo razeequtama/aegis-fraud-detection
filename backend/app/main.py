@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import time
 from app.services.risk_engine import risk_engine
+from app.api.routes import network
 
 app = FastAPI(
     title="AEGIS Fraud Detection API",
@@ -34,6 +35,8 @@ class RiskAssessmentResponse(BaseModel):
     model_version: str
     signals: List[SignalItem]
     latency_ms: int
+
+app.include_router(network.router)
 
 @app.get("/api/v1/health")
 def health_check():

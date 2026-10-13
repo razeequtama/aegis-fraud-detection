@@ -2,7 +2,7 @@ import os
 import joblib
 import numpy as np
 import pandas as pd
-from app.services.graph_analysis import graph_analyzer
+from app.services.graph_analysis import graph_analyzer, enrich_with_graph_features
 
 class RiskEngine:
     def __init__(self):
@@ -26,11 +26,29 @@ class RiskEngine:
         except Exception as e:
             print(f"RiskEngine Error loading artifacts: {e}")
 
-    def evaluate_transaction(self, tx_data: dict) -> dict:
+    def evaluate_transaction(self, tx_data: dict, historical_transactions: list = None) -> dict:
         """
         Process incoming transaction features, run ML model inference,
-        and apply decision policy thresholds.
+        apply decision policy thresholds, and incorporate graph network signals.
         """
+        if historical_transactions is None:
+            historical_transactions = []
+
+        # --- INTEGRASI GRAPH NETWORKX ---
+        account_id = tx_data.get("account_id")
+        graph_features = {}
+        if account_id:
+            # Import graph_analyzer di dalam file atau di atas file
+            from app.services.graph_analysis import graph_analyzer
+            
+            # Jika ada riwayat transaksi, bangun graph secara dinamis
+            if historical_transactions:
+                graph_analyzer.build_graph_from_transactions(historical_transactions)
+            
+            # Ekstrak fitur relasional graph untuk akun ini
+            graph_features = graph_analyzer.extract_graph_features(account_id)
+        # ---------------------------------
+
         # Extract raw features matching training columns
         amount = tx_data.get("amount", 0.0)
         oldbalanceOrg = tx_data.get("oldbalanceOrg", 0.0)
@@ -66,7 +84,7 @@ class RiskEngine:
                 scaled_features = self.scaler.transform(features)
                 # Predict probability of class 1 (Fraud)
                 risk_score = float(self.model.predict_proba(scaled_features)[0][1])
-                print(f"DEBUG - Raw Risk Score calculated by model: {risk_score}") # <-- Tambahkan ini
+                print(f"DEBUG - Raw Risk Score calculated by model: {risk_score}")
             except Exception as e:
                 print(f"Inference error: {e}")
                 risk_score = 0.5 # Fallback score
@@ -91,11 +109,26 @@ class RiskEngine:
         if errorBalanceOrg != 0:
             signals.append({"name": "balance_discrepancy", "description": "Discrepancy detected in source account balance calculation."})
 
+        # --- TAMBAHKAN SINYAL GRAPH KE HASIL ANALISIS ---
+        shared_devices = graph_features.get("shared_devices_count", 0.0)
+        node_degree = graph_features.get("node_degree", 0.0)
+        
+        if shared_devices > 0:
+            signals.append({
+                "name": "shared_device_detected", 
+                "description": f"Account shares devices with other entities (Shared count: {int(shared_devices)})."
+            })
+        # -----------------------------------------------
+
         return {
             "risk_score": round(risk_score, 4),
             "decision": decision,
             "model_version": "aegis-rf-v1.0",
-            "signals": signals
+            "signals": signals,
+            "graph_metrics": {
+                "shared_devices_count": shared_devices,
+                "node_degree": node_degree
+            }
         }
 
     def enrich_with_graph_features(account_id: str, transaction_history: list) -> dict:
