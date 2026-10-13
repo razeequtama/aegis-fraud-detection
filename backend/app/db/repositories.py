@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy.orm import Session
 from app.models.models import TransactionModel, InvestigationCaseModel
 from typing import Dict, Any, Optional
@@ -21,8 +23,15 @@ class FraudRepository:
 
     @staticmethod
     def create_case(db: Session, transaction_id: str, assigned_analyst: str, initial_status: str) -> InvestigationCaseModel:
-        # Generate a simple case ID
-        case_id = f"CASE-{abs(hash(transaction_id)) % 100000}"
+        existing_case = (
+            db.query(InvestigationCaseModel)
+            .filter(InvestigationCaseModel.transaction_id == transaction_id)
+            .first()
+        )
+        if existing_case is not None:
+            return existing_case
+
+        case_id = f"CASE-{uuid4().hex}"
         db_case = InvestigationCaseModel(
             case_id=case_id,
             transaction_id=transaction_id,

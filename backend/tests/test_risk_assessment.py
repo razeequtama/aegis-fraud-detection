@@ -74,4 +74,44 @@ def test_risk_assessment_persists_transaction_before_creating_case(monkeypatch):
         assert result["decision"] == "review"
         assert case.status == "open"
 
+        repeated_result = assess_risk(payload, db)
+        repeated_cases = (
+            db.query(InvestigationCaseModel)
+            .filter_by(transaction_id=payload.transaction_id)
+            .all()
+        )
+        assert repeated_result["decision"] == "review"
+        assert len(repeated_cases) == 1
+        assert repeated_cases[0].case_id == case.case_id
+
+    engine.dispose()
+
+
+def test_case_ids_are_unique_across_transactions(monkeypatch):
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    monkeypatch.setattr(
+        risk_engine,
+        "evaluate_risk",
+        lambda _payload: {
+            "risk_score": 0.9,
+            "decision": "decline",
+            "model_version": "test-model",
+            "signals": [],
+        },
+    )
+
+    with Session(engine) as db:
+        for suffix in ("A", "B"):
+            payload = RiskAssessmentRequest(
+                transaction_id=f"TX-RISK-{suffix}",
+                account_id=f"ACC-RISK-{suffix}",
+                amount=250.0,
+            )
+            assess_risk(payload, db)
+
+        cases = db.query(InvestigationCaseModel).all()
+        assert len(cases) == 2
+        assert len({case.case_id for case in cases}) == 2
+
     engine.dispose()
