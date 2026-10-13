@@ -1,27 +1,36 @@
 from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 from app.db.session import get_db
 from app.models.replay_run import ReplayRun
-from app.services.replay_engine import run_historical_replay
+from app.services.replay_engine import get_replay_step_range, run_historical_replay
 
 router = APIRouter(prefix="/api/v1/replays", tags=["replays"])
 
 class ReplayCreateRequest(BaseModel):
-    model_version: str
-    threshold: float
-    start_step: int
-    end_step: int
+    model_version: str = Field(..., min_length=1, max_length=50)
+    threshold: float = Field(..., ge=0, le=1)
+    start_step: Optional[int] = None
+    end_step: Optional[int] = None
 
 @router.post("", status_code=201)
 def create_replay(payload: ReplayCreateRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    min_step, max_step = get_replay_step_range(db)
+    if min_step is None or max_step is None:
+        raise HTTPException(status_code=404, detail="No historical transactions are available for replay.")
+
+    start_step = payload.start_step if payload.start_step is not None else min_step
+    end_step = payload.end_step if payload.end_step is not None else max_step
+    if start_step > end_step:
+        raise HTTPException(status_code=400, detail="start_step must not be greater than end_step.")
+
     new_replay = ReplayRun(
         model_version=payload.model_version,
         threshold=payload.threshold,
-        start_step=payload.start_step,
-        end_step=payload.end_step,
+        start_step=start_step,
+        end_step=end_step,
         status="QUEUED"
     )
     db.add(new_replay)
@@ -31,7 +40,11 @@ def create_replay(payload: ReplayCreateRequest, background_tasks: BackgroundTask
     # Trigger background worker (hanya kirim ID)
     background_tasks.add_task(run_historical_replay, new_replay.id)
 
-    return {"replay_id": new_replay.id, "status": new_replay.status}
+    return {
+        "job_id": new_replay.id,
+        "replay_id": new_replay.id,
+        "status": new_replay.status,
+    }
 
 @router.get("/{replay_id}")
 def get_replay_status(replay_id: int, db: Session = Depends(get_db)):
@@ -40,6 +53,7 @@ def get_replay_status(replay_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Replay run not found")
     
     return {
+        "job_id": replay.id,
         "replay_id": replay.id,
         "model_version": replay.model_version,
         "threshold": replay.threshold,

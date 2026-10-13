@@ -202,7 +202,9 @@ export const Dashboard: React.FC = () => {
                   labelFormatter={(value) => formatDate(String(value))}
                   formatter={(value, name) => [
                     numberFormat.format(Number(value)),
-                    name === 'transactions' ? 'Transactions' : 'Suspicious',
+                    name === 'Transactions' || name === 'transactions'
+                      ? 'Transactions'
+                      : 'Suspicious',
                   ]}
                   contentStyle={{
                     backgroundColor: '#0f172a',

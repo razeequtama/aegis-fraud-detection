@@ -17,6 +17,53 @@ interface RiskAssessmentResult {
   latency_ms: number;
 }
 
+const sampleTransactions = [
+  {
+    title: 'Sample 1',
+    payload: {
+      transaction_id: 'DEMO-APPROVE-101',
+      account_id: 'DEMO-ACC-101',
+      type: 'PAYMENT',
+      amount: 1200,
+      oldbalanceOrg: 50000,
+      newbalanceOrig: 48800,
+    },
+  },
+  {
+    title: 'Sample 2',
+    payload: {
+      transaction_id: 'DEMO-APPROVE-102',
+      account_id: 'DEMO-ACC-102',
+      type: 'DEBIT',
+      amount: 18000,
+      oldbalanceOrg: 100000,
+      newbalanceOrig: 82000,
+    },
+  },
+  {
+    title: 'Sample 3',
+    payload: {
+      transaction_id: 'DEMO-DECLINE-101',
+      account_id: 'DEMO-ACC-103',
+      type: 'TRANSFER',
+      amount: 2000000,
+      oldbalanceOrg: 2000000,
+      newbalanceOrig: 0,
+    },
+  },
+  {
+    title: 'Sample 4',
+    payload: {
+      transaction_id: 'DEMO-DECLINE-102',
+      account_id: 'DEMO-ACC-104',
+      type: 'CASH_OUT',
+      amount: 5000000,
+      oldbalanceOrg: 5000000,
+      newbalanceOrig: 0,
+    },
+  },
+];
+
 export const RiskAssessment: React.FC = () => {
   const [formData, setFormData] = useState({
     transaction_id: 'TX-99901',
@@ -72,6 +119,7 @@ export const RiskAssessment: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Form */}
+        <div className="space-y-6">
         <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
           <h3 className="text-lg font-semibold text-slate-200">Test Transaction Payload</h3>
           
@@ -152,6 +200,47 @@ export const RiskAssessment: React.FC = () => {
             {loading ? 'Evaluating Model & Graph...' : 'Analyze Transaction'}
           </button>
         </form>
+        <section className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-200">Try these!</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              Load an example into the form, then click Analyze Transaction.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {sampleTransactions.map(({ title, payload }) => (
+              <button
+                key={payload.transaction_id}
+                type="button"
+                onClick={() => {
+                  setFormData((current) => ({ ...current, ...payload }));
+                  setResult(null);
+                  setErrorMessage(null);
+                }}
+                className="rounded-lg border border-slate-800 bg-slate-950 p-3 text-left transition-colors hover:border-cyan-500/40 hover:bg-slate-900"
+              >
+                <span className="block text-sm font-semibold text-cyan-300">{title}</span>
+                <span className="mt-2 block text-xs text-slate-300">
+                  {payload.transaction_id} · {payload.type}
+                </span>
+                <span className="mt-1 block text-xs text-slate-400">
+                  Amount: {new Intl.NumberFormat('id-ID').format(payload.amount)}
+                </span>
+                <span className="mt-1 block text-xs text-slate-400">
+                  Balance: {new Intl.NumberFormat('id-ID').format(payload.oldbalanceOrg)} →{' '}
+                  {new Intl.NumberFormat('id-ID').format(payload.newbalanceOrig)}
+                </span>
+                <span className="mt-1 block text-xs text-slate-500">
+                  Account: {payload.account_id}
+                </span>
+                <span className="mt-2 block text-[11px] text-slate-500">
+                  Select to fill the form
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+        </div>
 
         {/* Result Panel */}
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4 flex flex-col justify-between">
