@@ -2,6 +2,7 @@ import os
 import joblib
 import numpy as np
 import pandas as pd
+from app.services.graph_analysis import graph_analyzer
 
 class RiskEngine:
     def __init__(self):
@@ -96,6 +97,14 @@ class RiskEngine:
             "model_version": "aegis-rf-v1.0",
             "signals": signals
         }
+
+    def enrich_with_graph_features(account_id: str, transaction_history: list) -> dict:
+        # Build or update graph dynamically with recent transactions
+        graph_analyzer.build_graph_from_transactions(transaction_history)
+        
+        # Extract graph features
+        graph_feats = graph_analyzer.extract_graph_features(account_id)
+        return graph_feats
 
 # Singleton instance
 risk_engine = RiskEngine()
