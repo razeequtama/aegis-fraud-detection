@@ -7,8 +7,7 @@ import time
 from app.services.risk_engine import risk_engine
 from app.api.routes import network, replays
 
-from app.db.base_class import Base
-from app.db.session import engine
+from app.api.routes import transactions
 
 app = FastAPI(
     title="AEGIS Fraud Detection API",
@@ -49,12 +48,10 @@ class RiskAssessmentResponse(BaseModel):
     signals: List[SignalItem]
     latency_ms: int
 
-# Tambahkan baris ini sebelum app.include_router atau di awal main.py
-Base.metadata.create_all(bind=engine)
-
 # Include API Routers
 app.include_router(network.router)
 app.include_router(replays.router)
+app.include_router(transactions.router, prefix="/api/v1", tags=["Transactions"])
 
 
 @app.get("/api/v1/health")

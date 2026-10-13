@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
-import { Sliders, Send, Loader2, AlertCircle } from 'lucide-react';
+import { Send, Loader2, AlertCircle } from 'lucide-react';
+import { isAxiosError } from 'axios';
 import { apiClient } from '../api/client';
+
+interface RiskSignal {
+  name: string;
+  description: string;
+}
+
+interface RiskAssessmentResult {
+  transaction_id: string;
+  risk_score: number;
+  decision: string;
+  model_version: string;
+  signals: RiskSignal[];
+  latency_ms: number;
+}
 
 export const RiskAssessment: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +31,7 @@ export const RiskAssessment: React.FC = () => {
     session_id: 'SES-102',
   });
 
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<RiskAssessmentResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -26,12 +41,18 @@ export const RiskAssessment: React.FC = () => {
     setErrorMessage(null);
 
     try {
-      const response = await apiClient.post('/risk-assessments', formData);
+      const response = await apiClient.post<RiskAssessmentResult>(
+        '/risk-assessments',
+        formData
+      );
       setResult(response.data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to evaluate risk via backend:', error);
+      const backendDetail = isAxiosError<{ detail?: string }>(error)
+        ? error.response?.data?.detail
+        : undefined;
       setErrorMessage(
-        error.response?.data?.detail || 'Failed to connect to FastAPI backend. Ensure uvicorn is running.'
+        backendDetail || 'Failed to connect to FastAPI backend. Ensure uvicorn is running.'
       );
     } finally {
       setLoading(false);
@@ -158,7 +179,7 @@ export const RiskAssessment: React.FC = () => {
                 <div>
                   <span className="text-xs text-slate-400 block mb-2">Triggered Signals & Graph Metrics:</span>
                   <ul className="space-y-2 max-h-40 overflow-y-auto">
-                    {result.signals?.map((sig: any, idx: number) => (
+                    {result.signals.map((sig, idx) => (
                       <li key={idx} className="p-2 bg-slate-950 rounded border border-slate-800 text-xs text-slate-300">
                         <strong className="text-cyan-400">{sig.name}:</strong> {sig.description}
                       </li>

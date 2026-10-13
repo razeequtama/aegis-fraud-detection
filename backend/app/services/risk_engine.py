@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
@@ -6,9 +7,14 @@ from app.services.graph_analysis import graph_analyzer, enrich_with_graph_featur
 
 class RiskEngine:
     def __init__(self):
-        # Path to ML artifacts saved during training stage
-        self.model_path = "ml/artifacts/fraud_rf_model.joblib"
-        self.scaler_path = "ml/artifacts/scaler.joblib"
+        artifacts_dir = Path(
+            os.getenv(
+                "ML_ARTIFACTS_DIR",
+                Path(__file__).resolve().parents[3] / "ml" / "artifacts",
+            )
+        )
+        self.model_path = artifacts_dir / "fraud_rf_model.joblib"
+        self.scaler_path = artifacts_dir / "scaler.joblib"
         
         self.model = None
         self.scaler = None
@@ -17,7 +23,7 @@ class RiskEngine:
     def load_artifacts(self):
         """Load trained Random Forest model and scaler safely."""
         try:
-            if os.path.exists(self.model_path) and os.path.exists(self.scaler_path):
+            if self.model_path.is_file() and self.scaler_path.is_file():
                 self.model = joblib.load(self.model_path)
                 self.scaler = joblib.load(self.scaler_path)
                 print("RiskEngine: Model and scaler loaded successfully.")

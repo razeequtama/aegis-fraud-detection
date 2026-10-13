@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -9,11 +7,16 @@ services:
       POSTGRES_PASSWORD: aegis_password
       POSTGRES_DB: aegis_db
     ports:
-      - "5433:5433"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - aegis_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aegis_user -d aegis_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   redis:
     image: redis:7-alpine
@@ -29,18 +32,28 @@ services:
       dockerfile: Dockerfile
     container_name: aegis_backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
+      - ./ml/artifacts:/ml/artifacts:ro
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://aegis_user:aegis_password@db:5432/aegis_db
+      - DATABASE_HOST=host.docker.internal
+      - ML_ARTIFACTS_DIR=/ml/artifacts
       - REDIS_HOST=redis
     depends_on:
-      - db
-      - redis
+      redis:
+        condition: service_started
     networks:
       - aegis_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
 
 volumes:
   postgres_data:

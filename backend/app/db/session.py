@@ -1,5 +1,6 @@
 import os
 from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -12,6 +13,12 @@ SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL", 
     "postgresql+psycopg2://postgres:postgres@localhost:5432/aegis_db"
 )
+
+database_host = os.getenv("DATABASE_HOST")
+if database_host:
+    SQLALCHEMY_DATABASE_URL = make_url(SQLALCHEMY_DATABASE_URL).set(
+        host=database_host
+    )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
