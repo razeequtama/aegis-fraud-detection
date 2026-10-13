@@ -1,55 +1,101 @@
-import time
-from typing import Dict, Any, List
-from app.services.feature_engineering import FeatureEngineeringService
-from app.schemas.risk import SignalItem
+import os
+import joblib
+import numpy as np
+import pandas as pd
 
-class RiskEngineService:
-    def __init__(self, model_version: str = "aegis-0.1.0"):
-        self.model_version = model_version
-
-    def evaluate_risk(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        start_time = time.time()
+class RiskEngine:
+    def __init__(self):
+        # Path to ML artifacts saved during training stage
+        self.model_path = "ml/artifacts/fraud_rf_model.joblib"
+        self.scaler_path = "ml/artifacts/scaler.joblib"
         
-        # 1. Feature Engineering
-        features = FeatureEngineeringService.extract_features(payload)
+        self.model = None
+        self.scaler = None
+        self.load_artifacts()
+
+    def load_artifacts(self):
+        """Load trained Random Forest model and scaler safely."""
+        try:
+            if os.path.exists(self.model_path) and os.path.exists(self.scaler_path):
+                self.model = joblib.load(self.model_path)
+                self.scaler = joblib.load(self.scaler_path)
+                print("RiskEngine: Model and scaler loaded successfully.")
+            else:
+                print("RiskEngine Warning: Model artifacts not found. Engine will run in mock/fallback mode.")
+        except Exception as e:
+            print(f"RiskEngine Error loading artifacts: {e}")
+
+    def evaluate_transaction(self, tx_data: dict) -> dict:
+        """
+        Process incoming transaction features, run ML model inference,
+        and apply decision policy thresholds.
+        """
+        # Extract raw features matching training columns
+        amount = tx_data.get("amount", 0.0)
+        oldbalanceOrg = tx_data.get("oldbalanceOrg", 0.0)
+        newbalanceOrig = tx_data.get("newbalanceOrig", 0.0)
+        oldbalanceDest = tx_data.get("oldbalanceDest", 0.0)
+        newbalanceDest = tx_data.get("newbalanceDest", 0.0)
         
-        # 2. Mock / Baseline Risk Scoring Logic (to be replaced by trained scikit-learn model artifacts)
-        risk_score = 0.1
-        signals: List[SignalItem] = []
+        # Calculate engineered error features (same as training pipeline)
+        errorBalanceOrg = newbalanceOrig + amount - oldbalanceOrg
+        errorBalanceDest = oldbalanceDest + amount - newbalanceDest
+        
+        # Transaction type dummy flags (default to 0 if not provided)
+        tx_type = tx_data.get("type", "TRANSFER")
+        is_cash_out = 1 if tx_type == "CASH_OUT" else 0
+        is_debit = 1 if tx_type == "DEBIT" else 0
+        is_payment = 1 if tx_type == "PAYMENT" else 0
+        is_transfer = 1 if tx_type == "TRANSFER" else 0
 
-        if features["is_high_velocity"]:
-            risk_score += 0.4
-            signals.append(SignalItem(
-                name="unusual_transaction_velocity",
-                description="Activity exceeds the configured velocity threshold based on payment attempts."
-            ))
+        # Construct feature array matching the 11 training features order
+        features = np.array([[
+            amount, oldbalanceOrg, newbalanceOrig, 
+            oldbalanceDest, newbalanceDest, 
+            errorBalanceOrg, errorBalanceDest,
+            is_cash_out, is_debit, is_payment, is_transfer
+        ]])
 
-        if features["is_high_amount"]:
-            risk_score += 0.3
-            signals.append(SignalItem(
-                name="high_transaction_amount",
-                description="Transaction amount is significantly higher than typical baseline."
-            ))
+        risk_score = 0.0
+        signals = []
 
-        # Cap risk score between 0.0 and 1.0
-        risk_score = min(max(risk_score, 0.0), 1.0)
+        # Run inference if model is loaded
+        if self.model and self.scaler:
+            try:
+                scaled_features = self.scaler.transform(features)
+                # Predict probability of class 1 (Fraud)
+                risk_score = float(self.model.predict_proba(scaled_features)[0][1])
+                print(f"DEBUG - Raw Risk Score calculated by model: {risk_score}") # <-- Tambahkan ini
+            except Exception as e:
+                print(f"Inference error: {e}")
+                risk_score = 0.5 # Fallback score
+        else:
+            # Fallback heuristic rule if model artifact is missing
+            if amount > 200000 and errorBalanceOrg != 0:
+                risk_score = 0.85
+            else:
+                risk_score = 0.12
 
-        # 3. Decision Policy Layer (Threshold mapping)
-        # Thresholds: < 0.4 -> approve, 0.4 to 0.75 -> review, > 0.75 -> decline
+        # Decision Policy Layer (Thresholds)
+        # < 0.4: approve, 0.4 - 0.75: review, > 0.75: decline
         if risk_score >= 0.75:
             decision = "decline"
-        elif risk_score >= 0.4:
+            signals.append({"name": "high_fraud_probability", "description": "Model predicts high risk of fraudulent pattern."})
+        elif risk_score >= 0.40:
             decision = "review"
+            signals.append({"name": "moderate_risk_velocity", "description": "Transaction requires analyst review due to suspicious balance shift."})
         else:
             decision = "approve"
 
-        latency_ms = round((time.time() - start_time) * 1000, 2)
+        if errorBalanceOrg != 0:
+            signals.append({"name": "balance_discrepancy", "description": "Discrepancy detected in source account balance calculation."})
 
         return {
-            "transaction_id": payload.get("transaction_id"),
-            "risk_score": round(risk_score, 2),
+            "risk_score": round(risk_score, 4),
             "decision": decision,
-            "model_version": self.model_version,
-            "signals": [s.model_dump() for s in signals],
-            "latency_ms": latency_ms
+            "model_version": "aegis-rf-v1.0",
+            "signals": signals
         }
+
+# Singleton instance
+risk_engine = RiskEngine()
