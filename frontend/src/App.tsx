@@ -17,6 +17,7 @@ export function App() {
           <Route index element={<Dashboard />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="investigation" element={<Investigation />} />
+          <Route path="investigation/:transactionId" element={<Investigation />} />
           <Route path="network" element={<Network />} />
           <Route path="assessment" element={<RiskAssessment />} />
           <Route path="model-lab" element={<ModelLab />} />

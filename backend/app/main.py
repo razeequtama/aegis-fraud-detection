@@ -5,7 +5,7 @@ from typing import List, Optional
 import time
 
 from app.services.risk_engine import risk_engine
-from app.api.routes import network, replays
+from app.api.routes import investigation, metrics, network, replays
 
 from app.api.routes import transactions
 
@@ -51,6 +51,8 @@ class RiskAssessmentResponse(BaseModel):
 # Include API Routers
 app.include_router(network.router)
 app.include_router(replays.router)
+app.include_router(metrics.router)
+app.include_router(investigation.router)
 app.include_router(transactions.router, prefix="/api/v1", tags=["Transactions"])
 
 

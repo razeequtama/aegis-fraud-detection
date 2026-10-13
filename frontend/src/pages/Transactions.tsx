@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { apiClient } from '../api/client';
 
@@ -131,7 +132,14 @@ export const Transactions: React.FC = () => {
               {transactions.length > 0 ? (
                 transactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-slate-850 transition-colors">
-                    <td className="p-4 font-medium text-cyan-400">{tx.id}</td>
+                    <td className="p-4 font-medium text-cyan-400">
+                      <Link
+                        to={`/investigation/${encodeURIComponent(tx.id)}`}
+                        className="hover:text-cyan-300 hover:underline"
+                      >
+                        {tx.id}
+                      </Link>
+                    </td>
                     <td className="p-4 text-slate-400">{tx.time}</td>
                     <td className="p-4 text-slate-300">{tx.account}</td>
                     <td className="p-4 text-slate-300">{tx.type}</td>

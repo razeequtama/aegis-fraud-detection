@@ -14,7 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session
 
-from app.api.routes.transactions import get_transactions
+from app.api.routes.transactions import get_transaction_details, get_transactions
 
 
 @pytest.mark.parametrize(
@@ -122,4 +122,73 @@ def test_get_transactions_supports_existing_table_layouts(
     assert [transaction["id"] for transaction in approved_transfers["data"]] == [
         "TX-LEGIT"
     ]
+    engine.dispose()
+
+
+@pytest.mark.parametrize(
+    ("account_column", "time_column", "fraud_column", "fraud_type"),
+    [
+        ("account_id", "timestamp", "label", Integer),
+        ("name_orig", "created_at", "is_fraud", Boolean),
+    ],
+)
+def test_get_transaction_details_returns_transaction_signals_and_entities(
+    account_column, time_column, fraud_column, fraud_type
+):
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    transaction_table = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column(account_column, String, nullable=False),
+        Column(time_column, DateTime(timezone=True)),
+        Column("amount", Float, nullable=False),
+        Column("type", String),
+        Column(fraud_column, fraud_type),
+        Column("device_id", String),
+        Column("session_id", String),
+        Column("risk_signals", String),
+    )
+    case_table = Table(
+        "investigation_cases",
+        metadata,
+        Column("case_id", String, primary_key=True),
+        Column("transaction_id", String, nullable=False),
+        Column("status", String),
+    )
+    metadata.create_all(engine)
+
+    with engine.begin() as connection:
+        connection.execute(
+            transaction_table.insert(),
+            {
+                "transaction_id": "TX-DETAIL",
+                account_column: "ACC-DETAIL",
+                time_column: datetime(2026, 1, 2, tzinfo=timezone.utc),
+                "amount": 850.0,
+                "type": "TRANSFER",
+                fraud_column: 1 if fraud_type is Integer else True,
+                "device_id": "DEV-DETAIL",
+                "session_id": "SES-DETAIL",
+                "risk_signals": '[{"name":"velocity","description":"Repeated transfers"}]',
+            },
+        )
+        connection.execute(
+            case_table.insert(),
+            {"case_id": "CASE-DETAIL", "transaction_id": "TX-DETAIL", "status": "open"},
+        )
+
+    with Session(engine) as db:
+        response = get_transaction_details("TX-DETAIL", db)
+
+    details = response["data"]
+    assert details["transaction"]["transaction_id"] == "TX-DETAIL"
+    assert details["transaction"]["account_id"] == "ACC-DETAIL"
+    assert details["risk_signals"] == [
+        {"name": "velocity", "description": "Repeated transfers"}
+    ]
+    assert details["related_entities"]["account"] == {"id": "ACC-DETAIL"}
+    assert details["related_entities"]["device"] == {"id": "DEV-DETAIL"}
+    assert details["case"]["case_id"] == "CASE-DETAIL"
     engine.dispose()
