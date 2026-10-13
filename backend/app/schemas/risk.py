@@ -1,17 +1,26 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List
+
 
 class RiskAssessmentRequest(BaseModel):
     transaction_id: str = Field(..., description="Unique identifier for the transaction")
     account_id: str = Field(..., description="Unique identifier for the user account")
     amount: float = Field(..., gt=0, description="Transaction amount in local currency")
+    type: Optional[str] = Field("TRANSFER", description="Transaction type used by PaySim")
+    oldbalanceOrg: Optional[float] = Field(0.0, description="Origin account old balance")
+    newbalanceOrig: Optional[float] = Field(0.0, description="Origin account new balance")
+    oldbalanceDest: Optional[float] = Field(0.0, description="Destination account old balance")
+    newbalanceDest: Optional[float] = Field(0.0, description="Destination account new balance")
     device_id: Optional[str] = Field(None, description="Unique identifier for the device")
     session_id: Optional[str] = Field(None, description="Unique identifier for the browsing session")
     payment_attempts: Optional[int] = Field(1, ge=1, description="Number of payment attempts made")
 
+
 class SignalItem(BaseModel):
     name: str
     description: str
+
 
 class RiskAssessmentResponse(BaseModel):
     transaction_id: str

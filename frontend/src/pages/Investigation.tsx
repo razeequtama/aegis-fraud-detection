@@ -159,7 +159,7 @@ export const Investigation: React.FC = () => {
           current
             ? {
                 ...current,
-                case: { case_id: caseId, status: 'in_review' },
+                case: { case_id: caseId ?? 'NEW-CASE', status: 'in_review' },
               }
             : current
         );

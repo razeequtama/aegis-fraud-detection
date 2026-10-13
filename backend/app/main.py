@@ -13,7 +13,7 @@ from app.services.observability import (
     record_api_latency,
     record_inference_latency,
 )
-from app.api.routes import investigation, metrics, network, replays
+from app.api.routes import investigation, metrics, network, replays, risk
 
 from app.api.routes import transactions
 
@@ -71,6 +71,7 @@ app.include_router(network.router)
 app.include_router(replays.router)
 app.include_router(metrics.router)
 app.include_router(investigation.router)
+app.include_router(risk.router)
 app.include_router(transactions.router, prefix="/api/v1", tags=["Transactions"])
 
 
@@ -112,7 +113,7 @@ def health_check(db: Session = Depends(get_db)):
         "inference_engine": {
             "status": "loaded" if model_loaded else "unavailable",
             "model_loaded": model_loaded,
-            "model_version": "aegis-rf-v1.0" if model_loaded else None,
+            "model_version": risk_engine.model_version if model_loaded else None,
         },
         "latency": get_latency_metrics(),
     }

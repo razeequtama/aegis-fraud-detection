@@ -14,7 +14,7 @@ class FraudRepository:
             payment_attempts=payload.get("payment_attempts", 1),
             label=label
         )
-        db.merge(db_txn)  # Use merge to handle upsert-like behavior if ID exists
+        db_txn = db.merge(db_txn)  # Use merge to handle upsert-like behavior if ID exists
         db.commit()
         db.refresh(db_txn)
         return db_txn

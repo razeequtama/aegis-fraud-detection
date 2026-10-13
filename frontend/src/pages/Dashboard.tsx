@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { Activity, CheckCircle2, ShieldAlert, TrendingUp } from 'lucide-react';
+import {
+  Activity,
+  CalendarDays,
+  CheckCircle2,
+  ShieldAlert,
+  TrendingUp,
+} from 'lucide-react';
 import {
   Area,
   AreaChart,
@@ -26,6 +32,15 @@ interface MetricsOverview {
     transactions: number;
     suspicious: number;
   }[];
+  available_range: {
+    start_date: string;
+    end_date: string;
+  } | null;
+  busiest_period: {
+    start_date: string;
+    end_date: string;
+    transactions: number;
+  } | null;
 }
 
 const numberFormat = new Intl.NumberFormat();
@@ -36,11 +51,19 @@ const formatDate = (value: string) =>
     day: 'numeric',
   });
 
+const formatMonth = (value: string) =>
+  new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
+    month: 'long',
+    year: 'numeric',
+  });
+
 export const Dashboard: React.FC = () => {
   const [overview, setOverview] = useState<MetricsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -49,7 +72,12 @@ export const Dashboard: React.FC = () => {
       setLoading(true);
       setErrorMessage(null);
       try {
-        const response = await apiClient.get<MetricsOverview>('/metrics/overview');
+        const response = await apiClient.get<MetricsOverview>('/metrics/overview', {
+          params: {
+            ...(startDate ? { start_date: startDate } : {}),
+            ...(endDate ? { end_date: endDate } : {}),
+          },
+        });
         if (active) {
           setOverview(response.data);
         }
@@ -74,7 +102,7 @@ export const Dashboard: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [refreshKey]);
+  }, [endDate, refreshKey, startDate]);
 
   const metricCards = overview
     ? [
@@ -168,11 +196,61 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <h3 className="mb-1 text-lg font-semibold text-slate-200">
-          Transaction &amp; Suspicious Activity Trend
-        </h3>
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-200">
+              Transaction &amp; Suspicious Activity Trend
+            </h3>
+            <p className="mt-1 text-xs text-slate-400">
+              Choose any date range in the recorded transaction history.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="grid gap-1 text-xs text-slate-400">
+              From
+              <input
+                aria-label="Trend start date"
+                type="date"
+                min={overview?.available_range?.start_date}
+                max={endDate || overview?.available_range?.end_date}
+                value={startDate || overview?.available_range?.start_date || ''}
+                onChange={(event) => setStartDate(event.target.value)}
+                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200"
+              />
+            </label>
+            <label className="grid gap-1 text-xs text-slate-400">
+              To
+              <input
+                aria-label="Trend end date"
+                type="date"
+                min={startDate || overview?.available_range?.start_date}
+                max={overview?.available_range?.end_date}
+                value={endDate || overview?.available_range?.end_date || ''}
+                onChange={(event) => setEndDate(event.target.value)}
+                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200"
+              />
+            </label>
+            <button
+              type="button"
+              disabled={!overview?.busiest_period || loading}
+              onClick={() => {
+                if (!overview?.busiest_period) return;
+                setStartDate(overview.busiest_period.start_date);
+                setEndDate(overview.busiest_period.end_date);
+              }}
+              className="flex items-center gap-2 rounded-lg border border-cyan-500/30 px-3 py-2 text-sm font-medium text-cyan-300 hover:bg-cyan-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <CalendarDays size={16} />
+              Busiest period
+            </button>
+          </div>
+        </div>
         <p className="mb-4 text-xs text-slate-400">
-          Daily totals for the 14 days through the latest recorded transaction
+          {startDate || overview?.available_range?.start_date || 'No start date'} –{' '}
+          {endDate || overview?.available_range?.end_date || 'No end date'}
+          {overview?.busiest_period
+            ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
+            : ''}
         </p>
         <div className="h-72 w-full">
           {loading ? (
@@ -232,7 +310,7 @@ export const Dashboard: React.FC = () => {
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
-              No timestamped transactions are available to chart.
+              No timestamped transactions are available in this date range.
             </div>
           )}
         </div>

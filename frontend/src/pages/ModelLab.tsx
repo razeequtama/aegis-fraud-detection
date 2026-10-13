@@ -119,6 +119,9 @@ export const ModelLab: React.FC = () => {
         if (currentReplay.status === 'FAILED') {
           throw new Error(currentReplay.error_message || 'The replay worker failed.');
         }
+        if (currentReplay.metrics_summary && currentReplay.metrics_summary.review_queue_difference !== undefined) {
+          setReplay(currentReplay);
+        }
         await waitForPoll(controller.signal);
       }
     } catch (requestError) {
@@ -254,7 +257,7 @@ export const ModelLab: React.FC = () => {
             <>
               <div role="status" className="flex items-center gap-2 text-sm text-emerald-300">
                 <CheckCircle2 size={17} />
-                Replay completed for {replay.model_version} at threshold {replay.threshold.toFixed(2)}.
+                Replay completed for {replay?.model_version ?? 'unknown model'} at threshold {(replay?.threshold ?? 0).toFixed(2)}.
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">

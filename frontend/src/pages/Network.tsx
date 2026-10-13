@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import axios from 'axios';
 import cytoscape from 'cytoscape';
 import type { Core, ElementDefinition } from 'cytoscape';
@@ -116,7 +116,7 @@ export const Network: React.FC = () => {
               style: {
                 'background-color': '#0891b2',
                 'border-color': '#67e8f9',
-                'border-width': 1,
+                'border-width': '1px',
                 label: 'data(label)',
                 color: '#cbd5e1',
                 'font-size': 11,
@@ -124,24 +124,24 @@ export const Network: React.FC = () => {
                 'text-margin-y': 7,
                 'text-wrap': 'wrap',
                 'text-max-width': 130,
-                width: 34,
-                height: 34,
-              },
+                width: '34px',
+                height: '34px',
+              } as any,
             },
             {
               selector: 'node[type = "account"]',
               style: {
                 shape: 'ellipse',
                 'background-color': '#0e7490',
-              },
+              } as any,
             },
             {
               selector: 'node[type = "account"][suspicious = true]',
               style: {
                 'background-color': '#e11d48',
                 'border-color': '#fda4af',
-                'border-width': 3,
-              },
+                'border-width': '3px',
+              } as any,
             },
             {
               selector: 'node[type = "device"]',
@@ -149,15 +149,15 @@ export const Network: React.FC = () => {
                 shape: 'round-rectangle',
                 'background-color': '#0891b2',
                 'border-color': '#67e8f9',
-              },
+              } as any,
             },
             {
               selector: 'node[type = "device"][shared = true]',
               style: {
                 'background-color': '#06b6d4',
                 'border-color': '#a5f3fc',
-                'border-width': 3,
-              },
+                'border-width': '3px',
+              } as any,
             },
             {
               selector: 'node[type = "session"]',
@@ -165,7 +165,7 @@ export const Network: React.FC = () => {
                 shape: 'diamond',
                 'background-color': '#475569',
                 'border-color': '#94a3b8',
-              },
+              } as any,
             },
             {
               selector: 'node[type = "transaction"]',
@@ -173,23 +173,23 @@ export const Network: React.FC = () => {
                 shape: 'hexagon',
                 'background-color': '#7c3aed',
                 'border-color': '#c4b5fd',
-              },
+              } as any,
             },
             {
               selector: 'edge',
               style: {
-                width: 2,
+                width: '2px',
                 'line-color': '#475569',
                 'target-arrow-color': '#64748b',
                 'target-arrow-shape': 'triangle',
                 'curve-style': 'bezier',
                 label: 'data(relation)',
                 color: '#94a3b8',
-                'font-size': 8,
+                'font-size': '8px',
                 'text-background-color': '#0f172a',
                 'text-background-opacity': 0.85,
-                'text-background-padding': 2,
-              },
+                'text-background-padding': '2px',
+              } as any,
             },
           ],
           layout: {
