@@ -1,14 +1,27 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import time
+
 from app.services.risk_engine import risk_engine
-from app.api.routes import network
+from app.api.routes import network, replays
+
+from app.db.base_class import Base
+from app.db.session import engine
 
 app = FastAPI(
     title="AEGIS Fraud Detection API",
     version="1.0.0",
     description="Backend API for real-time risk scoring, transaction analysis, and fraud investigation."
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Pydantic Request Models for strict input validation
@@ -36,7 +49,13 @@ class RiskAssessmentResponse(BaseModel):
     signals: List[SignalItem]
     latency_ms: int
 
+# Tambahkan baris ini sebelum app.include_router atau di awal main.py
+Base.metadata.create_all(bind=engine)
+
+# Include API Routers
 app.include_router(network.router)
+app.include_router(replays.router)
+
 
 @app.get("/api/v1/health")
 def health_check():

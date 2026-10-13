@@ -80,3 +80,20 @@ class FraudGraphAnalyzer:
 
 # Global instance for dependency injection or service use
 graph_analyzer = FraudGraphAnalyzer()
+
+def enrich_with_graph_features(transaction_data: dict, db_session=None) -> dict:
+    """
+    Helper function used by risk_engine to enrich transaction data 
+    with relational features extracted from the graph analyzer.
+    """
+    enriched = transaction_data.copy()
+    account_id = enriched.get("account_id")
+    
+    if account_id:
+        features = graph_analyzer.extract_graph_features(str(account_id))
+        enriched.update(features)
+    else:
+        enriched["shared_devices_count"] = 0.0
+        enriched["node_degree"] = 0.0
+        
+    return enriched

@@ -7,18 +7,17 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Muat file .env dengan path eksplisit agar terbaca dengan akurat
 env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../.env'))
 load_dotenv(env_path)
 
-# Impor Base dan model SQLAlchemy agar Alembic mendeteksi tabel
 from app.db.session import Base
 from app.models.models import TransactionModel, InvestigationCaseModel
+from app.models.replay_run import ReplayRun
+from app.models.transaction import Transaction
 
 # this is the Alembic Config object...
 config = context.config
 
-# Ambil DATABASE_URL dari environment variable dan masukkan ke config Alembic
 database_url = os.getenv("DATABASE_URL")
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
@@ -27,7 +26,6 @@ if database_url:
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Tentukan target_metadata secara sah untuk autogenerate migration
 target_metadata = Base.metadata
 
 
