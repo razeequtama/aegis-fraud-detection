@@ -49,10 +49,6 @@ export const Layout: React.FC = () => {
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8">
           <span className="text-sm font-medium text-slate-400">Operational Risk & Intelligence</span>
-          <div className="flex items-center gap-3">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs text-slate-300 font-medium">System Online</span>
-          </div>
         </header>
         <div className="flex-1 overflow-y-auto p-8 bg-slate-950">
           <Outlet />

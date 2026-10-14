@@ -108,7 +108,7 @@ This document defines the complete end-to-end API specification and communicatio
 
 - **URL**: `/risk-assessments`
 - **Method**: `POST`
-- **Description**: Evaluates a transaction in real-time, extracts features, calculates velocity signals, runs the ML model, applies decision policy thresholds, and persists the results.
+- **Description**: Runs a transaction simulation through the ML model, applies decision policy thresholds, and returns the risk assessment without persisting the submitted values or result.
 
 **Request Body:**
 

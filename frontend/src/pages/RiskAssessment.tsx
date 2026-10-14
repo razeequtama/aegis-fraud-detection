@@ -103,7 +103,12 @@ export const RiskAssessment: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-slate-100">Interactive Risk Assessment</h2>
+      <div>
+        <h2 className="text-2xl font-bold text-slate-100">Interactive Risk Assessment</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Run a transaction simulation through the ML model. Submitted values and results are not saved.
+        </p>
+      </div>
       
       {errorMessage && (
         <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-center gap-3 text-rose-400 text-sm">
@@ -192,7 +197,7 @@ export const RiskAssessment: React.FC = () => {
             className="flex items-center justify-center gap-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 rounded-lg transition-colors mt-4 disabled:opacity-50"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            {loading ? 'Evaluating Model & Graph...' : 'Analyze Transaction'}
+            {loading ? 'Evaluating Model & Graph...' : 'Run Simulation'}
           </button>
         </form>
         <section className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
@@ -273,7 +278,7 @@ export const RiskAssessment: React.FC = () => {
               </div>
             ) : (
               <p className="text-sm text-slate-500 italic text-center py-20">
-                Submit transaction data to run live backend inference and graph analysis.
+                Run a simulation to see the model score, suggested decision, and triggered signals.
               </p>
             )}
           </div>

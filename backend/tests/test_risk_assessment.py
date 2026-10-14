@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -8,15 +9,19 @@ from app.schemas.risk import RiskAssessmentRequest, RiskAssessmentResponse
 from app.services.risk_engine import risk_engine
 
 
-def test_risk_assessment_persists_transaction_and_returns_response(monkeypatch):
+@pytest.mark.parametrize(
+    ("decision", "risk_score"),
+    [("approve", 0.2), ("review", 0.6), ("decline", 0.9)],
+)
+def test_risk_assessment_simulates_without_persisting(monkeypatch, decision, risk_score):
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine)
     monkeypatch.setattr(
         risk_engine,
         "evaluate_risk",
         lambda _payload: {
-            "risk_score": 0.2,
-            "decision": "approve",
+            "risk_score": risk_score,
+            "decision": decision,
             "model_version": "test-model",
             "signals": [],
         },
@@ -28,13 +33,13 @@ def test_risk_assessment_persists_transaction_and_returns_response(monkeypatch):
     )
 
     with Session(engine) as db:
-        result = assess_risk(payload, db)
+        result = assess_risk(payload)
         response = RiskAssessmentResponse(**result)
 
-        transaction = db.get(TransactionModel, payload.transaction_id)
-        assert transaction is not None
-        assert transaction.account_id == payload.account_id
-        assert transaction.label == "approve"
+        assert db.get(TransactionModel, payload.transaction_id) is None
+        assert db.query(InvestigationCaseModel).count() == 0
+        assert result["risk_score"] == risk_score
+        assert result["decision"] == decision
         assert response.transaction_id == payload.transaction_id
         assert response.model_version == "test-model"
         assert response.latency_ms >= 0
@@ -42,7 +47,7 @@ def test_risk_assessment_persists_transaction_and_returns_response(monkeypatch):
     engine.dispose()
 
 
-def test_risk_assessment_persists_transaction_before_creating_case(monkeypatch):
+def test_repeated_risk_assessments_do_not_create_transactions_or_cases(monkeypatch):
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine)
     monkeypatch.setattr(
@@ -62,56 +67,12 @@ def test_risk_assessment_persists_transaction_before_creating_case(monkeypatch):
     )
 
     with Session(engine) as db:
-        result = assess_risk(payload, db)
+        result = assess_risk(payload)
+        repeated_result = assess_risk(payload)
 
-        transaction = db.get(TransactionModel, payload.transaction_id)
-        case = (
-            db.query(InvestigationCaseModel)
-            .filter_by(transaction_id=payload.transaction_id)
-            .one()
-        )
-        assert transaction is not None
-        assert result["decision"] == "review"
-        assert case.status == "open"
-
-        repeated_result = assess_risk(payload, db)
-        repeated_cases = (
-            db.query(InvestigationCaseModel)
-            .filter_by(transaction_id=payload.transaction_id)
-            .all()
-        )
         assert repeated_result["decision"] == "review"
-        assert len(repeated_cases) == 1
-        assert repeated_cases[0].case_id == case.case_id
-
-    engine.dispose()
-
-
-def test_case_ids_are_unique_across_transactions(monkeypatch):
-    engine = create_engine("sqlite://")
-    Base.metadata.create_all(engine)
-    monkeypatch.setattr(
-        risk_engine,
-        "evaluate_risk",
-        lambda _payload: {
-            "risk_score": 0.9,
-            "decision": "decline",
-            "model_version": "test-model",
-            "signals": [],
-        },
-    )
-
-    with Session(engine) as db:
-        for suffix in ("A", "B"):
-            payload = RiskAssessmentRequest(
-                transaction_id=f"TX-RISK-{suffix}",
-                account_id=f"ACC-RISK-{suffix}",
-                amount=250.0,
-            )
-            assess_risk(payload, db)
-
-        cases = db.query(InvestigationCaseModel).all()
-        assert len(cases) == 2
-        assert len({case.case_id for case in cases}) == 2
+        assert result["decision"] == "review"
+        assert db.query(TransactionModel).count() == 0
+        assert db.query(InvestigationCaseModel).count() == 0
 
     engine.dispose()
