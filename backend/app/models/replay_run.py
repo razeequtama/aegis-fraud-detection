@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, Text
 from sqlalchemy.sql import func
-from app.db.base_class import Base
+from app.db.session import Base
 
 class ReplayRun(Base):
     __tablename__ = "replay_runs"

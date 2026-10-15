@@ -7,7 +7,7 @@ from pathlib import Path
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@localhost:5433/aegis_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@localhost:5432/aegis_db")
 engine = create_engine(DATABASE_URL)
 
 def seed_database_from_csv(csv_path: str, sample_size: int = 50000):
@@ -35,10 +35,15 @@ def seed_database_from_csv(csv_path: str, sample_size: int = 50000):
             "account_id": row['nameOrig'],
             "timestamp": tx_timestamp, 
             "amount": float(row['amount']),
+            "type": str(row.get('type', 'TRANSFER')),
+            "oldbalance_org": float(row.get('oldbalanceOrg', 0.0)),
+            "newbalance_orig": float(row.get('newbalanceOrig', 0.0)),
+            "oldbalance_dest": float(row.get('oldbalanceDest', 0.0)),
+            "newbalance_dest": float(row.get('newbalanceDest', 0.0)),
             "device_id": f"DEV-SIM-{hash(row['nameOrig']) % 1000}",
             "session_id": f"SES-SIM-{idx}",
             "payment_attempts": 1,
-            "label": int(row['isFraud'])
+            "is_fraud": int(row['isFraud']),
         })
     
     tx_df = pd.DataFrame(transactions_data)

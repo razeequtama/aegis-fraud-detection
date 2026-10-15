@@ -11,9 +11,8 @@ env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../.env'))
 load_dotenv(env_path)
 
 from app.db.session import Base
-from app.models.models import TransactionModel, InvestigationCaseModel
+from app.models.models import Transaction, InvestigationCase, TransactionModel, InvestigationCaseModel
 from app.models.replay_run import ReplayRun
-from app.models.transaction import Transaction
 
 # this is the Alembic Config object...
 config = context.config
