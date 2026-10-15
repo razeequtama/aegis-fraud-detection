@@ -443,7 +443,7 @@ export const Investigation: React.FC = () => {
               </h2>
             </div>
             <p className="mt-1 text-sm text-slate-300">
-              Review case queues, analyze explainable ML signals, and record feedback decisions for retraining.
+              <strong>Review case queues, analyze explainable ML signals, and record feedback decisions for retraining.</strong>
             </p>
           </div>
 
@@ -456,21 +456,21 @@ export const Investigation: React.FC = () => {
                 value={searchJumpInput}
                 onChange={(e) => setSearchJumpInput(e.target.value)}
                 placeholder="Enter Transaction or Case ID…"
-                className="w-full sm:w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+                className="w-full sm:w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
               />
             </div>
             <button
               type="submit"
-              className="shrink-0 flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 sm:px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20"
+              className="shrink-0 flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 sm:px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
             >
-              Investigate <ArrowRight size={15} />
+              Investigate <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
             </button>
           </form>
         </div>
 
         {/* KPI Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 interactive-card hover:border-slate-700 cursor-default">
             <span className="text-sm font-medium text-slate-300">Total Cases</span>
             <div className="mt-2 text-2xl font-bold text-slate-100">
               {caseSummary ? caseSummary.total_cases : '—'}
@@ -478,7 +478,7 @@ export const Investigation: React.FC = () => {
             <span className="mt-1 block text-xs text-slate-400">Tracked in database</span>
           </div>
 
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 interactive-card hover:border-amber-500/50 cursor-default">
             <span className="text-sm font-medium text-amber-300">Open / Pending Review</span>
             <div className="mt-2 text-2xl font-bold text-amber-400">
               {caseSummary ? caseSummary.open + caseSummary.in_review : '—'}
@@ -486,7 +486,7 @@ export const Investigation: React.FC = () => {
             <span className="mt-1 block text-xs text-amber-300/90">Requires analyst action</span>
           </div>
 
-          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4">
+          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 interactive-card hover:border-rose-500/50 cursor-default">
             <span className="text-sm font-medium text-rose-300">Confirmed Fraud</span>
             <div className="mt-2 text-2xl font-bold text-rose-400">
               {caseSummary ? caseSummary.confirmed_fraud : '—'}
@@ -494,7 +494,7 @@ export const Investigation: React.FC = () => {
             <span className="mt-1 block text-xs text-rose-300/90">Ready for training loop</span>
           </div>
 
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 interactive-card hover:border-emerald-500/50 cursor-default">
             <span className="text-sm font-medium text-emerald-300">Cleared / Legitimate</span>
             <div className="mt-2 text-2xl font-bold text-emerald-400">
               {caseSummary ? caseSummary.legitimate : '—'}
@@ -518,7 +518,7 @@ export const Investigation: React.FC = () => {
                 key={preset.txId}
                 type="button"
                 onClick={() => navigate(`/investigation/${preset.txId}`)}
-                className="group flex flex-col justify-between rounded-lg border border-slate-800 bg-slate-950/60 p-3.5 text-left transition-all hover:border-cyan-500/50 hover:bg-slate-800/60"
+                className="group flex flex-col justify-between rounded-lg border border-slate-800 bg-slate-950/60 p-3.5 text-left interactive-card hover:border-cyan-500/50 hover:bg-slate-800/60"
               >
                 <div>
                   <div className="mb-1.5 flex items-center justify-between">
@@ -529,7 +529,7 @@ export const Investigation: React.FC = () => {
                       {preset.txId}
                     </span>
                   </div>
-                  <h4 className="text-sm font-semibold text-slate-100 group-hover:text-cyan-200">
+                  <h4 className="text-sm font-semibold text-slate-100 group-hover:text-cyan-200 transition-colors">
                     {preset.title}
                   </h4>
                   <p className="mt-1 text-xs text-slate-300 line-clamp-2">
@@ -537,7 +537,7 @@ export const Investigation: React.FC = () => {
                   </p>
                 </div>
                 <div className="mt-3 flex items-center justify-end text-xs font-semibold text-cyan-400">
-                  Open Case <ArrowRight size={13} className="ml-1" />
+                  Open Case <ArrowRight size={13} className="ml-1 transition-transform duration-200 group-hover:translate-x-1" />
                 </div>
               </button>
             ))}
@@ -548,7 +548,7 @@ export const Investigation: React.FC = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Case Table (2 Cols) */}
           <div className="space-y-4 lg:col-span-2">
-            <div className="rounded-xl border border-slate-800 bg-slate-900">
+            <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
               {/* Table Controls */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 p-4">
                 <div className="flex items-center gap-1.5">
@@ -562,9 +562,9 @@ export const Investigation: React.FC = () => {
                           setStatusFilter(st);
                           setPage(1);
                         }}
-                        className={`rounded px-2.5 py-1 text-xs sm:text-sm font-medium capitalize transition-colors ${
+                        className={`rounded px-2.5 py-1 text-xs sm:text-sm font-medium capitalize transition-all duration-150 interactive-btn ${
                           statusFilter === st
-                            ? 'bg-cyan-500/20 text-cyan-300'
+                            ? 'bg-cyan-500/20 text-cyan-300 shadow-sm shadow-cyan-500/10'
                             : 'text-slate-400 hover:text-slate-200'
                         }`}
                       >
@@ -584,7 +584,7 @@ export const Investigation: React.FC = () => {
                       setPage(1);
                     }}
                     placeholder="Filter cases…"
-                    className="w-48 rounded-lg border border-slate-700 bg-slate-950 py-1.5 pl-8 pr-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-48 rounded-lg border border-slate-700 bg-slate-950 py-1.5 pl-8 pr-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
                   />
                 </div>
               </div>
@@ -596,7 +596,7 @@ export const Investigation: React.FC = () => {
                   Loading case queue…
                 </div>
               ) : queueError ? (
-                <div className="p-6 text-center text-sm text-rose-400">
+                <div className="p-6 text-center text-sm text-rose-400 animate-slide-down">
                   <AlertTriangle className="mx-auto mb-2" size={24} />
                   {queueError}
                 </div>
@@ -623,14 +623,14 @@ export const Investigation: React.FC = () => {
                       {cases.map((c) => {
                         const score = c.risk_score ?? 0;
                         return (
-                          <tr key={c.case_id} className="transition-colors hover:bg-slate-800/40">
+                          <tr key={c.case_id} className="transition-colors duration-150 hover:bg-slate-800/50">
                             <td className="px-4 py-3 font-mono font-medium text-slate-300">
                               {c.case_id}
                             </td>
                             <td className="px-4 py-3">
                               <Link
                                 to={`/investigation/${c.transaction_id}`}
-                                className="font-mono text-cyan-400 hover:underline"
+                                className="font-mono text-cyan-400 hover:underline transition-colors"
                               >
                                 {c.transaction_id}
                               </Link>
@@ -654,7 +654,7 @@ export const Investigation: React.FC = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+                                className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize border transition-colors ${
                                   c.status === 'open'
                                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                     : c.status === 'in_review'
@@ -668,7 +668,7 @@ export const Investigation: React.FC = () => {
                             <td className="px-4 py-3">
                               {c.feedback_label ? (
                                 <span
-                                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+                                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize border transition-colors ${
                                     c.feedback_label === 'confirmed_fraud'
                                       ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                                       : c.feedback_label === 'legitimate'
@@ -686,7 +686,7 @@ export const Investigation: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => navigate(`/investigation/${c.transaction_id}`)}
-                                className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20"
+                                className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
                               >
                                 Review
                               </button>
@@ -709,16 +709,16 @@ export const Investigation: React.FC = () => {
                     type="button"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
-                    className="rounded border border-slate-700 bg-slate-800 px-3 py-1 disabled:opacity-40"
+                    className="rounded border border-slate-700 bg-slate-800 px-3 py-1 disabled:opacity-40 interactive-btn"
                   >
                     Previous
                   </button>
-                  <span>Page {page}</span>
+                  <span className="font-mono text-slate-200">Page {page}</span>
                   <button
                     type="button"
                     onClick={() => setPage((p) => p + 1)}
                     disabled={cases.length < 15}
-                    className="rounded border border-slate-700 bg-slate-800 px-3 py-1 disabled:opacity-40"
+                    className="rounded border border-slate-700 bg-slate-800 px-3 py-1 disabled:opacity-40 interactive-btn"
                   >
                     Next
                   </button>
@@ -735,7 +735,7 @@ export const Investigation: React.FC = () => {
                   <ShieldAlert size={16} className="text-rose-400" />
                   <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">Critical Alerts Inbox</h3>
                 </div>
-                <span className="rounded bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-300">
+                <span className="rounded bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-300 animate-pulse-subtle">
                   Priority
                 </span>
               </div>
@@ -748,7 +748,7 @@ export const Investigation: React.FC = () => {
                   urgentAlerts.map((alert) => (
                     <div
                       key={alert.transaction_id}
-                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-sm"
+                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-sm interactive-card hover:border-rose-500/40"
                     >
                       <div>
                         <div className="flex items-center gap-2">
@@ -766,7 +766,7 @@ export const Investigation: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => navigate(`/investigation/${alert.transaction_id}`)}
-                        className="rounded border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20"
+                        className="rounded border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 interactive-btn"
                       >
                         Investigate
                       </button>
@@ -864,7 +864,7 @@ export const Investigation: React.FC = () => {
               `Inference Engine: ${transaction.model_version}`
             ) : (
               <>
-                Live <span className="aegis-text-gradient font-arcane font-bold">AEGIS</span> Model &amp; Graph Engine
+                Live <span className="aegis-text-gradient font-fantasy font-bold">AEGIS</span> Model &amp; Graph Engine
               </>
             )}
             {investigationCase?.assigned_analyst ? ` • Assigned to ${investigationCase.assigned_analyst}` : ''}
@@ -876,7 +876,7 @@ export const Investigation: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to={`/network/transactions/${encodeURIComponent(transaction.transaction_id)}`}
-            className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20"
+            className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20 interactive-btn"
           >
             <Network size={16} />
             Explore in Network Graph
@@ -886,7 +886,7 @@ export const Investigation: React.FC = () => {
               type="button"
               onClick={handleReopenCase}
               disabled={isUpdatingStatus}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50 interactive-btn"
             >
               <RotateCcw size={14} />
               Reopen Case
@@ -933,7 +933,7 @@ export const Investigation: React.FC = () => {
                 onClick={() => {
                   setAnalystReasoning((prev) => (prev ? `${prev}, ${tag}` : tag));
                 }}
-                className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs sm:text-sm text-slate-200 hover:border-cyan-500/50 hover:text-cyan-200 transition-colors"
+                className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs sm:text-sm text-slate-200 hover:border-cyan-500/50 hover:text-cyan-200 interactive-btn"
               >
                 + {tag}
               </button>
@@ -952,7 +952,7 @@ export const Investigation: React.FC = () => {
             value={analystReasoning}
             onChange={(e) => setAnalystReasoning(e.target.value)}
             placeholder="Document observed pattern, device links, or reason for clearance…"
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
           />
         </div>
 
@@ -964,7 +964,7 @@ export const Investigation: React.FC = () => {
               type="button"
               onClick={() => void submitFeedback(label, title)}
               disabled={submittingLabel !== null}
-              className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 rounded-lg border px-3 sm:px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+              className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 rounded-lg border px-3 sm:px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 interactive-btn ${className}`}
             >
               <Icon size={16} />
               {submittingLabel === label ? 'Saving Decision…' : title}
@@ -973,13 +973,13 @@ export const Investigation: React.FC = () => {
         </div>
 
         {feedbackMessage && (
-          <div role="status" className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-300">
+          <div role="status" className="animate-slide-down flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-300">
             <CheckCircle2 size={16} />
             {feedbackMessage}
           </div>
         )}
         {feedbackError && (
-          <div role="alert" className="flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">
+          <div role="alert" className="animate-slide-down flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">
             <AlertCircle size={16} />
             {feedbackError}
           </div>
@@ -1201,7 +1201,7 @@ export const Investigation: React.FC = () => {
             <div className="pt-2">
               <Link
                 to={`/network/transactions/${encodeURIComponent(transaction.transaction_id)}`}
-                className="flex items-center justify-center gap-2 w-full rounded-lg border border-cyan-500/40 bg-cyan-500/10 py-2.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 transition-colors"
+                className="flex items-center justify-center gap-2 w-full rounded-lg border border-cyan-500/40 bg-cyan-500/10 py-2.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
               >
                 <Network size={16} />
                 Visualize Full Syndicate Ring

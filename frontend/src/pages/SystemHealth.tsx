@@ -191,7 +191,7 @@ export const SystemHealth: React.FC = () => {
             </h2>
           </div>
           <p className="mt-1 text-sm text-slate-300">
-            Live backend, database pool, velocity cache, and model inference status.
+            <strong>Live backend, database pool, velocity cache, and model inference status.</strong>
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-400 font-mono">
@@ -211,7 +211,7 @@ export const SystemHealth: React.FC = () => {
       {errorMessage && (
         <div
           role="alert"
-          className="flex items-center gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300"
+          className="animate-slide-down flex items-center gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300"
         >
           <AlertCircle size={19} />
           <span>Unable to refresh system health: {errorMessage}</span>
@@ -231,14 +231,22 @@ export const SystemHealth: React.FC = () => {
           }) => (
             <section
               key={title}
-              className="space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-slate-700/80"
+              className="interactive-card group space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6 hover:border-cyan-500/30"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-slate-300">
-                  <Icon size={20} className="text-cyan-400" />
+                  <Icon size={20} className="text-cyan-400 transition-transform duration-200 group-hover:scale-110" />
                   <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{title}</h3>
                 </div>
-                <StatusIcon operational={Boolean(operational)} />
+                <div className="flex items-center gap-2">
+                  {operational && (
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </span>
+                  )}
+                  <StatusIcon operational={Boolean(operational)} />
+                </div>
               </div>
               <div>
                 <p
@@ -264,7 +272,7 @@ export const SystemHealth: React.FC = () => {
       {!health && !errorMessage && (
         <div
           role="status"
-          className="flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900 p-6 text-sm text-slate-400"
+          className="animate-fade-in flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900 p-6 text-sm text-slate-400"
         >
           <LoaderCircle className="animate-spin text-cyan-400" size={17} />
           Loading observability metrics…

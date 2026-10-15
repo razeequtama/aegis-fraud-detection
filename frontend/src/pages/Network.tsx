@@ -421,7 +421,7 @@ export const Network: React.FC = () => {
             </h2>
           </div>
           <p className="mt-1 text-sm text-slate-300">
-            Explore connected accounts, shared devices, and transaction relationships.
+            <strong>Explore connected accounts, shared devices, and transaction relationships..</strong>
           </p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
@@ -432,7 +432,7 @@ export const Network: React.FC = () => {
             id="network-entity-type"
             value={entityType}
             onChange={(event) => setEntityType(event.target.value as EntityType)}
-            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none"
+            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
           >
             <option value="transactions">Transaction</option>
             <option value="accounts">Account</option>
@@ -445,11 +445,11 @@ export const Network: React.FC = () => {
             value={entityId}
             onChange={(event) => setEntityId(event.target.value)}
             placeholder={entityType === 'transactions' ? 'Transaction ID' : 'Account ID'}
-            className="flex-1 sm:w-48 sm:flex-initial rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+            className="flex-1 sm:w-48 sm:flex-initial rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
           />
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20"
+            className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
           >
             <Search size={16} />
             Explore
@@ -470,7 +470,7 @@ export const Network: React.FC = () => {
               key={sample.id}
               type="button"
               onClick={() => handleSelectSample(sample)}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-medium transition-all ${
+              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-medium transition-all interactive-btn ${
                 isActive
                   ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-sm shadow-cyan-500/20 ring-1 ring-cyan-400/40'
                   : 'border-slate-800 bg-slate-900/90 text-slate-300 hover:border-slate-700 hover:bg-slate-800'
@@ -493,7 +493,7 @@ export const Network: React.FC = () => {
       <div className="relative min-h-[440px] lg:min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />
         {!loadRequest && !loading && (
-          <div className="absolute inset-0 z-10 overflow-y-auto bg-slate-950/85 p-6 backdrop-blur-sm">
+          <div className="absolute inset-0 z-10 overflow-y-auto bg-slate-950/85 p-6 backdrop-blur-sm animate-fade-in">
             <div className="mx-auto max-w-5xl space-y-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-sm font-medium text-cyan-300">
@@ -514,7 +514,7 @@ export const Network: React.FC = () => {
                     key={sample.id}
                     type="button"
                     onClick={() => handleSelectSample(sample)}
-                    className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/90 p-4 text-left transition-all hover:border-cyan-500/50 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/10"
+                    className="interactive-card group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/90 p-4 text-left transition-all hover:border-cyan-500/50 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/10"
                   >
                     <div>
                       <div className="mb-2.5 flex items-center justify-between gap-2">
@@ -541,7 +541,7 @@ export const Network: React.FC = () => {
 
                     <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs sm:text-sm">
                       <span className="font-medium text-slate-300">{sample.stats}</span>
-                      <span className="flex items-center gap-1 font-semibold text-cyan-400 transition-transform group-hover:translate-x-0.5">
+                      <span className="flex items-center gap-1 font-semibold text-cyan-400 transition-transform group-hover:translate-x-1">
                         Explore <ArrowRight size={14} />
                       </span>
                     </div>
@@ -552,7 +552,7 @@ export const Network: React.FC = () => {
           </div>
         )}
         {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/70">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/70 animate-fade-in">
             <div role="status" className="flex items-center gap-3 text-sm text-slate-300">
               <LoaderCircle className="animate-spin text-cyan-400" size={18} />
               Loading NetworkX neighborhood…
@@ -560,7 +560,7 @@ export const Network: React.FC = () => {
           </div>
         )}
         {(errorMessage || routeError) && (
-          <div className="absolute left-4 right-4 top-4 z-20 flex items-start justify-between gap-4 rounded-lg border border-rose-500/30 bg-slate-950/95 p-4 text-sm text-rose-300 shadow-lg">
+          <div className="animate-slide-down absolute left-4 right-4 top-4 z-20 flex items-start justify-between gap-4 rounded-lg border border-rose-500/30 bg-slate-950/95 p-4 text-sm text-rose-300 shadow-lg">
             <div className="flex items-start gap-2">
               <AlertTriangle className="mt-0.5 shrink-0" size={17} />
               <span role="alert">{errorMessage ?? routeError}</span>
@@ -569,7 +569,7 @@ export const Network: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setRetryCount((count) => count + 1)}
-                className="shrink-0 rounded border border-rose-500/30 px-3 py-1.5 text-sm font-semibold hover:bg-rose-500/10"
+                className="shrink-0 rounded border border-rose-500/30 px-3 py-1.5 text-sm font-semibold hover:bg-rose-500/10 interactive-btn"
               >
                 Retry
               </button>
@@ -578,7 +578,7 @@ export const Network: React.FC = () => {
         )}
         {graphSummary && !loading && (
           <>
-            <div className="absolute left-4 top-4 z-10 flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/90 px-3.5 py-2 text-sm text-slate-200 shadow-md backdrop-blur-sm">
+            <div className="animate-fade-in absolute left-4 top-4 z-10 flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/90 px-3.5 py-2 text-sm text-slate-200 shadow-md backdrop-blur-sm">
               <span>
                 <strong className="text-cyan-300">{graphSummary.center_node}</strong> ·{' '}
                 {graphSummary.metrics?.neighborhood_size ?? graphSummary.nodes.length} nodes ·{' '}
@@ -587,12 +587,12 @@ export const Network: React.FC = () => {
               <button
                 type="button"
                 onClick={handleClear}
-                className="rounded border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-slate-500 hover:bg-slate-700 hover:text-white"
+                className="rounded border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-slate-500 hover:bg-slate-700 hover:text-white interactive-btn"
               >
                 Clear View
               </button>
             </div>
-            <div className="absolute bottom-4 right-4 z-10 space-y-2 rounded-lg border border-slate-700 bg-slate-950/90 p-3.5 text-sm text-slate-200">
+            <div className="animate-fade-in absolute bottom-4 right-4 z-10 space-y-2 rounded-lg border border-slate-700 bg-slate-950/90 p-3.5 text-sm text-slate-200">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-rose-500" />
                 Suspicious account

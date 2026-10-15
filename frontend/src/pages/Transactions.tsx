@@ -99,7 +99,7 @@ export const Transactions: React.FC = () => {
               setTransferDecision(e.target.value as 'ALL' | 'APPROVE' | 'DECLINE');
               setPage(1);
             }}
-            className="flex-1 sm:flex-initial bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-medium"
+            className="flex-1 sm:flex-initial bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-medium interactive-input"
           >
             <option value="ALL">All decisions</option>
             <option value="DECLINE">Declined only</option>
@@ -115,7 +115,7 @@ export const Transactions: React.FC = () => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-64"
+              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-64 interactive-input"
             />
           </div>
         </div>
@@ -294,11 +294,11 @@ export const Transactions: React.FC = () => {
               <tbody className="divide-y divide-slate-800 text-sm">
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-slate-850 transition-colors">
+                    <tr key={tx.id} className="hover:bg-slate-800/60 transition-colors duration-150">
                       <td className="p-4 font-mono font-medium text-cyan-400 whitespace-nowrap text-sm">
                         <Link
                           to={`/investigation/${encodeURIComponent(tx.id)}`}
-                          className="hover:text-cyan-300 hover:underline"
+                          className="hover:text-cyan-300 hover:underline transition-colors"
                         >
                           {tx.id}
                         </Link>
@@ -314,7 +314,7 @@ export const Transactions: React.FC = () => {
                           </span>
                           <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden hidden sm:block">
                             <div
-                              className={`h-full ${tx.riskScore >= 0.75 ? 'bg-rose-500' : tx.riskScore >= 0.4 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                              className={`h-full transition-all duration-300 ${tx.riskScore >= 0.75 ? 'bg-rose-500' : tx.riskScore >= 0.4 ? 'bg-amber-500' : 'bg-emerald-500'}`}
                               style={{ width: `${Math.min(100, Math.max(0, tx.riskScore * 100))}%` }}
                             />
                           </div>
@@ -343,15 +343,17 @@ export const Transactions: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              className="p-2 bg-slate-800 rounded hover:bg-slate-700 disabled:opacity-50"
+              className="p-2 bg-slate-800 rounded hover:bg-slate-700 disabled:opacity-50 interactive-btn"
               disabled={page === 1}
+              aria-label="Previous page"
             >
               <ChevronLeft size={16} />
             </button>
-            <span className="px-3 py-1 bg-slate-800 rounded text-slate-200">{page}</span>
+            <span className="px-3 py-1 bg-slate-800 rounded text-slate-200 font-mono font-medium">{page}</span>
             <button
               onClick={() => setPage((p) => p + 1)}
-              className="p-2 bg-slate-800 rounded hover:bg-slate-700"
+              className="p-2 bg-slate-800 rounded hover:bg-slate-700 interactive-btn"
+              aria-label="Next page"
             >
               <ChevronRight size={16} />
             </button>

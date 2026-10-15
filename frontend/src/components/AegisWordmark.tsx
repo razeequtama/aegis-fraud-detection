@@ -70,7 +70,7 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   // Transitioning from deep blue at the bottom to cyan or light blue-ish at the top
   const wordmarkContent = (
     <span
-      className={`font-arcane select-none transition-all duration-300 ${sizeStyles.text} aegis-text-gradient aegis-glow relative inline-block`}
+      className={` select-none transition-all duration-300 ease-out ${sizeStyles.text} aegis-text-gradient aegis-glow group-hover:brightness-110 relative inline-block`}
       style={{
         backgroundImage: 'linear-gradient(to top, #1e40af 0%, #0284c7 35%, #06b6d4 70%, #67e8f9 100%)',
         WebkitBackgroundClip: 'text',
@@ -102,7 +102,7 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
           <img
             src="/logo.svg"
             alt="AEGIS Crest"
-            className={`${logoClassName || sizeStyles.logo} object-contain shrink-0 transition-transform duration-300 hover:scale-105 filter drop-shadow-[0_2px_8px_rgba(6,182,212,0.35)]`}
+            className={`${logoClassName || sizeStyles.logo} object-contain shrink-0 transition-all duration-300 ease-out group-hover:scale-105 filter drop-shadow-[0_2px_8px_rgba(6,182,212,0.35)] group-hover:drop-shadow-[0_2px_14px_rgba(6,182,212,0.55)]`}
           />
         )}
         {wordmarkContent}

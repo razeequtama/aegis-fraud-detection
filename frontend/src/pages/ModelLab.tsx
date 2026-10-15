@@ -153,7 +153,7 @@ export const ModelLab: React.FC = () => {
             </h2>
           </div>
           <p className="mt-1 text-sm text-slate-300">
-            Evaluate model decision thresholds against historical transactions.
+            <strong>Evaluate model decision thresholds against historical transactions.</strong>
           </p>
         </div>
       </div>
@@ -174,7 +174,7 @@ export const ModelLab: React.FC = () => {
               value={modelVersion}
               onChange={(event) => setModelVersion(event.target.value)}
               disabled={isSimulating}
-              className="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none disabled:opacity-60"
+              className="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none disabled:opacity-60 interactive-input"
             >
               {modelVersions.map((version) => (
                 <option key={version} value={version}>
@@ -210,7 +210,7 @@ export const ModelLab: React.FC = () => {
             type="button"
             onClick={() => void handleRunReplay()}
             disabled={isSimulating}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60 interactive-btn"
           >
             {isSimulating ? (
               <>
@@ -235,14 +235,14 @@ export const ModelLab: React.FC = () => {
           </div>
 
           {error && (
-            <div role="alert" className="flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">
+            <div role="alert" className="animate-slide-down flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">
               <AlertTriangle className="mt-0.5 shrink-0" size={17} />
               <span>{error}</span>
             </div>
           )}
 
           {isSimulating && (
-            <div role="status" className="flex items-center gap-3 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-4 text-sm text-cyan-200">
+            <div role="status" className="animate-fade-in flex items-center gap-3 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-4 text-sm text-cyan-200">
               <LoaderCircle className="animate-spin text-cyan-400" size={18} />
               <div>
                 <p className="font-medium">
@@ -260,13 +260,13 @@ export const ModelLab: React.FC = () => {
           )}
 
           {metrics && (
-            <>
+            <div className="space-y-5 animate-slide-down">
               <div role="status" className="flex items-center gap-2 text-sm text-emerald-300 font-medium">
                 <CheckCircle2 size={17} />
                 Replay completed for {replay?.model_version ?? 'unknown model'} at threshold {(replay?.threshold ?? 0).toFixed(2)}.
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4">
                   <span className="block text-sm font-medium text-slate-300">Review Queue Load</span>
                   <span className="mt-2 inline-block text-2xl font-bold text-slate-100">
                     {formatCount(metrics.review_count)} <span className="text-sm font-medium text-slate-400">transactions</span>
@@ -283,7 +283,7 @@ export const ModelLab: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4">
                   <span className="block text-sm font-medium text-slate-300">Fraud Captured</span>
                   <span className="mt-2 inline-block text-2xl font-bold text-emerald-400">
                     {formatCount(metrics.fraud_detected)} <span className="text-sm font-medium text-slate-400">cases</span>
@@ -293,7 +293,7 @@ export const ModelLab: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 sm:col-span-2">
+                <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4 sm:col-span-2">
                   <span className="block text-sm font-medium text-slate-300">False Positive Metrics</span>
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
                     <span className="text-2xl font-bold text-rose-300">
@@ -308,7 +308,7 @@ export const ModelLab: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </section>
       </div>

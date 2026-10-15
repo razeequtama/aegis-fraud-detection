@@ -203,7 +203,7 @@ export const Dashboard: React.FC = () => {
             </h2>
           </div>
           <p className="text-sm text-slate-300 mt-1">
-            Real-time fraud oversight, operational metrics, and activity telemetry
+            <strong>Real-time fraud oversight, operational metrics, and activity telemetry</strong>
           </p>
         </div>
       </div>
@@ -211,13 +211,13 @@ export const Dashboard: React.FC = () => {
       {errorMessage && (
         <div
           role="alert"
-          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 animate-slide-down"
         >
           <span>Could not load operational metrics: {errorMessage}</span>
           <button
             type="button"
             onClick={() => setRefreshKey((key) => key + 1)}
-            className="rounded-lg border border-rose-400/30 px-3 py-1.5 font-medium text-rose-200 hover:bg-rose-500/10"
+            className="rounded-lg border border-rose-400/30 px-3 py-1.5 font-medium text-rose-200 hover:bg-rose-500/20 interactive-btn"
           >
             Retry
           </button>
@@ -239,11 +239,11 @@ export const Dashboard: React.FC = () => {
           : metricCards.map(({ title, value, detail, Icon, color }) => (
               <div
                 key={title}
-                className="rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-slate-700/80"
+                className="rounded-xl border border-slate-800 bg-slate-900 p-6 interactive-card hover:border-slate-700 group cursor-default"
               >
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="text-xs uppercase tracking-wider font-semibold text-slate-300 font-sans">{title}</span>
-                  <Icon size={20} className={color} />
+                  <Icon size={20} className={`${color} transition-transform duration-200 ease-out group-hover:scale-110`} />
                 </div>
                 <p className={`mt-4 text-3xl font-fantasy font-bold ${color}`}>{value}</p>
                 <span className="mt-2 inline-block text-sm text-slate-300 font-sans">
@@ -253,7 +253,7 @@ export const Dashboard: React.FC = () => {
             ))}
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
+      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-6 transition-colors duration-200">
         <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h3 className="font-fantasy text-lg sm:text-xl font-semibold tracking-wide text-slate-100">
@@ -272,10 +272,10 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-01');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-01' && endDate === '2026-01-01'
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
                 Jan 1 (Hourly)
@@ -286,10 +286,10 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-02');
                   setEndDate('2026-01-02');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-02' && endDate === '2026-01-02'
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
                 Jan 2 (Hourly)
@@ -300,10 +300,10 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-07');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-01' && endDate === '2026-01-07'
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
                 Jan 1–7
@@ -314,10 +314,10 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-31');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-01' && endDate === '2026-01-31'
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
                 Full Month
@@ -334,7 +334,7 @@ export const Dashboard: React.FC = () => {
                 min={overview?.available_range?.start_date}
                 max={overview?.available_range?.end_date}
                 onChange={(e) => handleStartDateChange(e.target.value)}
-                className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none"
+                className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
               />
               <label htmlFor="dashboard-end-date" className="text-xs sm:text-sm font-medium text-slate-300">
                 To:
@@ -346,7 +346,7 @@ export const Dashboard: React.FC = () => {
                 min={overview?.available_range?.start_date}
                 max={overview?.available_range?.end_date}
                 onChange={(e) => handleEndDateChange(e.target.value)}
-                className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none"
+                className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
               />
             </div>
           </div>
@@ -359,7 +359,7 @@ export const Dashboard: React.FC = () => {
               ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
               : ''}
           </span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-[11px] font-medium">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             {overview?.granularity === 'hourly' ? 'Hourly Timeline (24h View)' : 'Daily Timeline'}
           </span>
