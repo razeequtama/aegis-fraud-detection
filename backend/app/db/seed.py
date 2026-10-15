@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import pandas as pd
+import numpy as np
 from sqlalchemy import create_engine
 from pathlib import Path
 
@@ -47,6 +48,15 @@ def seed_database_from_csv(csv_path: str, sample_size: int = 50000):
         })
     
     tx_df = pd.DataFrame(transactions_data)
+    
+    print("Computing real ML + pattern continuous risk scores...")
+    from app.services.risk_engine import risk_engine
+    feature_matrix = []
+    for _, r in tx_df.iterrows():
+        fv = risk_engine._build_feature_vector(r)[0]
+        feature_matrix.append(fv)
+    matrix = np.array(feature_matrix, dtype=float)
+    tx_df["risk_score"] = risk_engine.predict_proba_batch(matrix)
     
     print("Inserting data into PostgreSQL database...")
     with engine.begin() as connection:

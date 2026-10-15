@@ -19,6 +19,7 @@ class Transaction(Base):
     session_id = Column(String(64), nullable=True)
     is_fraud = Column(Integer, default=0, nullable=False)
     payment_attempts = Column(Integer, default=1, nullable=True)
+    risk_score = Column(Float, nullable=True, index=True)
 
     @property
     def label(self):

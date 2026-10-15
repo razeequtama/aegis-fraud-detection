@@ -36,10 +36,12 @@ def upgrade() -> None:
         sa.Column('session_id', sa.String(length=64), nullable=True),
         sa.Column('is_fraud', sa.Integer(), server_default='0', nullable=False),
         sa.Column('payment_attempts', sa.Integer(), server_default='1', nullable=True),
+        sa.Column('risk_score', sa.Float(), nullable=True),
         sa.PrimaryKeyConstraint('transaction_id'),
     )
     op.create_index(op.f('ix_transactions_account_id'), 'transactions', ['account_id'], unique=False)
     op.create_index(op.f('ix_transactions_transaction_id'), 'transactions', ['transaction_id'], unique=False)
+    op.create_index(op.f('ix_transactions_risk_score'), 'transactions', ['risk_score'], unique=False)
 
     # 2. Investigation Cases table
     op.create_table(

@@ -25,10 +25,11 @@ const sampleTransactions = [
       account_id: 'ACC-LOW-001',
       type: 'PAYMENT',
       amount: 1200,
-      oldbalanceOrg: 50000,
-      newbalanceOrig: 48800,
+      oldbalanceOrg: 20000,
+      newbalanceOrig: 18800,
       oldbalanceDest: 20000,
       newbalanceDest: 21200,
+      payment_attempts: 1,
     },
   },
   {
@@ -37,11 +38,12 @@ const sampleTransactions = [
       transaction_id: 'TX-SAMPLE-REVIEW',
       account_id: 'ACC-REVIEW-001',
       type: 'TRANSFER',
-      amount: 18000,
+      amount: 85000,
       oldbalanceOrg: 100000,
-      newbalanceOrig: 82000,
-      oldbalanceDest: 50000,
-      newbalanceDest: 68000,
+      newbalanceOrig: 10000,
+      oldbalanceDest: 20000,
+      newbalanceDest: 105000,
+      payment_attempts: 2,
     },
   },
   {
@@ -55,6 +57,7 @@ const sampleTransactions = [
       newbalanceOrig: 0,
       oldbalanceDest: 250000,
       newbalanceDest: 2250000,
+      payment_attempts: 3,
     },
   },
 ];
@@ -63,14 +66,15 @@ export const RiskAssessment: React.FC = () => {
   const [formData, setFormData] = useState({
     transaction_id: 'TX-99901',
     account_id: 'ACC-505',
-    amount: 250000.0,
+    amount: 85000.0,
     type: 'TRANSFER',
-    oldbalanceOrg: 300000.0,
-    newbalanceOrig: 50000.0,
-    oldbalanceDest: 0.0,
-    newbalanceDest: 250000.0,
+    oldbalanceOrg: 100000.0,
+    newbalanceOrig: 10000.0,
+    oldbalanceDest: 20000.0,
+    newbalanceDest: 105000.0,
     device_id: 'DEV-888',
     session_id: 'SES-102',
+    payment_attempts: 2,
   });
 
   const [result, setResult] = useState<RiskAssessmentResult | null>(null);
@@ -106,7 +110,7 @@ export const RiskAssessment: React.FC = () => {
       <div>
         <h2 className="text-2xl font-bold text-slate-100">Interactive Risk Assessment</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Run a transaction simulation through the ML model. Submitted values and results are not saved.
+          Run a transaction simulation through the ML model and behavioral pattern engine. Submitted values are evaluated in real time.
         </p>
       </div>
       
@@ -172,7 +176,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Old Balance Orig</label>
+              <label className="block text-xs text-slate-400 mb-1">Origin Old Balance</label>
               <input
                 type="number"
                 value={formData.oldbalanceOrg}
@@ -181,11 +185,55 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">New Balance Orig</label>
+              <label className="block text-xs text-slate-400 mb-1">Origin New Balance</label>
               <input
                 type="number"
                 value={formData.newbalanceOrig}
                 onChange={(e) => setFormData({ ...formData, newbalanceOrig: Number(e.target.value) })}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Destination Old Balance</label>
+              <input
+                type="number"
+                value={formData.oldbalanceDest}
+                onChange={(e) => setFormData({ ...formData, oldbalanceDest: Number(e.target.value) })}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Destination New Balance</label>
+              <input
+                type="number"
+                value={formData.newbalanceDest}
+                onChange={(e) => setFormData({ ...formData, newbalanceDest: Number(e.target.value) })}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Payment Attempts</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={formData.payment_attempts}
+                onChange={(e) => setFormData({ ...formData, payment_attempts: Math.max(1, Number(e.target.value)) })}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Device ID</label>
+              <input
+                type="text"
+                value={formData.device_id}
+                onChange={(e) => setFormData({ ...formData, device_id: e.target.value })}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
               />
             </div>

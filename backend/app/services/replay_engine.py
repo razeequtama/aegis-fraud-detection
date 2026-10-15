@@ -135,9 +135,8 @@ def _score_transactions_batch(transactions):
                     feature_matrix.append(fv)
 
                 X = np.array(feature_matrix, dtype=float)
-                scaled_X = risk_engine.scaler.transform(X)
-                probabilities = risk_engine.model.predict_proba(scaled_X)
-                return [round(float(p[1]), 4) for p in probabilities]
+                probabilities = risk_engine.predict_proba_batch(X)
+                return [round(float(p), 4) for p in probabilities]
         except Exception as exc:
             logger.warning(f"Batch ML inference failed, using simulated fallback: {exc}")
 
