@@ -19,7 +19,11 @@ if database_host:
         host=database_host
     )
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+connect_args = {}
+if str(SQLALCHEMY_DATABASE_URL).startswith("postgresql"):
+    connect_args["connect_timeout"] = 3
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

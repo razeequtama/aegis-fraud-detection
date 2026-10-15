@@ -76,3 +76,20 @@ def test_repeated_risk_assessments_do_not_create_transactions_or_cases(monkeypat
         assert db.query(InvestigationCaseModel).count() == 0
 
     engine.dispose()
+
+
+def test_risk_assessment_triggers_high_velocity_burst(monkeypatch):
+    monkeypatch.setattr(
+        "app.services.risk_engine.check_transaction_velocity",
+        lambda account_id, window_seconds=60: 5,
+    )
+    result = risk_engine.evaluate_transaction({
+        "transaction_id": "TX-BURST-001",
+        "account_id": "ACC-BURST",
+        "amount": 50.0,
+        "type": "PAYMENT",
+    })
+    signal_names = [s["name"] for s in result["signals"]]
+    assert "high_velocity_burst" in signal_names
+    assert result["velocity"] == 5
+    assert result["risk_score"] >= 0.35

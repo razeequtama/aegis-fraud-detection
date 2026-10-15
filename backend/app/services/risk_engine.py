@@ -4,6 +4,7 @@ import joblib
 import numpy as np
 
 from app.services.graph_analysis import graph_analyzer
+from app.core.redis import check_transaction_velocity
 
 
 class RiskEngine:
@@ -134,7 +135,22 @@ class RiskEngine:
         else:
             risk_score = 0.85 if amount > 200000 and error_balance_org != 0 else 0.12
 
+        # Check transaction velocity in Redis (sliding window of 60s)
+        velocity = 1
+        if account_id:
+            velocity = check_transaction_velocity(str(account_id), window_seconds=60)
+            if velocity > 3:
+                # Add penalty to risk_score for velocity burst
+                risk_score = min(1.0, risk_score + 0.35)
+
         decision, signals = self._apply_decision_policy(risk_score, error_balance_org)
+
+        if velocity > 3:
+            signals.append({
+                "name": "high_velocity_burst",
+                "description": f"Unusual velocity burst detected: account initiated {velocity} transactions within 60 seconds.",
+            })
+
         shared_devices = float(graph_features.get("shared_devices_count", 0.0) or 0.0)
         node_degree = float(graph_features.get("node_degree", 0.0) or 0.0)
 
@@ -149,6 +165,7 @@ class RiskEngine:
             "decision": decision,
             "model_version": self.model_version,
             "signals": signals,
+            "velocity": velocity,
             "graph_metrics": {
                 "shared_devices_count": shared_devices,
                 "node_degree": node_degree,

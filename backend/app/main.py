@@ -13,6 +13,7 @@ from app.services.observability import (
     record_api_latency,
     record_inference_latency,
 )
+from app.core.redis import is_redis_available, REDIS_HOST, REDIS_PORT
 from app.api.routes import investigation, metrics, network, replays, risk
 
 from app.api.routes import transactions
@@ -96,9 +97,14 @@ def health_check(db: Session = Depends(get_db)):
         else None
     )
     model_loaded = risk_engine.model is not None and risk_engine.scaler is not None
+    redis_connected = is_redis_available()
 
     return {
-        "status": "healthy" if database_connected and model_loaded else "degraded",
+        "status": (
+            "healthy"
+            if database_connected and model_loaded and redis_connected
+            else "degraded"
+        ),
         "service": "aegis-backend",
         "database": {
             "status": "connected" if database_connected else "unavailable",
@@ -109,6 +115,11 @@ def health_check(db: Session = Depends(get_db)):
                 "overflow_connections": overflow,
                 "max_connections": max_connections,
             },
+        },
+        "redis": {
+            "status": "connected" if redis_connected else "unavailable",
+            "host": REDIS_HOST,
+            "port": REDIS_PORT,
         },
         "inference_engine": {
             "status": "loaded" if model_loaded else "unavailable",

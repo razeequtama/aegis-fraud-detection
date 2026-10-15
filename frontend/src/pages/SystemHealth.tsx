@@ -9,6 +9,7 @@ import {
   LoaderCircle,
   Server,
   XCircle,
+  Zap,
 } from 'lucide-react';
 import { apiClient } from '../api/client';
 
@@ -24,6 +25,11 @@ interface HealthResponse {
       overflow_connections: number | null;
       max_connections: number | null;
     };
+  };
+  redis?: {
+    status: 'connected' | 'unavailable' | string;
+    host?: string;
+    port?: number;
   };
   inference_engine: {
     status: 'loaded' | 'unavailable' | string;
@@ -97,6 +103,7 @@ export const SystemHealth: React.FC = () => {
 
   const serviceOperational = health?.status === 'healthy';
   const databaseConnected = health?.database.status === 'connected';
+  const redisConnected = health?.redis?.status === 'connected';
   const modelLoaded = health?.inference_engine.model_loaded === true;
 
   const cards = [
@@ -139,6 +146,25 @@ export const SystemHealth: React.FC = () => {
         : 'Connection pool usage',
     },
     {
+      title: 'Redis Velocity Cache',
+      Icon: Zap,
+      operational: Boolean(redisConnected),
+      status: health
+        ? redisConnected
+          ? 'Connected'
+          : 'Unavailable'
+        : 'Unknown',
+      metricLabel: 'Host & Port',
+      metric: health?.redis
+        ? `${health.redis.host ?? 'localhost'}:${health.redis.port ?? 6379}`
+        : '—',
+      detail: health
+        ? redisConnected
+          ? 'Real-time sliding-window velocity tracker active'
+          : 'Velocity cache unreachable (safe fallback mode)'
+        : 'Cache connection status',
+    },
+    {
       title: 'ML Inference Engine',
       Icon: Cpu,
       operational: modelLoaded,
@@ -163,7 +189,7 @@ export const SystemHealth: React.FC = () => {
             System Health &amp; Observability
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Live backend, database pool, and model inference status.
+            Live backend, database pool, velocity cache, and model inference status.
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -190,7 +216,7 @@ export const SystemHealth: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         {cards.map(
           ({
             title,
