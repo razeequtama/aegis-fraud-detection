@@ -53,8 +53,8 @@ export const Layout: React.FC = () => {
       <aside className="hidden lg:flex w-64 bg-slate-900 border-r border-slate-800 flex-col shrink-0">
         <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="text-cyan-400" size={24} />
-            <h1 className="text-xl font-bold tracking-wider text-cyan-400">AEGIS</h1>
+            <img className="w-16 py-2" src="../public/logo.svg" alt="" />
+            <h1 className="text-4xl font-bold tracking-wider text-cyan-400">AEGIS</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">Fraud Detection Platform</p>
         </div>
