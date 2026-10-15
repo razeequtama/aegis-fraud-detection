@@ -226,7 +226,7 @@ export const RiskAssessment: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-1">
         <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-          <AegisWordmark size="xs" inline /> // {t.riskAssessment.tag}
+          <AegisWordmark size="xs" inline />{t.riskAssessment.tag}
         </span>
         <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
           {t.riskAssessment.title}

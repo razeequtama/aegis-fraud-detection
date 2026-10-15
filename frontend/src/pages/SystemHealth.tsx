@@ -221,7 +221,7 @@ export const SystemHealth: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-              <AegisWordmark size="xs" inline /> // {t.systemHealth.tag}
+              <AegisWordmark size="xs" inline /> {t.systemHealth.tag}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">

@@ -40,6 +40,22 @@
   src: url('/fonts/philosopher-700.woff2') format('woff2');
 }
 
+@font-face {
+  font-family: 'Philosopher';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/philosopher-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Philosopher';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/philosopher-700.woff2') format('woff2');
+}
+
 /* 3. Renaissance Fantasy Serif with Needle Serifs & Elongated Tails */
 @font-face {
   font-family: 'Cormorant Garamond';
@@ -122,6 +138,7 @@
 @layer utilities {
   /* Signature AEGIS vertical gradient: transitioning from blue at bottom to cyan or light blue-ish at top */
   .aegis-text-gradient {
+    font-family: 'Philosopher', 'Cormorant Garamond', Georgia, serif;
     background-image: linear-gradient(to top, #1e40af 0%, #0284c7 35%, #06b6d4 70%, #67e8f9 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

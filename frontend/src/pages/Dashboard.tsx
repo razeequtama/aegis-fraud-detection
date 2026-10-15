@@ -201,7 +201,7 @@ export const Dashboard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
         <div>
           <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-            <AegisWordmark size="xs" inline /> // {t.dashboard.tag}
+            <AegisWordmark size="xs" inline /> {t.dashboard.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
             {t.dashboard.title}

@@ -390,7 +390,7 @@ export const en = {
   },
   welcomeModal: {
     badge: 'SYSTEM ONBOARDING & ARCHITECTURE',
-    title: 'Welcome to AEGIS',
+    title: 'Welcome to',
     tagline: 'Autonomous Real-Time Financial Fraud Intelligence Platform',
     aboutTitle: 'What is Aegis?',
     aboutDescription:

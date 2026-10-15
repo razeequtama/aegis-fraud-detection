@@ -202,7 +202,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-cyan-400 font-semibold">
-                  // LANGUAGE PREFERENCE
+                  LANGUAGE PREFERENCE
                 </span>
                 <h3 className="text-sm sm:text-base font-semibold text-slate-100">
                   {t.welcomeModal.chooseLanguage}

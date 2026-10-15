@@ -50,29 +50,29 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   // Balanced sizing: logo height is optically on-par with the main "AEGIS" text height
   const sizeStyles = {
     xs: {
-      text: 'text-sm font-bold tracking-[0.14em] leading-none',
+      text: 'text-sm leading-none',
       logo: 'h-4 w-4',
       subtitle: 'text-xs tracking-[0.18em] mt-1 text-slate-400 font-medium',
     },
     sm: {
-      text: 'text-lg font-bold tracking-[0.16em] leading-none',
+      text: 'text-lg leading-none',
       logo: 'h-5 w-5',
       subtitle: 'text-xs tracking-[0.18em] mt-1 text-slate-400 font-medium',
     },
     md: {
-      text: 'text-2xl font-bold tracking-[0.18em] leading-none',
+      text: 'text-2xl leading-none',
       logo: 'h-6 w-6 sm:h-7 sm:w-7',
       subtitle: 'text-xs tracking-[0.2em] mt-1.5 text-slate-400 font-medium',
     },
     lg: {
-      text: 'text-3xl sm:text-4xl font-extrabold tracking-[0.2em] leading-none',
+      text: 'text-2xl sm:text-3xl leading-none',
       logo: 'h-8 w-8 sm:h-9 sm:w-9',
-      subtitle: 'text-xs sm:text-sm tracking-[0.22em] mt-2 text-slate-300 font-medium',
+      subtitle: 'text-xs sm:text-sm tracking-[0.2em] mt-2 text-slate-300 font-medium',
     },
     xl: {
-      text: 'text-5xl sm:text-6xl font-extrabold tracking-[0.22em] leading-none',
+      text: 'text-4xl sm:text-5xl leading-none',
       logo: 'h-12 w-12 sm:h-14 sm:w-14',
-      subtitle: 'text-sm sm:text-base tracking-[0.24em] mt-2.5 text-slate-400 font-medium',
+      subtitle: 'text-sm sm:text-base tracking-[0.22em] mt-2.5 text-slate-400 font-medium',
     },
   }[size];
 
@@ -80,8 +80,9 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   // Transitioning from deep blue at the bottom to cyan or light blue-ish at the top
   const wordmarkContent = (
     <span
-      className={` select-none transition-all duration-300 ease-out ${sizeStyles.text} aegis-text-gradient aegis-glow group-hover:brightness-110 relative inline-block`}
+      className={`select-none transition-all duration-300 ease-out font-display tracking-[0.16em] aegis-text-gradient aegis-glow font-black text-transparent bg-clip-text group-hover:brightness-110 relative inline-block ${sizeStyles.text}`}
       style={{
+        fontFamily: "'Philosopher', 'Cormorant Garamond', Georgia, serif",
         backgroundImage: 'linear-gradient(to top, #1e40af 0%, #0284c7 35%, #06b6d4 70%, #67e8f9 100%)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',

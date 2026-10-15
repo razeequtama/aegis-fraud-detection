@@ -392,7 +392,7 @@ export const id: Translations = {
   },
   welcomeModal: {
     badge: 'PANDUAN SISTEM & ARSITEKTUR',
-    title: 'Selamat Datang di AEGIS',
+    title: 'Selamat Datang di',
     tagline: 'Platform Intelijen & Deteksi Penipuan Finansial Otonom Real-Time',
     aboutTitle: 'Apa itu Aegis?',
     aboutDescription:
