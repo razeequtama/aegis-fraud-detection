@@ -235,16 +235,6 @@ export const SystemHealth: React.FC = () => {
         {/* Status indicator & Refresh button */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-1.5 text-xs text-slate-300 font-mono">
-            {loading ? (
-              <LoaderCircle className="animate-spin text-cyan-400" size={14} />
-            ) : health?.status === 'healthy' ? (
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-            ) : (
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
-            )}
             <span>
               {loading
                 ? (language === 'id' ? 'Menghubungkan ke backend…' : 'Connecting to backend…')
@@ -314,10 +304,7 @@ export const SystemHealth: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   {operational && !loading && (
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                    </span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                   )}
                   {loading ? (
                     <LoaderCircle className="animate-spin text-slate-500" size={17} />

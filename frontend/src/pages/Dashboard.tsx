@@ -364,7 +364,7 @@ export const Dashboard: React.FC = () => {
               : ''}
           </span>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-xs font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
             {overview?.granularity === 'hourly' ? t.dashboard.hourlyView : t.dashboard.dailyView}
           </span>
         </div>

@@ -122,18 +122,6 @@ export const Layout: React.FC = () => {
           <span className="text-xs text-slate-400 font-medium">{t.common.language}</span>
           <LanguageSwitcher size="sm" />
         </div>
-
-        {/* Engine status footer */}
-        <div className="p-4 border-t border-slate-800/80 text-xs font-mono text-slate-400 flex items-center justify-between">
-          <span>{t.common.engine}: aegis-rf-0.1.0</span>
-          <span className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            {t.common.live}
-          </span>
-        </div>
       </aside>
 
       {/* Mobile / Tablet Drawer Menu with Smooth Sliding Transition */}
@@ -225,17 +213,6 @@ export const Layout: React.FC = () => {
           <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
             <span className="text-xs text-slate-400 font-medium">{t.common.language}</span>
             <LanguageSwitcher size="sm" />
-          </div>
-
-          <div className="p-4 border-t border-slate-800/80 text-xs font-mono text-slate-400 flex items-center justify-between">
-            <span>{t.common.engine}: aegis-rf-0.1.0</span>
-            <span className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              {t.common.live}
-            </span>
           </div>
         </aside>
       </div>
