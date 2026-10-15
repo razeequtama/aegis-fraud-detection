@@ -3,3 +3,7 @@ ps.csv
 
 # Environment Variables
 .env
+
+# pycache folders
+__pycache__/
+*.pyc
