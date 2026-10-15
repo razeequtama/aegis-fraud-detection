@@ -10,21 +10,33 @@ import {
   Activity,
   Menu,
   X,
+  HelpCircle,
 } from 'lucide-react';
 import { AegisWordmark } from './AegisWordmark';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { WelcomeModal } from './WelcomeModal';
+import { useTranslation } from '../i18n/LanguageContext';
 
 export const Layout: React.FC = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(() => {
+    try {
+      return localStorage.getItem('aegis_welcome_dismissed') !== 'true';
+    } catch {
+      return false;
+    }
+  });
+  const { t } = useTranslation();
 
   const navItems = [
-    { path: '/', label: 'Command Center', icon: LayoutDashboard },
-    { path: '/transactions', label: 'Transaction Explorer', icon: Search },
-    { path: '/investigation', label: 'Investigation', icon: ShieldAlert },
-    { path: '/network', label: 'Network Graph', icon: Network },
-    { path: '/assessment', label: 'Risk Assessment', icon: Sliders },
-    { path: '/model-lab', label: 'Model Lab', icon: Cpu },
-    { path: '/health', label: 'System Health', icon: Activity },
+    { path: '/', label: t.nav.commandCenter, icon: LayoutDashboard },
+    { path: '/transactions', label: t.nav.transactionExplorer, icon: Search },
+    { path: '/investigation', label: t.nav.investigation, icon: ShieldAlert },
+    { path: '/network', label: t.nav.network, icon: Network },
+    { path: '/assessment', label: t.nav.riskAssessment, icon: Sliders },
+    { path: '/model-lab', label: t.nav.modelLab, icon: Cpu },
+    { path: '/health', label: t.nav.systemHealth, icon: Activity },
   ];
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -87,14 +99,39 @@ export const Layout: React.FC = () => {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-          <span>Engine: aegis-rf-0.1.0</span>
+
+        {/* Platform Guide Button in Desktop Sidebar */}
+        <div className="p-3 border-t border-slate-800">
+          <button
+            type="button"
+            onClick={() => setWelcomeOpen(true)}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-slate-700/80 bg-slate-950/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.98] transition-all text-xs font-semibold group shadow-sm"
+          >
+            <span className="flex items-center gap-2">
+              <HelpCircle size={15} className="text-cyan-400 group-hover:scale-110 transition-transform" />
+              <span>{t.welcomeModal.reopenGuide}</span>
+            </span>
+            <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+              INFO
+            </span>
+          </button>
+        </div>
+
+        {/* Language Switcher in Desktop Sidebar */}
+        <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
+          <span className="text-xs text-slate-400 font-medium">{t.common.language}</span>
+          <LanguageSwitcher size="sm" />
+        </div>
+
+        {/* Engine status footer */}
+        <div className="p-4 border-t border-slate-800/80 text-xs font-mono text-slate-400 flex items-center justify-between">
+          <span>{t.common.engine}: aegis-rf-0.1.0</span>
           <span className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            Live
+            {t.common.live}
           </span>
         </div>
       </aside>
@@ -126,7 +163,7 @@ export const Layout: React.FC = () => {
               type="button"
               onClick={() => setMobileMenuOpen(false)}
               className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-white hover:border-slate-600 active:scale-95 transition-all duration-150"
-              aria-label="Close navigation menu"
+              aria-label={t.common.closeMenu}
             >
               <X size={19} />
             </button>
@@ -164,14 +201,40 @@ export const Layout: React.FC = () => {
             })}
           </nav>
 
-          <div className="p-4 border-t border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-            <span>Engine: aegis-rf-0.1.0</span>
+          {/* Platform Guide Button in Mobile Drawer */}
+          <div className="p-3 border-t border-slate-800">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setWelcomeOpen(true);
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-slate-700/80 bg-slate-950/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.98] transition-all text-xs font-semibold group shadow-sm"
+            >
+              <span className="flex items-center gap-2">
+                <HelpCircle size={15} className="text-cyan-400 group-hover:scale-110 transition-transform" />
+                <span>{t.welcomeModal.reopenGuide}</span>
+              </span>
+              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+                INFO
+              </span>
+            </button>
+          </div>
+
+          {/* Language Switcher in Mobile Drawer */}
+          <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
+            <span className="text-xs text-slate-400 font-medium">{t.common.language}</span>
+            <LanguageSwitcher size="sm" />
+          </div>
+
+          <div className="p-4 border-t border-slate-800/80 text-xs font-mono text-slate-400 flex items-center justify-between">
+            <span>{t.common.engine}: aegis-rf-0.1.0</span>
             <span className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              Live
+              {t.common.live}
             </span>
           </div>
         </aside>
@@ -181,22 +244,34 @@ export const Layout: React.FC = () => {
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile / Tablet Top Header Bar (hidden on lg screens) */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 shrink-0 sticky top-0 z-30">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
             <AegisWordmark size="sm" withLogo asLink />
             <span className="text-slate-600">/</span>
-            <span className="text-sm font-sans font-medium text-slate-200 truncate">
-              {currentNav?.label ?? 'Command Center'}
+            <span className="text-xs sm:text-sm font-sans font-medium text-slate-200 truncate">
+              {currentNav?.label ?? t.nav.commandCenter}
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 active:scale-95 transition-all duration-150"
-            aria-label="Open navigation menu"
-          >
-            <Menu size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setWelcomeOpen(true)}
+              className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 active:scale-95 transition-all duration-150"
+              aria-label={t.welcomeModal.reopenGuide}
+              title={t.welcomeModal.reopenGuide}
+            >
+              <HelpCircle size={18} />
+            </button>
+            <LanguageSwitcher size="sm" />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 active:scale-95 transition-all duration-150"
+              aria-label={t.common.openMenu}
+            >
+              <Menu size={20} />
+            </button>
+          </div>
         </header>
 
         {/* Scrollable page body with responsive padding and fluid page transition */}
@@ -206,6 +281,9 @@ export const Layout: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Welcome & Platform Guide Modal */}
+      <WelcomeModal isOpen={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
     </div>
   );
 };

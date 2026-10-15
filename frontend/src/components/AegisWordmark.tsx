@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../i18n/LanguageContext';
 
 export interface AegisWordmarkProps {
   /**
@@ -31,12 +32,21 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   size = 'md',
   withLogo = false,
   showSubtitle = false,
-  subtitle = 'Fraud Detection Platform',
+  subtitle,
   asLink = false,
   inline = false,
   className = '',
   logoClassName = '',
 }) => {
+  let defaultSubtitle = 'Fraud Detection Platform';
+  try {
+    const { t } = useTranslation();
+    defaultSubtitle = t.common.platformSubtitle;
+  } catch {
+    // rendered outside provider
+  }
+  const activeSubtitle = subtitle ?? defaultSubtitle;
+
   // Balanced sizing: logo height is optically on-par with the main "AEGIS" text height
   const sizeStyles = {
     xs: {
@@ -112,7 +122,7 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
         <p
           className={`font-sans uppercase ${sizeStyles.subtitle} transition-colors pl-0.5`}
         >
-          {subtitle}
+          {activeSubtitle}
         </p>
       )}
     </div>

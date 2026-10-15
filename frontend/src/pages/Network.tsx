@@ -17,6 +17,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { useTranslation } from '../i18n/LanguageContext';
 
 type EntityType = 'transactions' | 'accounts';
 
@@ -144,6 +145,7 @@ function renderSampleIcon(icon: NetworkSample['icon'], className = 'w-4 h-4') {
 }
 
 export const Network: React.FC = () => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<Core | null>(null);
   const navigate = useNavigate();
@@ -160,6 +162,48 @@ export const Network: React.FC = () => {
   const [graphSummary, setGraphSummary] = useState<GraphResponse | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [samples, setSamples] = useState<NetworkSample[]>(networkSamples);
+
+  const localizedPresetMap: Record<
+    string,
+    { title: string; badge: string; description: string; stats: string }
+  > = {
+    C376938867: {
+      title: t.network.presetRing1Title,
+      badge: t.network.badgeSyndicate,
+      description: t.network.presetRing1Desc,
+      stats: t.network.presetRing1Stats,
+    },
+    C1387708046: {
+      title: t.network.presetRing2Title,
+      badge: t.network.badgeDevice,
+      description: t.network.presetRing2Desc,
+      stats: t.network.presetRing2Stats,
+    },
+    'TX-100463': {
+      title: t.network.presetRing3Title,
+      badge: t.network.badgeFlagged,
+      description: t.network.presetRing3Desc,
+      stats: t.network.presetRing3Stats,
+    },
+    C1791470904: {
+      title: t.network.presetRing4Title,
+      badge: t.network.badgeMule,
+      description: t.network.presetRing4Desc,
+      stats: t.network.presetRing4Stats,
+    },
+    'TX-140135': {
+      title: t.network.presetRing5Title,
+      badge: t.network.badgeDecline,
+      description: t.network.presetRing5Desc,
+      stats: t.network.presetRing5Stats,
+    },
+    C1041698296: {
+      title: t.network.presetRing6Title,
+      badge: t.network.badgeNormal,
+      description: t.network.presetRing6Desc,
+      stats: t.network.presetRing6Stats,
+    },
+  };
 
   useEffect(() => {
     let active = true;
@@ -242,7 +286,7 @@ export const Network: React.FC = () => {
     requestedType && requestedId ? { type: requestedType, id: requestedId } : null;
   const routeError =
     routeEntityType && !requestedType
-      ? 'Choose a transaction or account network to explore.'
+      ? t.network.chooseEntityError
       : null;
 
   useEffect(() => {
@@ -405,7 +449,7 @@ export const Network: React.FC = () => {
     event.preventDefault();
     const normalizedId = entityId.trim();
     if (!normalizedId) {
-      setErrorMessage('Enter an ID to load its network neighborhood.');
+      setErrorMessage(t.network.enterIdError);
       return;
     }
     setErrorMessage(null);
@@ -417,13 +461,13 @@ export const Network: React.FC = () => {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
         <div>
           <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-            <AegisWordmark size="xs" inline /> // GRAPH INTELLIGENCE
+            <AegisWordmark size="xs" inline /> // {t.network.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-            Network Graph Explorer
+            {t.network.title}
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-400">
-            Explore connected accounts, shared devices, IP clusters, and transaction relationships in interactive Cytoscape graphs.
+            {t.network.subtitle}
           </p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
@@ -436,8 +480,8 @@ export const Network: React.FC = () => {
             onChange={(event) => setEntityType(event.target.value as EntityType)}
             className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
           >
-            <option value="transactions">Transaction</option>
-            <option value="accounts">Account</option>
+            <option value="transactions">{t.network.transactionOption}</option>
+            <option value="accounts">{t.network.accountOption}</option>
           </select>
           <label htmlFor="network-entity-id" className="sr-only">
             Transaction or account ID
@@ -446,7 +490,7 @@ export const Network: React.FC = () => {
             id="network-entity-id"
             value={entityId}
             onChange={(event) => setEntityId(event.target.value)}
-            placeholder={entityType === 'transactions' ? 'Transaction ID' : 'Account ID'}
+            placeholder={entityType === 'transactions' ? t.network.txIdPlaceholder : t.network.accIdPlaceholder}
             className="flex-1 sm:w-48 sm:flex-initial rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
           />
           <button
@@ -454,7 +498,7 @@ export const Network: React.FC = () => {
             className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
           >
             <Search size={16} />
-            Explore
+            {t.network.exploreBtn}
           </button>
         </form>
       </div>
@@ -463,10 +507,12 @@ export const Network: React.FC = () => {
       <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
         <span className="flex shrink-0 items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300 mr-1">
           <Sparkles size={14} className="text-cyan-400" />
-          Pattern Presets:
+          {t.network.patternPresets}
         </span>
         {samples.map((sample) => {
           const isActive = requestedId === sample.id && requestedType === sample.type;
+          const loc = localizedPresetMap[sample.id];
+          const title = loc?.title || sample.title;
           return (
             <button
               key={sample.id}
@@ -481,11 +527,11 @@ export const Network: React.FC = () => {
               <span className={isActive ? 'text-cyan-400' : 'text-slate-400'}>
                 {renderSampleIcon(sample.icon, 'w-3.5 h-3.5')}
               </span>
-              <span>{sample.title}</span>
+              <span>{title}</span>
               <span
                 className={`rounded px-2 py-0.5 text-xs font-semibold border ${sample.badgeColor}`}
               >
-                {sample.type === 'accounts' ? 'Account' : 'TX'}
+                {sample.type === 'accounts' ? t.network.accountOption : 'TX'}
               </span>
             </button>
           );
@@ -500,55 +546,63 @@ export const Network: React.FC = () => {
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-sm font-medium text-cyan-300">
                   <Sparkles size={14} />
-                  Database Pattern Showcase
+                  {t.network.dbPatternShowcase}
                 </div>
                 <h3 className="mt-2 text-xl sm:text-2xl font-display font-bold tracking-tight text-slate-100">
-                  Choose a Graph Pattern to Explore
+                  {t.network.choosePatternTitle}
                 </h3>
                 <p className="mx-auto mt-1 max-w-2xl text-xs sm:text-sm text-slate-400">
-                  Select any curated entity from the live database below to visualize device-sharing rings, emulator syndicates, mule networks, or clean retail baselines in Cytoscape.
+                  {t.network.choosePatternDesc}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {samples.map((sample) => (
-                  <button
-                    key={sample.id}
-                    type="button"
-                    onClick={() => handleSelectSample(sample)}
-                    className="interactive-card group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/90 p-4 text-left transition-all hover:border-cyan-500/50 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/10"
-                  >
-                    <div>
-                      <div className="mb-2.5 flex items-center justify-between gap-2">
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${sample.badgeColor}`}
-                        >
-                          {renderSampleIcon(sample.icon, 'w-3 h-3')}
-                          {sample.badge}
-                        </span>
-                        <span className="font-mono text-xs text-slate-300 group-hover:text-cyan-300">
-                          {sample.type === 'accounts' ? 'Account' : 'Transaction'}
+                {samples.map((sample) => {
+                  const loc = localizedPresetMap[sample.id];
+                  const title = loc?.title || sample.title;
+                  const badge = loc?.badge || sample.badge;
+                  const desc = loc?.description || sample.description;
+                  const stats = loc?.stats || sample.stats;
+
+                  return (
+                    <button
+                      key={sample.id}
+                      type="button"
+                      onClick={() => handleSelectSample(sample)}
+                      className="interactive-card group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/90 p-4 text-left transition-all hover:border-cyan-500/50 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/10"
+                    >
+                      <div>
+                        <div className="mb-2.5 flex items-center justify-between gap-2">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${sample.badgeColor}`}
+                          >
+                            {renderSampleIcon(sample.icon, 'w-3 h-3')}
+                            {badge}
+                          </span>
+                          <span className="font-mono text-xs text-slate-300 group-hover:text-cyan-300">
+                            {sample.type === 'accounts' ? t.network.accountOption : t.network.transactionOption}
+                          </span>
+                        </div>
+                        <h4 className="font-display text-base font-semibold tracking-tight text-slate-100 group-hover:text-cyan-200">
+                          {title}
+                        </h4>
+                        <p className="mt-1 font-mono text-sm text-cyan-400">
+                          {sample.id}
+                        </p>
+                        <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2">
+                          {desc}
+                        </p>
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs sm:text-sm">
+                        <span className="font-medium text-slate-300">{stats}</span>
+                        <span className="flex items-center gap-1 font-semibold text-cyan-400 transition-transform group-hover:translate-x-1">
+                          {t.network.exploreBtn} <ArrowRight size={14} />
                         </span>
                       </div>
-                      <h4 className="font-display text-base font-semibold tracking-tight text-slate-100 group-hover:text-cyan-200">
-                        {sample.title}
-                      </h4>
-                      <p className="mt-1 font-mono text-sm text-cyan-400">
-                        {sample.id}
-                      </p>
-                      <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2">
-                        {sample.description}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs sm:text-sm">
-                      <span className="font-medium text-slate-300">{sample.stats}</span>
-                      <span className="flex items-center gap-1 font-semibold text-cyan-400 transition-transform group-hover:translate-x-1">
-                        Explore <ArrowRight size={14} />
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -557,7 +611,7 @@ export const Network: React.FC = () => {
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/70 animate-fade-in">
             <div role="status" className="flex items-center gap-3 text-sm text-slate-300">
               <LoaderCircle className="animate-spin text-cyan-400" size={18} />
-              Loading NetworkX neighborhood…
+              {t.network.loadingGraph}
             </div>
           </div>
         )}
@@ -573,7 +627,7 @@ export const Network: React.FC = () => {
                 onClick={() => setRetryCount((count) => count + 1)}
                 className="shrink-0 rounded border border-rose-500/30 px-3 py-1.5 text-sm font-semibold hover:bg-rose-500/10 interactive-btn"
               >
-                Retry
+                {t.network.retry}
               </button>
             )}
           </div>
@@ -583,25 +637,25 @@ export const Network: React.FC = () => {
             <div className="animate-fade-in absolute left-4 top-4 z-10 flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/90 px-3.5 py-2 text-sm text-slate-200 shadow-md backdrop-blur-sm">
               <span>
                 <strong className="text-cyan-300">{graphSummary.center_node}</strong> ·{' '}
-                {graphSummary.metrics?.neighborhood_size ?? graphSummary.nodes.length} nodes ·{' '}
-                {graphSummary.edges.length} connections
+                {graphSummary.metrics?.neighborhood_size ?? graphSummary.nodes.length} {t.network.nodesCount} ·{' '}
+                {graphSummary.edges.length} {t.network.connectionsCount}
               </span>
               <button
                 type="button"
                 onClick={handleClear}
                 className="rounded border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-slate-500 hover:bg-slate-700 hover:text-white interactive-btn"
               >
-                Clear View
+                {t.network.clearView}
               </button>
             </div>
             <div className="animate-fade-in absolute bottom-4 right-4 z-10 space-y-2 rounded-lg border border-slate-700 bg-slate-950/90 p-3.5 text-sm text-slate-200">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-rose-500" />
-                Suspicious account
+                {t.network.suspiciousAccount}
               </div>
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-sm bg-cyan-400" />
-                Shared device
+                {t.network.sharedDevice}
               </div>
             </div>
           </>

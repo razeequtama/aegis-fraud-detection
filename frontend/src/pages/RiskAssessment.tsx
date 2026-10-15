@@ -3,6 +3,7 @@ import { Send, Loader2, AlertCircle, Sparkles, Database, Search, ShieldCheck, Za
 import { isAxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface RiskSignal {
   name: string;
@@ -108,6 +109,7 @@ const defaultPresets: PresetItem[] = [
 ];
 
 export const RiskAssessment: React.FC = () => {
+  const { t } = useTranslation();
   const [presets, setPresets] = useState<PresetItem[]>(defaultPresets);
   const [formData, setFormData] = useState({
     transaction_id: 'TX-100001',
@@ -224,13 +226,13 @@ export const RiskAssessment: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-1">
         <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-          <AegisWordmark size="xs" inline /> // INFERENCE LAB
+          <AegisWordmark size="xs" inline /> // {t.riskAssessment.tag}
         </span>
         <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
-          Interactive Risk Assessment
+          {t.riskAssessment.title}
         </h2>
         <p className="text-xs sm:text-sm text-slate-400 font-normal">
-          Simulate transactions against the <AegisWordmark size="xs" inline /> ML inference model and behavioral pattern engine.
+          {t.riskAssessment.subtitle}
         </p>
       </div>
       
@@ -245,11 +247,11 @@ export const RiskAssessment: React.FC = () => {
         {/* Form */}
         <div className="space-y-6">
         <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
-          <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">Test Transaction Payload</h3>
+          <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">{t.riskAssessment.testPayload}</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Transaction ID</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldTxId}</label>
               <input
                 type="text"
                 value={formData.transaction_id}
@@ -258,7 +260,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Account ID</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldAccountId}</label>
               <input
                 type="text"
                 value={formData.account_id}
@@ -270,7 +272,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Transaction Type</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldType}</label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -284,7 +286,7 @@ export const RiskAssessment: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Amount (IDR)</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldAmount}</label>
               <input
                 type="number"
                 value={formData.amount}
@@ -296,7 +298,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Origin Old Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldOldOrig}</label>
               <input
                 type="number"
                 value={formData.oldbalanceOrg}
@@ -305,7 +307,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Origin New Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldNewOrig}</label>
               <input
                 type="number"
                 value={formData.newbalanceOrig}
@@ -317,7 +319,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Destination Old Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldOldDest}</label>
               <input
                 type="number"
                 value={formData.oldbalanceDest}
@@ -326,7 +328,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Destination New Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldNewDest}</label>
               <input
                 type="number"
                 value={formData.newbalanceDest}
@@ -338,7 +340,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Payment Attempts</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldAttempts}</label>
               <input
                 type="number"
                 min="1"
@@ -349,7 +351,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Device ID</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldDevice}</label>
               <input
                 type="text"
                 value={formData.device_id}
@@ -365,7 +367,7 @@ export const RiskAssessment: React.FC = () => {
             className="flex items-center justify-center gap-2 w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-2.5 text-sm shadow-lg shadow-cyan-950/40 transition-all active:scale-[0.99] disabled:opacity-50 mt-4"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            {loading ? 'Evaluating Model & Graph...' : 'Run Simulation'}
+            {loading ? t.riskAssessment.evaluatingModel : t.riskAssessment.runSimulationBtn}
           </button>
         </form>
         <section className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
@@ -373,10 +375,10 @@ export const RiskAssessment: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-cyan-400" />
-                <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">Real Database Presets</h3>
+                <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">{t.riskAssessment.realDbPresets}</h3>
               </div>
               <p className="mt-1 text-xs text-slate-400">
-                Load verified real transactions from the database directly into the simulation model.
+                {t.riskAssessment.realDbPresetsDesc}
               </p>
             </div>
             <span className="text-xs font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 rounded font-medium">
@@ -388,7 +390,7 @@ export const RiskAssessment: React.FC = () => {
           <form onSubmit={handleLookupTransaction} className="flex flex-col gap-2 bg-slate-950 p-3.5 rounded-lg border border-slate-800">
             <span className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
               <Database size={14} className="text-cyan-400" />
-              Load Any Real Transaction from Database
+              {t.riskAssessment.loadAnyRealTx}
             </span>
             <div className="flex gap-2">
               <input
@@ -404,7 +406,7 @@ export const RiskAssessment: React.FC = () => {
                 className="flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 px-3.5 py-2 text-xs sm:text-sm font-semibold transition-colors disabled:opacity-40"
               >
                 {lookupLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-                Load
+                {t.riskAssessment.loadBtn}
               </button>
             </div>
             {lookupError && (
@@ -436,7 +438,7 @@ export const RiskAssessment: React.FC = () => {
                             : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                       }`}
                     >
-                      {category}
+                      {category === 'DECLINE' ? t.common.decline : category === 'REVIEW' ? t.common.review : t.common.approve}
                     </span>
                   )}
                 </div>
@@ -453,7 +455,7 @@ export const RiskAssessment: React.FC = () => {
                   Account: {payload.account_id}
                 </span>
                 <span className="mt-2 block text-xs text-cyan-400 font-medium group-hover:underline">
-                  Select to load payload →
+                  {t.riskAssessment.selectToLoad}
                 </span>
               </button>
             ))}
@@ -466,10 +468,10 @@ export const RiskAssessment: React.FC = () => {
           <div className="flex items-center justify-between border-b border-slate-800 pb-4">
             <div>
               <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-100">
-                Risk Evaluation Result
+                {t.riskAssessment.riskEvaluationResult}
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
-                Real-time inference &amp; explainable behavioral telemetry
+                {t.riskAssessment.realTimeInferenceTelemetry}
               </p>
             </div>
             {result && (
@@ -486,7 +488,7 @@ export const RiskAssessment: React.FC = () => {
                 <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col justify-between">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
-                      Risk Score
+                      {t.riskAssessment.riskScore}
                     </span>
                     <span
                       className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase border ${
@@ -498,10 +500,10 @@ export const RiskAssessment: React.FC = () => {
                       }`}
                     >
                       {result.risk_score >= 0.75
-                        ? 'High Risk'
+                        ? t.riskAssessment.highRisk
                         : result.risk_score >= 0.4
-                        ? 'Medium Risk'
-                        : 'Low Risk'}
+                        ? t.riskAssessment.medRisk
+                        : t.riskAssessment.lowRisk}
                     </span>
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
@@ -538,7 +540,7 @@ export const RiskAssessment: React.FC = () => {
 
                 <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col justify-between">
                   <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
-                    Suggested Decision
+                    {t.riskAssessment.suggestedDecision}
                   </span>
                   <div className="mt-2">
                     <span
@@ -550,7 +552,7 @@ export const RiskAssessment: React.FC = () => {
                           : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                       }`}
                     >
-                      {result.decision}
+                      {result.decision === 'DECLINE' ? t.common.decline : result.decision === 'REVIEW' ? t.common.review : t.common.approve}
                     </span>
                   </div>
                   <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-slate-500 border-t border-slate-800/80 pt-2">
@@ -570,7 +572,7 @@ export const RiskAssessment: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <Activity size={16} className="text-cyan-400" />
                     <span className="text-sm font-semibold text-slate-200">
-                      Triggered Signals &amp; Graph Metrics
+                      {t.riskAssessment.triggeredSignals}
                     </span>
                   </div>
                   <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium">
@@ -601,10 +603,10 @@ export const RiskAssessment: React.FC = () => {
                   <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-950 rounded-xl border border-slate-800/80 text-center">
                     <ShieldCheck size={36} className="text-emerald-400 mb-2" />
                     <span className="text-sm font-semibold text-slate-200">
-                      No Risk Signals Triggered
+                      {t.riskAssessment.noSignalsTriggered}
                     </span>
                     <p className="text-xs text-slate-400 mt-1 max-w-xs">
-                      All behavioral heuristics, graph relationships, and velocity counts remain within normal thresholds.
+                      {t.riskAssessment.noSignalsDesc}
                     </p>
                   </div>
                 )}
@@ -616,10 +618,10 @@ export const RiskAssessment: React.FC = () => {
                 <Activity size={32} className="text-cyan-400/80 animate-pulse" />
               </div>
               <h4 className="font-display font-semibold text-slate-200 text-base">
-                Awaiting Simulation
+                {t.riskAssessment.awaitingSimulation}
               </h4>
               <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
-                Run a simulation or load a verified database preset to evaluate the transaction through the AEGIS inference engine and graph pattern analyzer.
+                {t.riskAssessment.awaitingSimulationDesc}
               </p>
             </div>
           )}

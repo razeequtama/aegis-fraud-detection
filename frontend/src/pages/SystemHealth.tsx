@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface HealthResponse {
   status: 'healthy' | 'degraded' | string;
@@ -71,6 +72,7 @@ function StatusIcon({ operational }: { operational: boolean }) {
 }
 
 export const SystemHealth: React.FC = () => {
+  const { t, language } = useTranslation();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -129,14 +131,14 @@ export const SystemHealth: React.FC = () => {
       Icon: Server,
       operational: serviceOperational,
       status: loading
-        ? 'Connecting…'
+        ? (language === 'id' ? 'Menghubungkan…' : 'Connecting…')
         : health
           ? serviceOperational
-            ? 'Operational'
-            : 'Degraded'
-          : 'Offline',
+            ? t.common.operational
+            : t.common.degraded
+          : t.common.offline,
       metricLabel: 'API Latency (p95)',
-      metric: loading ? 'Measuring…' : health ? latencyText(health.latency.api_p95_ms) : '—',
+      metric: loading ? (language === 'id' ? 'Mengukur…' : 'Measuring…') : health ? latencyText(health.latency.api_p95_ms) : '—',
       detail: health
         ? `${health.latency.api_sample_count} sample(s) recorded in rolling window`
         : 'Async ASGI server runtime on port 8000',
@@ -146,18 +148,18 @@ export const SystemHealth: React.FC = () => {
       Icon: Database,
       operational: databaseConnected,
       status: loading
-        ? 'Connecting…'
+        ? (language === 'id' ? 'Menghubungkan…' : 'Connecting…')
         : health
           ? databaseConnected
-            ? 'Connected'
-            : 'Unavailable'
-          : 'Offline',
+            ? (language === 'id' ? 'Terhubung' : 'Connected')
+            : t.common.unavailable
+          : t.common.offline,
       metricLabel: 'Active Pool Connections',
       metric: loading
-        ? 'Checking pool…'
+        ? (language === 'id' ? 'Memeriksa pool…' : 'Checking pool…')
         : health
           ? health.database.pool.active_connections === null
-            ? 'Connected'
+            ? (language === 'id' ? 'Terhubung' : 'Connected')
             : `${health.database.pool.active_connections}${
                 health.database.pool.max_connections === null
                   ? ''
@@ -173,22 +175,22 @@ export const SystemHealth: React.FC = () => {
       Icon: Zap,
       operational: Boolean(redisConnected),
       status: loading
-        ? 'Connecting…'
+        ? (language === 'id' ? 'Menghubungkan…' : 'Connecting…')
         : health
           ? redisConnected
-            ? 'Active'
-            : 'Unavailable'
-          : 'Offline',
+            ? (language === 'id' ? 'Aktif' : 'Active')
+            : t.common.unavailable
+          : t.common.offline,
       metricLabel: 'Cache Instance',
       metric: loading
-        ? 'Connecting…'
+        ? (language === 'id' ? 'Menghubungkan…' : 'Connecting…')
         : health?.redis
           ? `${health.redis.host ?? '127.0.0.1'}:${health.redis.port ?? 6379}`
           : '—',
       detail: health
         ? redisConnected
-          ? 'Sliding-window velocity tracking active'
-          : 'Velocity cache unreachable (safe fallback mode)'
+          ? (language === 'id' ? 'Pelacakan kecepatan sliding-window aktif' : 'Sliding-window velocity tracking active')
+          : (language === 'id' ? 'Cache kecepatan tidak terjangkau (mode cadangan)' : 'Velocity cache unreachable (safe fallback mode)')
         : 'In-memory account velocity & rate tracking',
     },
     {
@@ -196,16 +198,16 @@ export const SystemHealth: React.FC = () => {
       Icon: Cpu,
       operational: modelLoaded,
       status: loading
-        ? 'Loading artifact…'
+        ? (language === 'id' ? 'Memuat artefak…' : 'Loading artifact…')
         : health
           ? modelLoaded
-            ? 'Model Active'
-            : 'Unavailable'
-          : 'Offline',
+            ? (language === 'id' ? 'Model Aktif' : 'Model Active')
+            : t.common.unavailable
+          : t.common.offline,
       metricLabel: 'Artifact Version',
       metric: loading
-        ? 'Checking artifact…'
-        : health?.inference_engine.model_version ?? 'No model loaded',
+        ? (language === 'id' ? 'Memeriksa artefak…' : 'Checking artifact…')
+        : health?.inference_engine.model_version ?? (language === 'id' ? 'Model belum dimuat' : 'No model loaded'),
       detail: health
         ? `Inference p95: ${latencyText(health.latency.inference_p95_ms)} · ${health.latency.inference_sample_count} sample(s)`
         : 'Vectorized Scikit-Learn Random Forest pipeline',
@@ -219,14 +221,14 @@ export const SystemHealth: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-              <AegisWordmark size="xs" inline /> // SYSTEM OBSERVABILITY
+              <AegisWordmark size="xs" inline /> // {t.systemHealth.tag}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-            System Health &amp; Observability
+            {t.systemHealth.title}
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-400">
-            Live telemetry for FastAPI backend, PostgreSQL connection pool, Redis velocity cache, and machine learning inference.
+            {t.systemHealth.subtitle}
           </p>
         </div>
 
@@ -245,10 +247,10 @@ export const SystemHealth: React.FC = () => {
             )}
             <span>
               {loading
-                ? 'Connecting to backend…'
+                ? (language === 'id' ? 'Menghubungkan ke backend…' : 'Connecting to backend…')
                 : lastUpdated
-                  ? `Updated ${lastUpdated.toLocaleTimeString()} (every 10s)`
-                  : 'Awaiting connection'}
+                  ? `${t.systemHealth.lastChecked} ${lastUpdated.toLocaleTimeString(language === 'id' ? 'id-ID' : 'en-US')} (10s)`
+                  : t.systemHealth.awaitingTraffic}
             </span>
           </div>
 
@@ -256,11 +258,11 @@ export const SystemHealth: React.FC = () => {
             type="button"
             onClick={() => void fetchHealth(true)}
             disabled={refreshing || loading}
-            title="Refresh system health metrics now"
+            title={t.systemHealth.refreshBtn}
             className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 hover:border-cyan-500/40 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors disabled:opacity-50 interactive-btn"
           >
             <RefreshCw size={13} className={refreshing ? 'animate-spin text-cyan-400' : 'text-slate-400'} />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="hidden sm:inline">{refreshing ? t.systemHealth.refreshing : t.systemHealth.refreshBtn}</span>
           </button>
         </div>
       </div>
@@ -273,14 +275,14 @@ export const SystemHealth: React.FC = () => {
         >
           <div className="flex items-center gap-2.5">
             <AlertCircle size={18} className="shrink-0 text-rose-400" />
-            <span>Connection Issue: {errorMessage}</span>
+            <span>{t.common.error}: {errorMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => void fetchHealth(true)}
             className="rounded-lg border border-rose-400/40 bg-rose-500/20 px-3 py-1 text-xs font-semibold text-rose-200 hover:bg-rose-500/30 transition-colors interactive-btn"
           >
-            Retry Now
+            {t.common.retry}
           </button>
         </div>
       )}

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ReplayMetrics {
   total_processed: number;
@@ -106,6 +107,7 @@ function waitForPoll(signal: AbortSignal): Promise<void> {
 }
 
 export const ModelLab: React.FC = () => {
+  const { t } = useTranslation();
   const [threshold, setThreshold] = useState(0.75);
   const [modelVersion, setModelVersion] = useState(MODEL_OPTIONS[0].id);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -201,13 +203,13 @@ export const ModelLab: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
         <div>
           <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-            <AegisWordmark size="xs" inline /> // SIMULATION &amp; BENCHMARKING
+            <AegisWordmark size="xs" inline /> // {t.modelLab.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-            Model Lab &amp; Replay Simulator
+            {t.modelLab.title}
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-slate-400">
-            Evaluate model decision thresholds against historical transactions using high-throughput batch vector inference.
+            {t.modelLab.subtitle}
           </p>
         </div>
       </div>
@@ -218,13 +220,13 @@ export const ModelLab: React.FC = () => {
           <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3">
             <Cpu className="text-cyan-400" size={18} />
             <h3 className="font-display text-base font-semibold tracking-tight text-slate-200">
-              Replay Configuration
+              {t.modelLab.configTitle}
             </h3>
           </div>
 
           <div>
             <label htmlFor="model-version" className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-slate-400">
-              Model Version
+              {t.modelLab.modelSelect}
             </label>
             <select
               id="model-version"
@@ -243,7 +245,7 @@ export const ModelLab: React.FC = () => {
 
           <div>
             <div className="mb-2 flex justify-between items-center text-xs font-mono">
-              <span className="text-slate-400 uppercase tracking-wider">Decision Threshold</span>
+              <span className="text-slate-400 uppercase tracking-wider">{t.modelLab.thresholdSelect}</span>
               <span className="text-cyan-300 font-bold text-sm bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded">
                 {threshold.toFixed(2)}
               </span>
@@ -269,7 +271,7 @@ export const ModelLab: React.FC = () => {
           {/* Quick presets */}
           <div>
             <span className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-              <Sliders size={13} className="text-cyan-400" /> Quick Threshold Presets
+              <Sliders size={13} className="text-cyan-400" /> {t.modelLab.quickThresholdPresets}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {THRESHOLD_PRESETS.map((p) => (
@@ -299,12 +301,12 @@ export const ModelLab: React.FC = () => {
             {isSimulating ? (
               <>
                 <LoaderCircle className="animate-spin" size={17} />
-                {replay?.status === 'RUNNING' ? 'Running batch inference…' : 'Queuing replay job…'}
+                {replay?.status === 'RUNNING' ? t.modelLab.runningBatch : t.modelLab.queuingJob}
               </>
             ) : (
               <>
                 <Play size={16} />
-                Run Historical Replay
+                {t.modelLab.runReplay}
               </>
             )}
           </button>
@@ -315,10 +317,10 @@ export const ModelLab: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
             <div>
               <h3 className="font-display text-base font-semibold tracking-tight text-slate-200">
-                Simulation Impact Analysis
+                {t.modelLab.summaryTitle}
               </h3>
               <p className="mt-0.5 text-xs text-slate-400">
-                Operational impact benchmarked against baseline policy threshold of 0.75.
+                {t.modelLab.impactSubtitle}
               </p>
             </div>
             {replay && (
@@ -352,9 +354,9 @@ export const ModelLab: React.FC = () => {
           {!metrics && !isSimulating && !error && (
             <div className="rounded-xl border border-dashed border-slate-800 p-8 text-center text-sm text-slate-400">
               <Sparkles className="mx-auto mb-2 text-cyan-400" size={24} />
-              <p className="font-medium text-slate-300">No replay currently loaded.</p>
+              <p className="font-medium text-slate-300">{t.modelLab.noReplayLoaded}</p>
               <p className="text-xs text-slate-500 mt-1">
-                Click &ldquo;Run Historical Replay&rdquo; to simulate operational metrics.
+                {t.modelLab.clickToRun}
               </p>
             </div>
           )}
@@ -370,13 +372,13 @@ export const ModelLab: React.FC = () => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">Review Queue Load</span>
+                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">{t.modelLab.reviewQueueLoad}</span>
                   <span className="mt-2 inline-block text-2xl font-bold font-mono text-slate-100">
-                    {formatCount(metrics.review_count)} <span className="text-xs font-sans text-slate-400 font-normal">transactions</span>
+                    {formatCount(metrics.review_count)} <span className="text-xs font-sans text-slate-400 font-normal">{t.modelLab.transactions}</span>
                   </span>
                   <span className={`mt-1 block text-xs font-medium font-mono ${reviewDifferenceClass}`}>
                     {reviewDifference > 0 ? '+' : ''}
-                    {formatCount(reviewDifference)} vs baseline
+                    {formatCount(reviewDifference)} {t.modelLab.vsBaseline}
                     {metrics.review_queue_difference_percent !== null
                       ? ` (${metrics.review_queue_difference_percent > 0 ? '+' : ''}${metrics.review_queue_difference_percent.toFixed(1)}%)`
                       : ''}
@@ -387,17 +389,17 @@ export const ModelLab: React.FC = () => {
                 </div>
 
                 <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">Fraud Cases Captured</span>
+                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">{t.modelLab.fraudCasesCaptured}</span>
                   <span className="mt-2 inline-block text-2xl font-bold font-mono text-emerald-400">
-                    {formatCount(metrics.fraud_detected)} <span className="text-xs font-sans text-slate-400 font-normal">cases</span>
+                    {formatCount(metrics.fraud_detected)} <span className="text-xs font-sans text-slate-400 font-normal">{t.modelLab.cases}</span>
                   </span>
                   <span className="mt-1 block text-xs text-slate-400 font-mono">
-                    Of {formatCount(metrics.total_processed)} transactions replayed
+                    Of {formatCount(metrics.total_processed)} {t.modelLab.transactions} replayed
                   </span>
                 </div>
 
                 <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4 sm:col-span-2">
-                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">False Positive Ratio</span>
+                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">{t.modelLab.falsePositiveRatio}</span>
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
                     <span className="text-2xl font-bold font-mono text-rose-300">
                       {formatCount(metrics.false_positives)}
@@ -407,7 +409,7 @@ export const ModelLab: React.FC = () => {
                     </span>
                   </div>
                   <span className="mt-1 block text-[11px] text-slate-500">
-                    Rate indicates false positive alerts relative to legitimate historical transactions.
+                    {t.modelLab.rateExplainer}
                   </span>
                 </div>
               </div>
@@ -423,7 +425,7 @@ export const ModelLab: React.FC = () => {
             <div className="flex items-center gap-2">
               <History size={16} className="text-cyan-400" />
               <h3 className="font-display text-base font-semibold text-slate-200">
-                Recent Simulation Runs
+                {t.modelLab.recentRuns}
               </h3>
             </div>
             <span className="text-xs font-mono text-slate-400">
@@ -435,13 +437,13 @@ export const ModelLab: React.FC = () => {
             <table className="w-full text-left text-xs font-mono">
               <thead className="border-b border-slate-800 text-slate-400">
                 <tr>
-                  <th className="pb-2 font-medium">RUN ID</th>
-                  <th className="pb-2 font-medium">MODEL</th>
-                  <th className="pb-2 font-medium">THRESHOLD</th>
-                  <th className="pb-2 font-medium">REVIEW COUNT</th>
-                  <th className="pb-2 font-medium">FRAUD CAUGHT</th>
-                  <th className="pb-2 font-medium">FP RATE</th>
-                  <th className="pb-2 font-medium text-right">ACTION</th>
+                  <th className="pb-2 font-medium">{t.modelLab.thRunId}</th>
+                  <th className="pb-2 font-medium">{t.modelLab.thModel}</th>
+                  <th className="pb-2 font-medium">{t.modelLab.thThreshold}</th>
+                  <th className="pb-2 font-medium">{t.modelLab.thReviewCount}</th>
+                  <th className="pb-2 font-medium">{t.modelLab.thFraudCaught}</th>
+                  <th className="pb-2 font-medium">{t.modelLab.thFpRate}</th>
+                  <th className="pb-2 font-medium text-right">{t.modelLab.thAction}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -454,7 +456,7 @@ export const ModelLab: React.FC = () => {
                         #{r.replay_id}
                         {isCurrent && (
                           <span className="ml-1.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 px-1 py-0.2 text-[10px]">
-                            ACTIVE
+                            {t.modelLab.activeBadge}
                           </span>
                         )}
                       </td>
@@ -479,7 +481,7 @@ export const ModelLab: React.FC = () => {
                           }}
                           className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-200 hover:border-cyan-500 hover:text-cyan-300 transition-colors"
                         >
-                          Load Metrics
+                          {t.modelLab.loadMetrics}
                         </button>
                       </td>
                     </tr>

@@ -18,6 +18,7 @@ import {
 
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface MetricsOverview {
   metrics: {
@@ -80,19 +81,20 @@ const formatTooltipLabel = (value: string) => {
   return value;
 };
 
-const formatMonth = (value: string) =>
-  new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
-    month: 'long',
-    year: 'numeric',
-  });
-
 export const Dashboard: React.FC = () => {
+  const { t, language } = useTranslation();
   const [overview, setOverview] = useState<MetricsOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const formatMonth = (value: string) =>
+    new Date(`${value}T00:00:00`).toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
 
   const handleStartDateChange = (val: string) => {
     setStartDate(val);
@@ -155,36 +157,36 @@ export const Dashboard: React.FC = () => {
   const metricCards = overview
     ? [
         {
-          title: 'Total Transactions',
+          title: t.dashboard.totalTransactions,
           value: numberFormat.format(overview.metrics.total_transactions),
-          detail: 'Transactions recorded in PostgreSQL',
+          detail: t.dashboard.totalTransactionsDesc,
           Icon: TrendingUp,
           color: 'text-cyan-400',
         },
         {
-          title: 'Review Queue',
+          title: t.dashboard.reviewQueue,
           value: numberFormat.format(overview.metrics.review_queue_count),
-          detail: 'Open cases awaiting analyst review',
+          detail: t.dashboard.reviewQueueDesc,
           Icon: ShieldAlert,
           color: 'text-amber-400',
         },
         {
-          title: 'Detected Frauds',
+          title: t.dashboard.detectedFrauds,
           value: numberFormat.format(overview.metrics.detected_frauds),
-          detail: 'Transactions labeled as suspicious',
+          detail: t.dashboard.detectedFraudsDesc,
           Icon: Activity,
           color: 'text-rose-400',
         },
         {
-          title: 'Model Status',
+          title: t.dashboard.modelStatus,
           value:
             overview.metrics.model_status === 'online'
-              ? overview.metrics.model_version ?? 'Online'
-              : 'Unavailable',
+              ? overview.metrics.model_version ?? t.common.online
+              : t.common.unavailable,
           detail:
             overview.metrics.model_status === 'online'
-              ? 'Risk model loaded and ready'
-              : 'Risk model is not loaded',
+              ? t.dashboard.modelLoadedDesc
+              : t.dashboard.modelNotLoadedDesc,
           Icon: CheckCircle2,
           color:
             overview.metrics.model_status === 'online'
@@ -199,13 +201,13 @@ export const Dashboard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
         <div>
           <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-            <AegisWordmark size="xs" inline /> // COMMAND CENTER
+            <AegisWordmark size="xs" inline /> // {t.dashboard.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-            Real-Time Fraud Oversight
+            {t.dashboard.title}
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Operational metrics, review queues, and transactional activity telemetry.
+            {t.dashboard.subtitle}
           </p>
         </div>
       </div>
@@ -215,13 +217,13 @@ export const Dashboard: React.FC = () => {
           role="alert"
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 animate-slide-down"
         >
-          <span>Could not load operational metrics: {errorMessage}</span>
+          <span>{t.dashboard.errorPrefix} {errorMessage}</span>
           <button
             type="button"
             onClick={() => setRefreshKey((key) => key + 1)}
             className="rounded-lg border border-rose-400/30 px-3 py-1.5 font-medium text-rose-200 hover:bg-rose-500/20 interactive-btn"
           >
-            Retry
+            {t.common.retry}
           </button>
         </div>
       )}
@@ -259,11 +261,11 @@ export const Dashboard: React.FC = () => {
         <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h3 className="font-display text-lg sm:text-xl font-semibold tracking-tight text-slate-100">
-              Transaction &amp; Suspicious Activity Trend
+              {t.dashboard.chartTitle}
             </h3>
 
             <p className="mt-1 text-xs sm:text-sm text-slate-400">
-              Historical activity timeline derived from transactional records.
+              {t.dashboard.chartSubtitle}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
@@ -280,7 +282,7 @@ export const Dashboard: React.FC = () => {
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
-                Jan 1 (Hourly)
+                {t.dashboard.btnJan1}
               </button>
               <button
                 type="button"
@@ -294,7 +296,7 @@ export const Dashboard: React.FC = () => {
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
-                Jan 2 (Hourly)
+                {t.dashboard.btnJan2}
               </button>
               <button
                 type="button"
@@ -308,7 +310,7 @@ export const Dashboard: React.FC = () => {
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
-                Jan 1–7
+                {t.dashboard.btnJanWeek}
               </button>
               <button
                 type="button"
@@ -322,12 +324,12 @@ export const Dashboard: React.FC = () => {
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
                 }`}
               >
-                Full Month
+                {t.dashboard.btnFullMonth}
               </button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <label htmlFor="dashboard-start-date" className="text-xs sm:text-sm font-medium text-slate-300">
-                From:
+                {t.dashboard.fromLabel}
               </label>
               <input
                 id="dashboard-start-date"
@@ -339,7 +341,7 @@ export const Dashboard: React.FC = () => {
                 className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
               />
               <label htmlFor="dashboard-end-date" className="text-xs sm:text-sm font-medium text-slate-300">
-                To:
+                {t.dashboard.toLabel}
               </label>
               <input
                 id="dashboard-end-date"
@@ -355,15 +357,15 @@ export const Dashboard: React.FC = () => {
         </div>
         <div className="mb-4 flex flex-wrap items-center justify-between text-xs sm:text-sm text-slate-300 gap-2">
           <span>
-            {startDate || overview?.available_range?.start_date || 'No start date'} –{' '}
-            {endDate || overview?.available_range?.end_date || 'No end date'}
+            {startDate || overview?.available_range?.start_date || t.dashboard.noStartDate} –{' '}
+            {endDate || overview?.available_range?.end_date || t.dashboard.noEndDate}
             {overview?.busiest_period
-              ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
+              ? ` · ${t.dashboard.busiestMonthPrefix} ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} ${t.dashboard.transactionsWord})`
               : ''}
           </span>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-xs font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            {overview?.granularity === 'hourly' ? 'Hourly Timeline (24h View)' : 'Daily Timeline'}
+            {overview?.granularity === 'hourly' ? t.dashboard.hourlyView : t.dashboard.dailyView}
           </span>
         </div>
         <div className="h-64 sm:h-72 lg:h-80 w-full">
@@ -371,7 +373,7 @@ export const Dashboard: React.FC = () => {
             <div className="h-full animate-pulse rounded-lg bg-slate-800/50" />
           ) : errorMessage ? (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
-              Trend data is unavailable until metrics load.
+              {t.dashboard.trendUnavailable}
             </div>
           ) : overview?.trend.length ? (
             <ResponsiveContainer width="100%" height="100%">
@@ -394,9 +396,9 @@ export const Dashboard: React.FC = () => {
                   labelFormatter={(value) => formatTooltipLabel(String(value))}
                   formatter={(value, name) => [
                     numberFormat.format(Number(value)),
-                    name === 'Transactions' || name === 'transactions'
-                      ? 'Transactions'
-                      : 'Suspicious',
+                    name === 'Transactions' || name === 'transactions' || name === t.dashboard.tooltipTransactions
+                      ? t.dashboard.tooltipTransactions
+                      : t.dashboard.tooltipSuspicious,
                   ]}
                   contentStyle={{
                     backgroundColor: '#0f172a',
@@ -407,7 +409,7 @@ export const Dashboard: React.FC = () => {
                 <Area
                   type="monotone"
                   dataKey="transactions"
-                  name="Transactions"
+                  name={t.dashboard.tooltipTransactions}
                   stroke="#06b6d4"
                   fill="#06b6d4"
                   fillOpacity={0.1}
@@ -415,7 +417,7 @@ export const Dashboard: React.FC = () => {
                 <Area
                   type="monotone"
                   dataKey="suspicious"
-                  name="Suspicious"
+                  name={t.dashboard.tooltipSuspicious}
                   stroke="#f43f5e"
                   fill="#f43f5e"
                   fillOpacity={0.2}
@@ -424,7 +426,7 @@ export const Dashboard: React.FC = () => {
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
-              No timestamped transactions are available in this date range.
+              {t.dashboard.noTimestamped}
             </div>
           )}
         </div>

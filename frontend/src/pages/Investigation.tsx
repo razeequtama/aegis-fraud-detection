@@ -25,6 +25,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { useTranslation } from '../i18n/LanguageContext';
 
 type FeedbackLabel = 'confirmed_fraud' | 'legitimate' | 'inconclusive';
 
@@ -121,79 +122,6 @@ interface UrgentAlert {
   timestamp: string | null;
 }
 
-const curatedCasePresets = [
-  {
-    txId: 'TX-100463',
-    title: '53-Account Syndicate Transfer',
-    type: 'TRANSFER',
-    badge: 'Syndicate Ring',
-    badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
-    description: 'Shared device DEV-SIM-995 links 53 accounts with 17 flagged fraud nodes.',
-  },
-  {
-    txId: 'TX-140135',
-    title: 'High-Value Account Drain',
-    type: 'CASH_OUT',
-    badge: 'Critical Drain (Score 0.99)',
-    badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
-    description: 'Rp 2,988,103 cash out with 100% balance depletion on device DEV-SIM-360.',
-  },
-  {
-    txId: 'TX-100033',
-    title: 'Mule Ring Liquidation',
-    type: 'CASH_OUT',
-    badge: 'Mule Network',
-    badgeColor: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    description: 'Rapid cash-out liquidation on shared emulator DEV-SIM-278.',
-  },
-  {
-    txId: 'TX-100001',
-    title: 'Clean Retail Baseline',
-    type: 'PAYMENT',
-    badge: 'Legitimate Baseline',
-    badgeColor: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
-    description: 'Normal merchant retail payment with zero anomaly signals.',
-  },
-];
-
-const quickReasoningTags = [
-  'Device Sharing Ring',
-  '100% Account Drain',
-  'Mule Account Funnel',
-  'Customer Verified Legitimate',
-  'Ledger Discrepancy Anomaly',
-  'Multiple Payment Retries',
-];
-
-const feedbackActions: {
-  label: FeedbackLabel;
-  title: string;
-  className: string;
-  Icon: typeof CheckCircle;
-}[] = [
-  {
-    label: 'confirmed_fraud',
-    title: 'Confirm Fraud',
-    className:
-      'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border-rose-500/40 hover:border-rose-500/60 shadow-sm shadow-rose-500/10',
-    Icon: XCircle,
-  },
-  {
-    label: 'legitimate',
-    title: 'Mark Legitimate',
-    className:
-      'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/40 hover:border-emerald-500/60 shadow-sm shadow-emerald-500/10',
-    Icon: CheckCircle,
-  },
-  {
-    label: 'inconclusive',
-    title: 'Inconclusive',
-    className:
-      'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40 hover:border-amber-500/60 shadow-sm shadow-amber-500/10',
-    Icon: AlertTriangle,
-  },
-];
-
 function formatError(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const detail = error.response?.data?.detail;
@@ -202,13 +130,13 @@ function formatError(error: unknown): string {
   return error instanceof Error ? error.message : 'An unexpected error occurred.';
 }
 
-function displayEntityId(entity: EntityMetadata | null): string {
-  if (!entity) return 'Not available';
-  return String(entity.id ?? 'Not available');
+function displayEntityId(entity: EntityMetadata | null, fallback = '—'): string {
+  if (!entity) return fallback;
+  return String(entity.id ?? fallback);
 }
 
-function formatIDR(amount: number | null | undefined): string {
-  if (amount === null || amount === undefined) return 'Not available';
+function formatIDR(amount: number | null | undefined, fallback = '—'): string {
+  if (amount === null || amount === undefined) return fallback;
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
@@ -217,8 +145,82 @@ function formatIDR(amount: number | null | undefined): string {
 }
 
 export const Investigation: React.FC = () => {
+  const { t, language } = useTranslation();
   const { transactionId } = useParams<{ transactionId: string }>();
   const navigate = useNavigate();
+
+  const curatedCasePresets = [
+    {
+      txId: 'TX-100463',
+      title: t.investigation.presetSyndicateTitle,
+      type: 'TRANSFER',
+      badge: t.network.badgeSyndicate,
+      badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+      description: t.investigation.presetSyndicateDesc,
+    },
+    {
+      txId: 'TX-140135',
+      title: t.investigation.presetDrainTitle,
+      type: 'CASH_OUT',
+      badge: `Critical Drain (${t.riskAssessment.riskScore} 0.99)`,
+      badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+      description: t.investigation.presetDrainDesc,
+    },
+    {
+      txId: 'TX-100033',
+      title: t.investigation.presetMuleTitle,
+      type: 'CASH_OUT',
+      badge: t.network.badgeMule,
+      badgeColor: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+      description: t.investigation.presetMuleDesc,
+    },
+    {
+      txId: 'TX-100001',
+      title: t.investigation.presetCleanTitle,
+      type: 'PAYMENT',
+      badge: t.common.legitimate,
+      badgeColor: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+      description: t.investigation.presetCleanDesc,
+    },
+  ];
+
+  const quickReasoningTags = [
+    t.investigation.tagDeviceRing,
+    t.investigation.tagAccountDrain,
+    t.investigation.tagMuleFunnel,
+    t.investigation.tagCustomerVerified,
+    t.investigation.tagLedgerAnomaly,
+    t.investigation.tagPaymentRetries,
+  ];
+
+  const feedbackActions: {
+    label: FeedbackLabel;
+    title: string;
+    className: string;
+    Icon: typeof CheckCircle;
+  }[] = [
+    {
+      label: 'confirmed_fraud',
+      title: t.investigation.confirmFraud,
+      className:
+        'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border-rose-500/40 hover:border-rose-500/60 shadow-sm shadow-rose-500/10',
+      Icon: XCircle,
+    },
+    {
+      label: 'legitimate',
+      title: t.investigation.markLegitimate,
+      className:
+        'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/40 hover:border-emerald-500/60 shadow-sm shadow-emerald-500/10',
+      Icon: CheckCircle,
+    },
+    {
+      label: 'inconclusive',
+      title: t.investigation.markInconclusive,
+      className:
+        'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40 hover:border-amber-500/60 shadow-sm shadow-amber-500/10',
+      Icon: AlertTriangle,
+    },
+  ];
 
   // Search Jump State
   const [searchJumpInput, setSearchJumpInput] = useState('');
@@ -439,16 +441,15 @@ export const Investigation: React.FC = () => {
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-              <AegisWordmark size="xs" inline /> // CASE OPERATIONS
+              <AegisWordmark size="xs" inline /> // {t.investigation.hubTag}
             </span>
             <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-              Fraud Investigation Hub
+              {t.investigation.title}
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-slate-400">
-              Review prioritized case queues, analyze explainable ML signals, and record feedback decisions for retraining.
+              {t.investigation.subtitle}
             </p>
           </div>
-
 
           <form onSubmit={handleSearchJump} className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
@@ -457,7 +458,7 @@ export const Investigation: React.FC = () => {
                 type="text"
                 value={searchJumpInput}
                 onChange={(e) => setSearchJumpInput(e.target.value)}
-                placeholder="Enter Transaction or Case ID…"
+                placeholder={t.investigation.searchPlaceholder}
                 className="w-full sm:w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
               />
             </div>
@@ -465,7 +466,7 @@ export const Investigation: React.FC = () => {
               type="submit"
               className="shrink-0 flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 sm:px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
             >
-              Investigate <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              {t.investigation.searchBtn} <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
             </button>
           </form>
         </div>
@@ -473,35 +474,35 @@ export const Investigation: React.FC = () => {
         {/* KPI Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 interactive-card hover:border-slate-700 cursor-default">
-            <span className="text-sm font-medium text-slate-300">Total Cases</span>
+            <span className="text-sm font-medium text-slate-300">{t.investigation.totalCasesCard}</span>
             <div className="mt-2 text-2xl font-bold text-slate-100">
               {caseSummary ? caseSummary.total_cases : '—'}
             </div>
-            <span className="mt-1 block text-xs text-slate-400">Tracked in database</span>
+            <span className="mt-1 block text-xs text-slate-400">{t.investigation.trackedInDb}</span>
           </div>
 
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 interactive-card hover:border-amber-500/50 cursor-default">
-            <span className="text-sm font-medium text-amber-300">Open / Pending Review</span>
+            <span className="text-sm font-medium text-amber-300">{t.investigation.pendingReviewCard}</span>
             <div className="mt-2 text-2xl font-bold text-amber-400">
               {caseSummary ? caseSummary.open + caseSummary.in_review : '—'}
             </div>
-            <span className="mt-1 block text-xs text-amber-300/90">Requires analyst action</span>
+            <span className="mt-1 block text-xs text-amber-300/90">{t.investigation.requiresAction}</span>
           </div>
 
           <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 interactive-card hover:border-rose-500/50 cursor-default">
-            <span className="text-sm font-medium text-rose-300">Confirmed Fraud</span>
+            <span className="text-sm font-medium text-rose-300">{t.investigation.confirmedFraudCard}</span>
             <div className="mt-2 text-2xl font-bold text-rose-400">
               {caseSummary ? caseSummary.confirmed_fraud : '—'}
             </div>
-            <span className="mt-1 block text-xs text-rose-300/90">Ready for training loop</span>
+            <span className="mt-1 block text-xs text-rose-300/90">{t.investigation.readyForTraining}</span>
           </div>
 
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 interactive-card hover:border-emerald-500/50 cursor-default">
-            <span className="text-sm font-medium text-emerald-300">Cleared / Legitimate</span>
+            <span className="text-sm font-medium text-emerald-300">{t.investigation.clearedLegitimateCard}</span>
             <div className="mt-2 text-2xl font-bold text-emerald-400">
               {caseSummary ? caseSummary.legitimate : '—'}
             </div>
-            <span className="mt-1 block text-xs text-emerald-300/90">False positive mitigation</span>
+            <span className="mt-1 block text-xs text-emerald-300/90">{t.investigation.falsePositiveMitigation}</span>
           </div>
         </div>
 
@@ -510,9 +511,9 @@ export const Investigation: React.FC = () => {
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-cyan-400" />
-              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Curated Investigation Presets</h3>
+              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{t.investigation.curatedPresetsTitle}</h3>
             </div>
-            <span className="text-sm text-slate-300">1-click select real database patterns</span>
+            <span className="text-sm text-slate-300">{t.investigation.oneClickPreset}</span>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {curatedCasePresets.map((preset) => (
@@ -539,7 +540,7 @@ export const Investigation: React.FC = () => {
                   </p>
                 </div>
                 <div className="mt-3 flex items-center justify-end text-xs font-semibold text-cyan-400">
-                  Open Case <ArrowRight size={13} className="ml-1 transition-transform duration-200 group-hover:translate-x-1" />
+                  {t.investigation.openCaseBtn} <ArrowRight size={13} className="ml-1 transition-transform duration-200 group-hover:translate-x-1" />
                 </div>
               </button>
             ))}
@@ -570,7 +571,13 @@ export const Investigation: React.FC = () => {
                             : 'text-slate-400 hover:text-slate-200'
                         }`}
                       >
-                        {st === 'in_review' ? 'In Review' : st}
+                        {st === 'all'
+                          ? t.common.all
+                          : st === 'open'
+                          ? t.common.open
+                          : st === 'in_review'
+                          ? t.common.inReview
+                          : t.common.closed}
                       </button>
                     ))}
                   </div>
@@ -585,7 +592,7 @@ export const Investigation: React.FC = () => {
                       setSearchFilter(e.target.value);
                       setPage(1);
                     }}
-                    placeholder="Filter cases…"
+                    placeholder={t.investigation.filterCasesPlaceholder}
                     className="w-48 rounded-lg border border-slate-700 bg-slate-950 py-1.5 pl-8 pr-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
                   />
                 </div>
@@ -595,7 +602,7 @@ export const Investigation: React.FC = () => {
               {queueLoading ? (
                 <div className="flex items-center justify-center p-12 text-sm text-slate-400">
                   <LoaderCircle className="mr-2 animate-spin text-cyan-400" size={18} />
-                  Loading case queue…
+                  {t.investigation.loadingQueue}
                 </div>
               ) : queueError ? (
                 <div className="p-6 text-center text-sm text-rose-400 animate-slide-down">
@@ -605,20 +612,20 @@ export const Investigation: React.FC = () => {
               ) : cases.length === 0 ? (
                 <div className="p-12 text-center text-sm text-slate-500">
                   <Inbox className="mx-auto mb-2 text-slate-600" size={32} />
-                  No cases found for the selected filter.
+                  {t.investigation.noCasesInQueue}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[660px] text-left text-sm">
                     <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-xs font-semibold text-slate-300 whitespace-nowrap">
                       <tr>
-                        <th className="px-4 py-3">Case ID</th>
-                        <th className="px-4 py-3">Transaction</th>
-                        <th className="px-4 py-3">Amount</th>
-                        <th className="px-4 py-3">Risk Score</th>
-                        <th className="px-4 py-3">Status</th>
-                        <th className="px-4 py-3">Outcome</th>
-                        <th className="px-4 py-3 text-right">Action</th>
+                        <th className="px-4 py-3">{t.investigation.thCaseId}</th>
+                        <th className="px-4 py-3">{t.investigation.thTransaction}</th>
+                        <th className="px-4 py-3">{t.investigation.thAmount}</th>
+                        <th className="px-4 py-3">{t.investigation.thRiskScore}</th>
+                        <th className="px-4 py-3">{t.investigation.thStatus}</th>
+                        <th className="px-4 py-3">{t.investigation.thOutcome}</th>
+                        <th className="px-4 py-3 text-right">{t.investigation.thAction}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60 whitespace-nowrap">
@@ -664,7 +671,11 @@ export const Investigation: React.FC = () => {
                                     : 'bg-slate-700/40 text-slate-300 border border-slate-600'
                                 }`}
                               >
-                                {c.status === 'in_review' ? 'In Review' : c.status}
+                                {c.status === 'open'
+                                  ? t.common.open
+                                  : c.status === 'in_review'
+                                  ? t.common.inReview
+                                  : t.common.closed}
                               </span>
                             </td>
                             <td className="px-4 py-3">
@@ -678,10 +689,14 @@ export const Investigation: React.FC = () => {
                                       : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                   }`}
                                 >
-                                  {c.feedback_label.replace('_', ' ')}
+                                  {c.feedback_label === 'confirmed_fraud'
+                                    ? t.common.confirmedFraud
+                                    : c.feedback_label === 'legitimate'
+                                    ? t.common.legitimate
+                                    : t.common.inconclusive}
                                 </span>
                               ) : (
-                                <span className="text-slate-400 italic">Pending</span>
+                                <span className="text-slate-400 italic">{t.investigation.pending}</span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-right">
@@ -690,7 +705,7 @@ export const Investigation: React.FC = () => {
                                 onClick={() => navigate(`/investigation/${c.transaction_id}`)}
                                 className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
                               >
-                                Review
+                                {t.investigation.btnReview}
                               </button>
                             </td>
                           </tr>
@@ -704,7 +719,7 @@ export const Investigation: React.FC = () => {
               {/* Pagination Footer */}
               <div className="flex items-center justify-between border-t border-slate-800 p-4 text-sm text-slate-300">
                 <span>
-                  Showing {cases.length} of {totalCases} cases
+                  {t.investigation.showingCases.replace('{count}', String(cases.length)).replace('{total}', String(totalCases))}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -713,16 +728,18 @@ export const Investigation: React.FC = () => {
                     disabled={page <= 1}
                     className="rounded border border-slate-700 bg-slate-800 px-3 py-1 disabled:opacity-40 interactive-btn"
                   >
-                    Previous
+                    {t.investigation.btnPrevious}
                   </button>
-                  <span className="font-mono text-slate-200">Page {page}</span>
+                  <span className="font-mono text-slate-200">
+                    {t.investigation.pageOf.replace('{page}', String(page))}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setPage((p) => p + 1)}
                     disabled={cases.length < 15}
                     className="rounded border border-slate-700 bg-slate-800 px-3 py-1 disabled:opacity-40 interactive-btn"
                   >
-                    Next
+                    {t.investigation.btnNext}
                   </button>
                 </div>
               </div>
@@ -735,14 +752,14 @@ export const Investigation: React.FC = () => {
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldAlert size={16} className="text-rose-400" />
-                  <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">Critical Alerts Inbox</h3>
+                  <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">{t.investigation.urgentAttention}</h3>
                 </div>
                 <span className="rounded bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-300 animate-pulse-subtle">
-                  Priority
+                  {t.investigation.priorityBadge}
                 </span>
               </div>
               <p className="text-sm text-slate-300 mb-4">
-                High-risk transactions exceeding decline threshold that require urgent review.
+                {t.investigation.urgentSubtitle}
               </p>
 
               <div className="space-y-2.5">
@@ -770,12 +787,12 @@ export const Investigation: React.FC = () => {
                         onClick={() => navigate(`/investigation/${alert.transaction_id}`)}
                         className="rounded border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 interactive-btn"
                       >
-                        Investigate
+                        {t.investigation.searchBtn}
                       </button>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400 italic">No pending urgent alerts.</p>
+                  <p className="text-sm text-slate-400 italic">{t.investigation.noPendingAlerts}</p>
                 )}
               </div>
             </div>
@@ -792,7 +809,7 @@ export const Investigation: React.FC = () => {
     return (
       <div role="status" className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900 p-16 text-slate-400">
         <LoaderCircle className="mr-3 animate-spin text-cyan-400" size={24} />
-        Loading transaction, ledger balances, and risk signals…
+        {t.investigation.loadingCase}
       </div>
     );
   }
@@ -801,7 +818,7 @@ export const Investigation: React.FC = () => {
     return (
       <div className="space-y-4">
         <div role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">
-          Could not load transaction details: {loadError}
+          {t.investigation.errorLoading} {loadError}
         </div>
         <div className="flex gap-2">
           <button
@@ -809,13 +826,13 @@ export const Investigation: React.FC = () => {
             onClick={() => window.location.reload()}
             className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
           >
-            Retry
+            {t.common.retry}
           </button>
           <Link
             to="/investigation"
             className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
           >
-            Back to Cases
+            {t.investigation.backToQueue}
           </Link>
         </div>
       </div>
@@ -837,18 +854,18 @@ export const Investigation: React.FC = () => {
               to="/investigation"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-400 hover:underline"
             >
-              <ArrowLeft size={15} /> Back to Case Queue
+              <ArrowLeft size={15} /> {t.investigation.backToQueue}
             </Link>
             <span className="text-slate-600">/</span>
             <span className="text-sm text-slate-300 font-mono">
-              {investigationCase?.case_id ?? 'Auto-Assigned Case'}
+              {investigationCase?.case_id ?? t.investigation.autoAssigned}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="h-4 w-1 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
               <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-slate-100 break-all sm:break-normal">
-                Case Investigation: <span className="font-mono text-cyan-400 font-semibold">{transaction.transaction_id}</span>
+                {t.investigation.caseInvestigationPrefix} <span className="font-mono text-cyan-400 font-semibold">{transaction.transaction_id}</span>
               </h2>
             </div>
             <span
@@ -858,21 +875,20 @@ export const Investigation: React.FC = () => {
                   : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
               }`}
             >
-              {investigationCase?.status ?? 'open'}
+              {investigationCase?.status === 'closed' ? t.common.closed : t.common.open}
             </span>
           </div>
           <p className="mt-1 text-xs sm:text-sm text-slate-400 pl-3">
             {transaction.model_version ? (
-              `Inference Engine: ${transaction.model_version}`
+              `${t.investigation.inferenceEngine} ${transaction.model_version}`
             ) : (
               <>
-                Live <AegisWordmark size="xs" inline /> Model &amp; Graph Engine
+                Live <AegisWordmark size="xs" inline /> {t.common.platformSubtitle}
               </>
             )}
-            {investigationCase?.assigned_analyst ? ` • Assigned to ${investigationCase.assigned_analyst}` : ''}
+            {investigationCase?.assigned_analyst ? ` • ${t.investigation.assignedTo} ${investigationCase.assigned_analyst}` : ''}
           </p>
         </div>
-
 
         {/* Action Shortcuts */}
         <div className="flex flex-wrap items-center gap-2">
@@ -881,7 +897,7 @@ export const Investigation: React.FC = () => {
             className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20 interactive-btn"
           >
             <Network size={16} />
-            Explore in Network Graph
+            {t.investigation.exploreInNetwork}
           </Link>
           {isCaseClosed && (
             <button
@@ -891,7 +907,7 @@ export const Investigation: React.FC = () => {
               className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50 interactive-btn"
             >
               <RotateCcw size={14} />
-              Reopen Case
+              {t.investigation.reopenCase}
             </button>
           )}
         </div>
@@ -901,14 +917,14 @@ export const Investigation: React.FC = () => {
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">Analyst Case Disposition</h3>
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">{t.investigation.dispositionTitle}</h3>
             <p className="text-sm text-slate-300">
-              Record ground-truth feedback. Labeled feedback feeds into future model calibration and replay simulations.
+              {t.investigation.dispositionSubtitle}
             </p>
           </div>
           {investigationCase?.feedback_label && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-300">Recorded Label:</span>
+              <span className="text-sm text-slate-300">{t.investigation.recordedLabel}</span>
               <span
                 className={`rounded-full px-3 py-0.5 text-sm font-semibold capitalize border ${
                   investigationCase.feedback_label === 'confirmed_fraud'
@@ -918,7 +934,11 @@ export const Investigation: React.FC = () => {
                     : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
                 }`}
               >
-                {investigationCase.feedback_label.replace('_', ' ')}
+                {investigationCase.feedback_label === 'confirmed_fraud'
+                  ? t.common.confirmedFraud
+                  : investigationCase.feedback_label === 'legitimate'
+                  ? t.common.legitimate
+                  : t.common.inconclusive}
               </span>
             </div>
           )}
@@ -926,7 +946,7 @@ export const Investigation: React.FC = () => {
 
         {/* Quick Reasoning Tags */}
         <div>
-          <span className="block text-sm font-medium text-slate-300 mb-2">Quick Reasoning Tags:</span>
+          <span className="block text-sm font-medium text-slate-300 mb-2">{t.investigation.quickReasoning}</span>
           <div className="flex flex-wrap gap-1.5">
             {quickReasoningTags.map((tag) => (
               <button
@@ -946,14 +966,14 @@ export const Investigation: React.FC = () => {
         {/* Reasoning Text Input */}
         <div>
           <label htmlFor="analyst-reasoning" className="block text-sm font-medium text-slate-300 mb-1.5">
-            Analyst Notes &amp; Justification
+            {t.investigation.justificationLabel}
           </label>
           <textarea
             id="analyst-reasoning"
             rows={2}
             value={analystReasoning}
             onChange={(e) => setAnalystReasoning(e.target.value)}
-            placeholder="Document observed pattern, device links, or reason for clearance…"
+            placeholder={t.investigation.justificationPlaceholder}
             className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
           />
         </div>
@@ -969,7 +989,7 @@ export const Investigation: React.FC = () => {
               className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 rounded-lg border px-3 sm:px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 interactive-btn ${className}`}
             >
               <Icon size={16} />
-              {submittingLabel === label ? 'Saving Decision…' : title}
+              {submittingLabel === label ? t.investigation.savingDecision : title}
             </button>
           ))}
         </div>
@@ -995,9 +1015,9 @@ export const Investigation: React.FC = () => {
           {/* Transaction Metadata & Risk Gauge */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Transaction Profile</h3>
+              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{t.investigation.profileTitle}</h3>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-300">Risk Score:</span>
+                <span className="text-sm text-slate-300">{t.investigation.scoreLabel}</span>
                 <span
                   className={`font-mono text-base font-bold ${
                     (transaction.risk_score ?? 0) >= 0.75
@@ -1020,30 +1040,36 @@ export const Investigation: React.FC = () => {
                       : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                   }`}
                 >
-                  {transaction.decision ?? 'EVALUATED'}
+                  {transaction.decision === 'decline'
+                    ? t.common.decline
+                    : transaction.decision === 'review'
+                    ? t.common.review
+                    : t.common.approve}
                 </span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">Transaction Amount</span>
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.amountLabel}</span>
                 <span className="text-xl font-bold text-slate-100">{formatIDR(transaction.amount)}</span>
               </div>
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">Type</span>
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.typeLabel}</span>
                 <span className="text-base font-semibold text-slate-200">{transaction.type ?? 'TRANSFER'}</span>
               </div>
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">Timestamp</span>
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.timeLabel}</span>
                 <span className="font-medium text-slate-200">
-                  {transaction.timestamp ? new Date(transaction.timestamp).toLocaleString() : 'Not available'}
+                  {transaction.timestamp
+                    ? new Date(transaction.timestamp).toLocaleString(language === 'id' ? 'id-ID' : 'en-US')
+                    : t.investigation.notAvailable}
                 </span>
               </div>
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">Payment Attempts</span>
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.attemptsLabel}</span>
                 <span className="font-medium text-slate-200">
-                  {transaction.payment_attempts ?? 1} attempt(s)
+                  {transaction.payment_attempts ?? 1} {t.investigation.attemptsUnit}
                 </span>
               </div>
             </div>
@@ -1051,26 +1077,26 @@ export const Investigation: React.FC = () => {
 
           {/* Ledger & Balance Progression */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
-            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Ledger Balance State &amp; Account Depletion</h3>
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{t.investigation.ledgerTitle}</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-sm">
               {/* Origin Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
                 <span className="font-semibold text-cyan-400 uppercase tracking-wider text-xs">
-                  Origin Account (Source)
+                  {t.investigation.originAccount}
                 </span>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300">Old Balance:</span>
+                  <span className="text-slate-300">{t.investigation.oldBalance}</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.oldbalance_org)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300">New Balance:</span>
+                  <span className="text-slate-300">{t.investigation.newBalance}</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.newbalance_orig)}</span>
                 </div>
                 {typeof transaction.oldbalance_org === 'number' &&
                   typeof transaction.amount === 'number' &&
                   transaction.oldbalance_org > 0 && (
                     <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
-                      <span className="text-slate-300">Balance Drain Ratio:</span>
+                      <span className="text-slate-300">{t.investigation.drainRatio}</span>
                       <span className="font-mono font-bold text-amber-400">
                         {((transaction.amount / transaction.oldbalance_org) * 100).toFixed(1)}%
                       </span>
@@ -1081,18 +1107,18 @@ export const Investigation: React.FC = () => {
               {/* Destination Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
                 <span className="font-semibold text-slate-300 uppercase tracking-wider text-xs">
-                  Destination Account
+                  {t.investigation.destinationAccount}
                 </span>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300">Old Balance:</span>
+                  <span className="text-slate-300">{t.investigation.oldBalance}</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.oldbalance_dest)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-300">New Balance:</span>
+                  <span className="text-slate-300">{t.investigation.newBalance}</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.newbalance_dest)}</span>
                 </div>
                 <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
-                  <span className="text-slate-300">Destination Account ID:</span>
+                  <span className="text-slate-300">{t.investigation.destAccountId}</span>
                   <span className="font-mono text-slate-200">
                     {displayEntityId(entities.account)}
                   </span>
@@ -1104,8 +1130,8 @@ export const Investigation: React.FC = () => {
           {/* Explainable Risk Signals */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Explainable Risk Signals</h3>
-              <span className="text-sm text-slate-300">{signals.length} triggered signal(s)</span>
+              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{t.investigation.explainableSignalsTitle}</h3>
+              <span className="text-sm text-slate-300">{signals.length} {t.investigation.triggeredSignalsCount}</span>
             </div>
 
             {signals.length ? (
@@ -1143,7 +1169,7 @@ export const Investigation: React.FC = () => {
                 })}
               </div>
             ) : (
-              <p className="text-sm text-slate-400 italic">No stored risk signals are available for this transaction.</p>
+              <p className="text-sm text-slate-400 italic">{t.investigation.noStoredSignals}</p>
             )}
           </section>
         </div>
@@ -1151,7 +1177,7 @@ export const Investigation: React.FC = () => {
         {/* Right Column: Related Entities & Network Graph Jump */}
         <aside className="space-y-6">
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
-            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Entity Relationships</h3>
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{t.investigation.entityRelationshipsTitle}</h3>
 
             <div className="space-y-4 text-sm">
               {/* Account Link */}
@@ -1159,7 +1185,7 @@ export const Investigation: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <User size={18} className="mt-0.5 text-cyan-400" />
                   <div>
-                    <span className="block text-xs text-slate-400 font-medium">Source Account</span>
+                    <span className="block text-xs text-slate-400 font-medium">{t.investigation.sourceAccount}</span>
                     <span className="font-mono text-sm text-slate-200">{transaction.account_id ?? 'N/A'}</span>
                   </div>
                 </div>
@@ -1178,13 +1204,13 @@ export const Investigation: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <Monitor size={18} className="mt-0.5 text-cyan-400" />
                   <div>
-                    <span className="block text-xs text-slate-400 font-medium">Device Hardware</span>
+                    <span className="block text-xs text-slate-400 font-medium">{t.investigation.deviceHardware}</span>
                     <span className="font-mono text-sm text-slate-200">{transaction.device_id ?? 'N/A'}</span>
                   </div>
                 </div>
                 {transaction.device_id && (
                   <span className="rounded bg-cyan-500/10 px-2 py-0.5 text-xs font-mono text-cyan-300">
-                    Shared
+                    {t.investigation.sharedBadge}
                   </span>
                 )}
               </div>
@@ -1193,7 +1219,7 @@ export const Investigation: React.FC = () => {
               <div className="flex items-start gap-2.5 rounded-lg bg-slate-950 p-3.5">
                 <Clock size={18} className="mt-0.5 text-cyan-400" />
                 <div>
-                  <span className="block text-xs text-slate-400 font-medium">Session ID</span>
+                  <span className="block text-xs text-slate-400 font-medium">{t.investigation.sessionId}</span>
                   <span className="font-mono text-sm text-slate-200">{transaction.session_id ?? 'N/A'}</span>
                 </div>
               </div>
@@ -1206,7 +1232,7 @@ export const Investigation: React.FC = () => {
                 className="flex items-center justify-center gap-2 w-full rounded-lg border border-cyan-500/40 bg-cyan-500/10 py-2.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
               >
                 <Network size={16} />
-                Visualize Full Syndicate Ring
+                {t.investigation.visualizeSyndicateRing}
               </Link>
             </div>
           </section>
@@ -1215,26 +1241,26 @@ export const Investigation: React.FC = () => {
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-3 text-sm">
             <h3 className="font-display text-base font-semibold tracking-wide text-slate-200 flex items-center gap-2">
               <FileText size={17} className="text-slate-400" />
-              Investigation Case Record
+              {t.investigation.caseRecordTitle}
             </h3>
             <div className="space-y-2.5 text-slate-300">
               <div className="flex justify-between">
-                <span className="text-slate-400">Case ID:</span>
-                <span className="font-mono text-slate-200">{investigationCase?.case_id ?? 'Not Assigned'}</span>
+                <span className="text-slate-400">{t.investigation.thCaseId}:</span>
+                <span className="font-mono text-slate-200">{investigationCase?.case_id ?? t.investigation.notAssigned}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Status:</span>
+                <span className="text-slate-400">{t.investigation.statusLabel}</span>
                 <span className="capitalize font-semibold text-slate-100">
-                  {investigationCase?.status ?? 'Open'}
+                  {investigationCase?.status === 'closed' ? t.common.closed : t.common.open}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Assigned Analyst:</span>
-                <span className="text-slate-200">{investigationCase?.assigned_analyst ?? 'Unassigned'}</span>
+                <span className="text-slate-400">{t.investigation.assignedAnalyst}:</span>
+                <span className="text-slate-200">{investigationCase?.assigned_analyst ?? t.investigation.unassigned}</span>
               </div>
               {investigationCase?.feedback_reasoning && (
                 <div className="border-t border-slate-800 pt-2.5">
-                  <span className="block text-slate-400 font-medium mb-1">Saved Reasoning:</span>
+                  <span className="block text-slate-400 font-medium mb-1">{t.investigation.savedReasoning}</span>
                   <p className="rounded bg-slate-950 p-2.5 text-slate-200 italic">
                     "{investigationCase.feedback_reasoning}"
                   </p>
