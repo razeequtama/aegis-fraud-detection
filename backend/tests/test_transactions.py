@@ -192,3 +192,124 @@ def test_get_transaction_details_returns_transaction_signals_and_entities(
     assert details["related_entities"]["device"] == {"id": "DEV-DETAIL"}
     assert details["case"]["case_id"] == "CASE-DETAIL"
     engine.dispose()
+
+
+def test_get_transactions_computes_real_ml_scores():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    table = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String, nullable=False),
+        Column("amount", Float, nullable=False),
+        Column("type", String),
+        Column("oldbalance_org", Float),
+        Column("newbalance_orig", Float),
+        Column("oldbalance_dest", Float),
+        Column("newbalance_dest", Float),
+        Column("is_fraud", Integer),
+    )
+    metadata.create_all(engine)
+    with engine.begin() as conn:
+        conn.execute(
+            table.insert(),
+            [
+                {
+                    "transaction_id": "TX-REAL-FRAUD",
+                    "account_id": "ACC-RF-1",
+                    "amount": 250000.0,
+                    "type": "TRANSFER",
+                    "oldbalance_org": 250000.0,
+                    "newbalance_orig": 0.0,
+                    "oldbalance_dest": 0.0,
+                    "newbalance_dest": 0.0,
+                    "is_fraud": 1,
+                },
+                {
+                    "transaction_id": "TX-REAL-LEGIT",
+                    "account_id": "ACC-RF-2",
+                    "amount": 50.0,
+                    "type": "PAYMENT",
+                    "oldbalance_org": 1000.0,
+                    "newbalance_orig": 950.0,
+                    "oldbalance_dest": 0.0,
+                    "newbalance_dest": 0.0,
+                    "is_fraud": 0,
+                },
+            ],
+        )
+
+    with Session(engine) as db:
+        res = get_transactions(page=1, limit=10, db=db)
+
+    txs = {t["id"]: t for t in res["data"]}
+    assert txs["TX-REAL-FRAUD"]["decision"] == "DECLINE"
+    assert txs["TX-REAL-FRAUD"]["riskScore"] >= 0.75
+    assert txs["TX-REAL-LEGIT"]["decision"] == "APPROVE"
+    assert txs["TX-REAL-LEGIT"]["riskScore"] < 0.40
+    engine.dispose()
+
+
+def test_get_transactions_filters_by_risk_score_range():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    table = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String, nullable=False),
+        Column("amount", Float, nullable=False),
+        Column("type", String),
+        Column("oldbalance_org", Float),
+        Column("newbalance_orig", Float),
+        Column("oldbalance_dest", Float),
+        Column("newbalance_dest", Float),
+        Column("is_fraud", Integer),
+    )
+    metadata.create_all(engine)
+    with engine.begin() as conn:
+        conn.execute(
+            table.insert(),
+            [
+                {
+                    "transaction_id": "TX-HIGH-RISK",
+                    "account_id": "ACC-HR",
+                    "amount": 250000.0,
+                    "type": "TRANSFER",
+                    "oldbalance_org": 250000.0,
+                    "newbalance_orig": 0.0,
+                    "oldbalance_dest": 0.0,
+                    "newbalance_dest": 0.0,
+                    "is_fraud": 1,
+                },
+                {
+                    "transaction_id": "TX-LOW-RISK",
+                    "account_id": "ACC-LR",
+                    "amount": 50.0,
+                    "type": "PAYMENT",
+                    "oldbalance_org": 1000.0,
+                    "newbalance_orig": 950.0,
+                    "oldbalance_dest": 0.0,
+                    "newbalance_dest": 0.0,
+                    "is_fraud": 0,
+                },
+            ],
+        )
+
+    with Session(engine) as db:
+        # High risk filter (minRiskScore = 0.7)
+        res_high = get_transactions(page=1, limit=10, min_risk_score=0.7, max_risk_score=1.0, db=db)
+        # Low risk filter (maxRiskScore = 0.3)
+        res_low = get_transactions(page=1, limit=10, min_risk_score=0.0, max_risk_score=0.3, db=db)
+        # Narrow filter matching nothing
+        res_empty = get_transactions(page=1, limit=10, min_risk_score=0.45, max_risk_score=0.55, db=db)
+
+    assert len(res_high["data"]) == 1
+    assert res_high["data"][0]["id"] == "TX-HIGH-RISK"
+
+    assert len(res_low["data"]) == 1
+    assert res_low["data"][0]["id"] == "TX-LOW-RISK"
+
+    assert len(res_empty["data"]) == 0
+    engine.dispose()

@@ -93,3 +93,15 @@ def test_risk_assessment_triggers_high_velocity_burst(monkeypatch):
     assert "high_velocity_burst" in signal_names
     assert result["velocity"] == 5
     assert result["risk_score"] >= 0.35
+
+
+def test_risk_assessment_triggers_repeated_payment_attempts():
+    result = risk_engine.evaluate_transaction({
+        "transaction_id": "TX-ATTEMPTS-001",
+        "account_id": "ACC-ATTEMPTS",
+        "amount": 100.0,
+        "type": "PAYMENT",
+        "payment_attempts": 3,
+    })
+    signal_names = [s["name"] for s in result["signals"]]
+    assert "high_payment_attempts" in signal_names

@@ -10,7 +10,7 @@ load_dotenv()
 # Mengambil URL dari environment variable dengan fallback aman
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql+psycopg2://postgres:postgres@localhost:5432/aegis_db"
+    "postgresql+psycopg2://postgres:postgres@localhost:5433/aegis_db"
 )
 
 database_host = os.getenv("DATABASE_HOST")

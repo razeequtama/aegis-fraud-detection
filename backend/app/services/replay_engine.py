@@ -1,7 +1,9 @@
 import logging
+import numpy as np
 from sqlalchemy import MetaData, Table, func, inspect, select
 from app.db.session import SessionLocal
 from app.models.replay_run import ReplayRun
+from app.services.risk_engine import risk_engine
 
 logger = logging.getLogger(__name__)
 
@@ -39,19 +41,19 @@ def load_replay_transactions(db, start_step: int, end_step: int):
         ),
         None,
     )
-    selected = [
-        table.c.amount.label("amount"),
-        fraud_column.label("is_fraud") if fraud_column is not None else None,
-    ]
 
     if "step" in table.c:
-        statement = select(*(column for column in selected if column is not None))
+        statement = select(table)
         statement = statement.where(
             table.c.step >= start_step,
             table.c.step <= end_step,
         )
         statement = statement.order_by(table.c.step)
-        return [dict(row) for row in db.execute(statement).mappings().all()]
+        rows = [dict(row) for row in db.execute(statement).mappings().all()]
+        if fraud_column is not None and "is_fraud" not in table.c:
+            for r in rows:
+                r["is_fraud"] = r.get(fraud_column.name)
+        return rows
 
     order_columns = []
     timestamp_column = next(
@@ -62,15 +64,20 @@ def load_replay_transactions(db, start_step: int, end_step: int):
         order_columns.append(timestamp_column.asc().nulls_last())
     if "transaction_id" in table.c:
         order_columns.append(table.c.transaction_id.asc())
-    statement = select(*(column for column in selected if column is not None))
+
+    statement = select(table)
     if order_columns:
         statement = statement.order_by(*order_columns)
     rows = db.execute(statement).mappings().all()
-    return [
+    results = [
         dict(row)
         for index, row in enumerate(rows, start=1)
         if start_step <= index <= end_step
     ]
+    if fraud_column is not None and "is_fraud" not in table.c:
+        for r in results:
+            r["is_fraud"] = r.get(fraud_column.name)
+    return results
 
 
 def _is_fraud(transaction):
@@ -98,12 +105,47 @@ def _amount(transaction):
     value = (
         transaction.get("amount")
         if isinstance(transaction, dict)
-        else getattr(transaction, "amount")
+        else getattr(transaction, "amount", 0.0)
     )
     return float(value or 0)
 
 
-def _get_operational_metrics(transactions, threshold: float):
+def _score_transactions_batch(transactions):
+    """
+    Score transactions using real ML batch inference with risk_engine.model.predict_proba.
+    Falls back gracefully to simulated scoring if transactions are bare mock objects or model is unavailable.
+    """
+    if not transactions:
+        return []
+
+    if risk_engine.model is not None and risk_engine.scaler is not None:
+        try:
+            # Check if any transaction has balance fields or non-amount features.
+            has_rich_features = any(
+                (isinstance(tx, dict) and any(k in tx for k in ("oldbalance_org", "oldbalanceOrg", "type", "payment_attempts")))
+                or (not isinstance(tx, dict) and hasattr(tx, "oldbalance_org"))
+                for tx in transactions
+            )
+
+            if has_rich_features:
+                feature_matrix = []
+                for tx in transactions:
+                    tx_dict = tx if isinstance(tx, dict) else vars(tx)
+                    fv = risk_engine._build_feature_vector(tx_dict)[0]
+                    feature_matrix.append(fv)
+
+                X = np.array(feature_matrix, dtype=float)
+                scaled_X = risk_engine.scaler.transform(X)
+                probabilities = risk_engine.model.predict_proba(scaled_X)
+                return [round(float(p[1]), 4) for p in probabilities]
+        except Exception as exc:
+            logger.warning(f"Batch ML inference failed, using simulated fallback: {exc}")
+
+    # Fallback to simulated score (e.g. for bare mock test objects)
+    return [min(_amount(tx) / 200000.0, 1.0) for tx in transactions]
+
+
+def _get_operational_metrics(transactions, threshold: float, scores: list | None = None):
     total_processed = len(transactions)
     total_fraud = sum(1 for tx in transactions if _is_fraud(tx))
     legitimate_count = total_processed - total_fraud
@@ -111,9 +153,11 @@ def _get_operational_metrics(transactions, threshold: float):
     fraud_detected = 0
     false_positives = 0
 
-    for tx in transactions:
-        simulated_score = min(_amount(tx) / 200000.0, 1.0)
-        if simulated_score >= threshold:
+    if scores is None:
+        scores = _score_transactions_batch(transactions)
+
+    for tx, score in zip(transactions, scores):
+        if score >= threshold:
             review_count += 1
             if _is_fraud(tx):
                 fraud_detected += 1
@@ -146,8 +190,9 @@ def run_historical_replay(replay_id: int):
             db, replay_job.start_step, replay_job.end_step
         )
 
-        metrics = _get_operational_metrics(transactions, replay_job.threshold)
-        baseline_metrics = _get_operational_metrics(transactions, BASELINE_THRESHOLD)
+        scores = _score_transactions_batch(transactions)
+        metrics = _get_operational_metrics(transactions, replay_job.threshold, scores=scores)
+        baseline_metrics = _get_operational_metrics(transactions, BASELINE_THRESHOLD, scores=scores)
         baseline_review_count = baseline_metrics["review_count"]
         metrics.update(
             {

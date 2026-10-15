@@ -55,10 +55,10 @@ class RiskEngine:
 
     def _build_feature_vector(self, tx_data: dict) -> np.ndarray:
         amount = float(tx_data.get("amount", 0.0) or 0.0)
-        oldbalance_org = float(tx_data.get("oldbalanceOrg", 0.0) or 0.0)
-        newbalance_orig = float(tx_data.get("newbalanceOrig", 0.0) or 0.0)
-        oldbalance_dest = float(tx_data.get("oldbalanceDest", 0.0) or 0.0)
-        newbalance_dest = float(tx_data.get("newbalanceDest", 0.0) or 0.0)
+        oldbalance_org = float(tx_data.get("oldbalanceOrg", tx_data.get("oldbalance_org", 0.0)) or 0.0)
+        newbalance_orig = float(tx_data.get("newbalanceOrig", tx_data.get("newbalance_orig", 0.0)) or 0.0)
+        oldbalance_dest = float(tx_data.get("oldbalanceDest", tx_data.get("oldbalance_dest", 0.0)) or 0.0)
+        newbalance_dest = float(tx_data.get("newbalanceDest", tx_data.get("newbalance_dest", 0.0)) or 0.0)
 
         error_balance_org = newbalance_orig + amount - oldbalance_org
         error_balance_dest = oldbalance_dest + amount - newbalance_dest
@@ -80,7 +80,17 @@ class RiskEngine:
         ]
         return np.array([feature_vector], dtype=float)
 
-    def _apply_decision_policy(self, risk_score: float, error_balance_org: float) -> tuple[str, list[dict]]:
+    def predict_proba_batch(self, feature_matrix: np.ndarray) -> np.ndarray:
+        """Run vectorized inference on a 2D matrix of features, returning fraud probabilities."""
+        if self.model is not None and self.scaler is not None:
+            scaled = self.scaler.transform(feature_matrix)
+            probs = self.model.predict_proba(scaled)
+            return probs[:, 1]
+        return np.array([0.5] * len(feature_matrix), dtype=float)
+
+    def _apply_decision_policy(
+        self, risk_score: float, error_balance_org: float, payment_attempts: int = 1
+    ) -> tuple[str, list[dict]]:
         signals = []
         if risk_score >= self.DECLINE_THRESHOLD:
             decision = "decline"
@@ -103,9 +113,20 @@ class RiskEngine:
                 "description": "Source account balance mismatch indicates an anomalous transaction pattern.",
             })
 
+        if payment_attempts > 2:
+            signals.append({
+                "name": "high_payment_attempts",
+                "description": f"Multiple payment attempts detected ({payment_attempts} attempts).",
+            })
+
         return decision, signals
 
-    def evaluate_transaction(self, tx_data: dict, historical_transactions: list | None = None) -> dict:
+    def evaluate_transaction(
+        self,
+        tx_data: dict,
+        historical_transactions: list | None = None,
+        check_velocity: bool = True,
+    ) -> dict:
         """Process an incoming transaction using the trained model and decision policy."""
         if historical_transactions is None:
             historical_transactions = []
@@ -118,9 +139,10 @@ class RiskEngine:
             graph_features = graph_analyzer.extract_graph_features(account_id)
 
         amount = float(tx_data.get("amount", 0.0) or 0.0)
-        oldbalance_org = float(tx_data.get("oldbalanceOrg", 0.0) or 0.0)
-        newbalance_orig = float(tx_data.get("newbalanceOrig", 0.0) or 0.0)
+        oldbalance_org = float(tx_data.get("oldbalanceOrg", tx_data.get("oldbalance_org", 0.0)) or 0.0)
+        newbalance_orig = float(tx_data.get("newbalanceOrig", tx_data.get("newbalance_orig", 0.0)) or 0.0)
         error_balance_org = newbalance_orig + amount - oldbalance_org
+        payment_attempts = int(tx_data.get("payment_attempts", 1) or 1)
 
         features = self._build_feature_vector(tx_data)
         risk_score = 0.0
@@ -135,15 +157,17 @@ class RiskEngine:
         else:
             risk_score = 0.85 if amount > 200000 and error_balance_org != 0 else 0.12
 
-        # Check transaction velocity in Redis (sliding window of 60s)
+        # Check transaction velocity in Redis (sliding window of 60s) if enabled
         velocity = 1
-        if account_id:
+        if check_velocity and account_id:
             velocity = check_transaction_velocity(str(account_id), window_seconds=60)
             if velocity > 3:
                 # Add penalty to risk_score for velocity burst
                 risk_score = min(1.0, risk_score + 0.35)
 
-        decision, signals = self._apply_decision_policy(risk_score, error_balance_org)
+        decision, signals = self._apply_decision_policy(
+            risk_score, error_balance_org, payment_attempts=payment_attempts
+        )
 
         if velocity > 3:
             signals.append({
@@ -173,8 +197,17 @@ class RiskEngine:
         }
         return result
 
-    def evaluate_risk(self, tx_data: dict, historical_transactions: list | None = None) -> dict:
-        return self.evaluate_transaction(tx_data, historical_transactions=historical_transactions)
+    def evaluate_risk(
+        self,
+        tx_data: dict,
+        historical_transactions: list | None = None,
+        check_velocity: bool = True,
+    ) -> dict:
+        return self.evaluate_transaction(
+            tx_data,
+            historical_transactions=historical_transactions,
+            check_velocity=check_velocity,
+        )
 
     def enrich_with_graph_features(self, account_id: str, transaction_history: list) -> dict:
         graph_analyzer.build_graph_from_transactions(transaction_history)

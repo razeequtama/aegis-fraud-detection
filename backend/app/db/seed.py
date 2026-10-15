@@ -7,7 +7,7 @@ from pathlib import Path
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@localhost:5432/aegis_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@localhost:5433/aegis_db")
 engine = create_engine(DATABASE_URL)
 
 def seed_database_from_csv(csv_path: str, sample_size: int = 50000):

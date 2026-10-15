@@ -86,3 +86,37 @@ def test_replay_range_and_transactions_support_schema_without_step():
     assert len(only_second) == 1
     assert _get_operational_metrics(only_second, threshold=0.75)["fraud_detected"] == 1
     engine.dispose()
+
+
+def test_score_transactions_batch_real_ml_inference():
+    from app.services.replay_engine import _score_transactions_batch
+
+    transactions = [
+        {
+            "amount": 250000.0,
+            "type": "TRANSFER",
+            "oldbalance_org": 250000.0,
+            "newbalance_orig": 0.0,
+            "oldbalance_dest": 0.0,
+            "newbalance_dest": 0.0,
+            "is_fraud": 1,
+        },
+        {
+            "amount": 50.0,
+            "type": "PAYMENT",
+            "oldbalance_org": 1000.0,
+            "newbalance_orig": 950.0,
+            "oldbalance_dest": 0.0,
+            "newbalance_dest": 0.0,
+            "is_fraud": 0,
+        },
+    ]
+
+    scores = _score_transactions_batch(transactions)
+    assert len(scores) == 2
+    assert isinstance(scores[0], float)
+    assert isinstance(scores[1], float)
+    # Fraud transaction score should be significantly higher than benign payment
+    assert scores[0] > scores[1]
+    assert scores[0] >= 0.75
+    assert scores[1] < 0.40
