@@ -2,14 +2,12 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import {
   AlertCircle,
-  CheckCircle2,
   Cpu,
   Database,
   LoaderCircle,
   RefreshCw,
   Server,
   ShieldCheck,
-  XCircle,
   Zap,
 } from 'lucide-react';
 import { apiClient } from '../api/client';
@@ -61,14 +59,6 @@ function latencyText(value: number | null): string {
   if (value === null || value === undefined) return 'Awaiting traffic';
   if (value < 0.1) return '< 0.10 ms';
   return `${value.toFixed(2)} ms`;
-}
-
-function StatusIcon({ operational }: { operational: boolean }) {
-  return operational ? (
-    <CheckCircle2 className="text-emerald-400" size={20} />
-  ) : (
-    <XCircle className="text-rose-400" size={20} />
-  );
 }
 
 export const SystemHealth: React.FC = () => {
@@ -302,16 +292,11 @@ export const SystemHealth: React.FC = () => {
                     {title}
                   </h3>
                 </div>
-                <div className="flex items-center gap-2">
-                  {operational && !loading && (
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  )}
-                  {loading ? (
+                {loading && (
+                  <div className="flex items-center">
                     <LoaderCircle className="animate-spin text-slate-500" size={17} />
-                  ) : (
-                    <StatusIcon operational={Boolean(operational)} />
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               <div>

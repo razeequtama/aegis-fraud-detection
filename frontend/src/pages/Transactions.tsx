@@ -135,13 +135,13 @@ export const Transactions: React.FC = () => {
       </div>
 
       {/* Risk Score Range Filter Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 flex-1">
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-200 min-w-fit">
-            <Sliders size={18} className="text-cyan-400" />
-            <span>{t.transactions.riskScore}</span>
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col gap-5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-200 shrink-0">
+            <Sliders size={18} className="text-cyan-400 shrink-0" />
+            <span className="shrink-0">{t.transactions.riskScore}</span>
             <span
-              className={`px-2.5 py-1 rounded text-xs sm:text-sm font-mono font-bold border ${
+              className={`inline-block min-w-[7.5rem] text-center px-2.5 py-1 rounded text-xs sm:text-sm font-mono font-bold border transition-colors shrink-0 ${
                 minRiskScore >= 0.75
                   ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
                   : minRiskScore >= 0.4
@@ -156,9 +156,13 @@ export const Transactions: React.FC = () => {
           </div>
 
           {/* Dual Sliders and Exact Number Inputs */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm text-slate-300 font-mono font-medium">{t.transactions.min}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full min-w-0">
+            {/* Minimum risk score */}
+            <div className="grid grid-cols-[auto_5rem_minmax(0,1fr)] items-center gap-3 min-w-0">
+              <span className="text-sm text-slate-300 font-mono font-medium">
+                {t.transactions.min}
+              </span>
+
               <input
                 type="number"
                 min="0"
@@ -166,12 +170,16 @@ export const Transactions: React.FC = () => {
                 step="0.05"
                 value={minRiskScore}
                 onChange={(e) => {
-                  const val = Math.max(0, Math.min(Number(e.target.value) || 0, maxRiskScore));
+                  const val = Math.max(
+                    0,
+                    Math.min(Number(e.target.value) || 0, maxRiskScore)
+                  );
                   setMinRiskScore(Number(val.toFixed(2)));
                   setPage(1);
                 }}
-                className="w-16 bg-slate-950 border border-slate-750 rounded px-2 py-1 text-sm text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500 font-semibold"
+                className="w-full min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-sm text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500 font-semibold"
               />
+
               <input
                 type="range"
                 min="0"
@@ -183,13 +191,12 @@ export const Transactions: React.FC = () => {
                   setMinRiskScore(Number(val.toFixed(2)));
                   setPage(1);
                 }}
-                className="w-20 sm:w-28 accent-cyan-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
+                className="w-full min-w-0 accent-cyan-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
               />
             </div>
 
-            <span className="text-slate-600 font-semibold">—</span>
-
-            <div className="flex items-center gap-2">
+            {/* Maximum risk score */}
+            <div className="grid grid-cols-[minmax(0,1fr)_5rem_auto] items-center gap-3 min-w-0">
               <input
                 type="range"
                 min="0"
@@ -201,8 +208,9 @@ export const Transactions: React.FC = () => {
                   setMaxRiskScore(Number(val.toFixed(2)));
                   setPage(1);
                 }}
-                className="w-20 sm:w-28 accent-cyan-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
+                className="w-full min-w-0 accent-cyan-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
               />
+
               <input
                 type="number"
                 min={minRiskScore}
@@ -210,25 +218,31 @@ export const Transactions: React.FC = () => {
                 step="0.05"
                 value={maxRiskScore}
                 onChange={(e) => {
-                  const val = Math.min(1, Math.max(Number(e.target.value) || 0, minRiskScore));
+                  const val = Math.min(
+                    1,
+                    Math.max(Number(e.target.value) || 0, minRiskScore)
+                  );
                   setMaxRiskScore(Number(val.toFixed(2)));
                   setPage(1);
                 }}
-                className="w-16 bg-slate-950 border border-slate-750 rounded px-2 py-1 text-sm text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500 font-semibold"
+                className="w-full min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-sm text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500 font-semibold"
               />
-              <span className="text-xs sm:text-sm text-slate-300 font-mono font-medium">{t.transactions.max}</span>
+
+              <span className="text-sm text-slate-300 font-mono font-medium">
+                {t.transactions.max}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Quick Range Presets */}
+        {/* Quick Range Presets with zero-layout-shift Reset Button */}
         <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
             className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.0 && maxRiskScore === 1.0
-                ? 'bg-slate-750 border-slate-600 text-slate-100 font-semibold'
+                ? 'bg-slate-700 border-slate-600 text-slate-100 font-semibold'
                 : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
           >
@@ -268,17 +282,20 @@ export const Transactions: React.FC = () => {
             {t.transactions.highRange}
           </button>
 
-          {(minRiskScore !== 0.0 || maxRiskScore !== 1.0) && (
-            <button
-              type="button"
-              onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-colors ml-1 font-medium"
-              title={t.transactions.resetFilterTooltip}
-            >
-              <RotateCcw size={13} />
-              {t.transactions.resetFilter}
-            </button>
-          )}
+          <button
+            type="button"
+            disabled={minRiskScore === 0.0 && maxRiskScore === 1.0}
+            onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm rounded-lg border font-medium transition-all duration-150 ml-1 ${
+              minRiskScore !== 0.0 || maxRiskScore !== 1.0
+                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400 hover:bg-rose-500/20 cursor-pointer opacity-100'
+                : 'opacity-0 pointer-events-none invisible border-transparent'
+            }`}
+            title={t.transactions.resetFilterTooltip}
+          >
+            <RotateCcw size={13} />
+            {t.transactions.resetFilter}
+          </button>
         </div>
       </div>
 
