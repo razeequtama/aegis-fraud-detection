@@ -76,11 +76,18 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-100">Transaction Explorer</h2>
-          <p className="text-xs text-slate-400 mt-1">Live fraud evaluation records and real-time inference scores</p>
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+              Transaction Explorer
+            </h2>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            Live fraud evaluation records and real-time inference scores
+          </p>
         </div>
+
         <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
           <label htmlFor="transfer-decision-filter" className="sr-only">
             Filter transfers by decision

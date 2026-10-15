@@ -435,13 +435,18 @@ export const Investigation: React.FC = () => {
     return (
       <div className="space-y-6">
         {/* Header & Direct ID Search */}
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-100">Fraud Investigation Hub</h2>
+            <div className="flex items-center gap-2.5">
+              <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+                Fraud Investigation Hub
+              </h2>
+            </div>
             <p className="mt-1 text-xs text-slate-400">
               Review case queues, analyze explainable ML signals, and record feedback decisions for retraining.
             </p>
           </div>
+
 
           <form onSubmit={handleSearchJump} className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
@@ -503,7 +508,7 @@ export const Investigation: React.FC = () => {
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-cyan-400" />
-              <h3 className="text-sm font-semibold text-slate-200">Curated Investigation Presets</h3>
+              <h3 className="font-display text-sm font-semibold tracking-wide text-slate-200">Curated Investigation Presets</h3>
             </div>
             <span className="text-xs text-slate-400">1-click select real database patterns</span>
           </div>
@@ -728,7 +733,7 @@ export const Investigation: React.FC = () => {
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldAlert size={16} className="text-rose-400" />
-                  <h3 className="text-sm font-semibold text-slate-100">Critical Alerts Inbox</h3>
+                  <h3 className="font-display text-sm font-semibold tracking-wide text-slate-100">Critical Alerts Inbox</h3>
                 </div>
                 <span className="rounded bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-rose-300">
                   Priority
@@ -838,9 +843,12 @@ export const Investigation: React.FC = () => {
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-100 break-all sm:break-normal">
-              Case Investigation: {transaction.transaction_id}
-            </h2>
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
+              <h2 className="font-fantasy text-xl sm:text-2xl font-bold tracking-wide text-slate-100 break-all sm:break-normal">
+                Case Investigation: <span className="font-mono text-cyan-400 font-semibold">{transaction.transaction_id}</span>
+              </h2>
+            </div>
             <span
               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize border ${
                 investigationCase?.status === 'closed'
@@ -851,13 +859,18 @@ export const Investigation: React.FC = () => {
               {investigationCase?.status ?? 'open'}
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-            {transaction.model_version
-              ? `Inference Engine: ${transaction.model_version}`
-              : 'Live Aegis Model & Graph Engine'}
+          <p className="mt-1 text-xs text-slate-400 pl-3">
+            {transaction.model_version ? (
+              `Inference Engine: ${transaction.model_version}`
+            ) : (
+              <>
+                Live <span className="aegis-text-gradient font-arcane font-bold">AEGIS</span> Model &amp; Graph Engine
+              </>
+            )}
             {investigationCase?.assigned_analyst ? ` • Assigned to ${investigationCase.assigned_analyst}` : ''}
           </p>
         </div>
+
 
         {/* Action Shortcuts */}
         <div className="flex flex-wrap items-center gap-2">
@@ -886,7 +899,7 @@ export const Investigation: React.FC = () => {
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-slate-100">Analyst Case Disposition</h3>
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">Analyst Case Disposition</h3>
             <p className="text-xs text-slate-400">
               Record ground-truth feedback. Labeled feedback feeds into future model calibration and replay simulations.
             </p>
@@ -980,7 +993,7 @@ export const Investigation: React.FC = () => {
           {/* Transaction Metadata & Risk Gauge */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-200">Transaction Profile</h3>
+              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Transaction Profile</h3>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-400">Risk Score:</span>
                 <span
@@ -1036,7 +1049,7 @@ export const Investigation: React.FC = () => {
 
           {/* Ledger & Balance Progression */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
-            <h3 className="text-base font-semibold text-slate-200">Ledger Balance State &amp; Account Depletion</h3>
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Ledger Balance State &amp; Account Depletion</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-xs">
               {/* Origin Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
@@ -1089,7 +1102,7 @@ export const Investigation: React.FC = () => {
           {/* Explainable Risk Signals */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-slate-200">Explainable Risk Signals</h3>
+              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Explainable Risk Signals</h3>
               <span className="text-xs text-slate-400">{signals.length} triggered signal(s)</span>
             </div>
 
@@ -1136,7 +1149,7 @@ export const Investigation: React.FC = () => {
         {/* Right Column: Related Entities & Network Graph Jump */}
         <aside className="space-y-6">
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
-            <h3 className="text-base font-semibold text-slate-200">Entity Relationships</h3>
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Entity Relationships</h3>
 
             <div className="space-y-4 text-xs">
               {/* Account Link */}
@@ -1198,7 +1211,7 @@ export const Investigation: React.FC = () => {
 
           {/* Case Audit Trail */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-3 text-xs">
-            <h3 className="text-base font-semibold text-slate-200 flex items-center gap-2">
+            <h3 className="font-display text-base font-semibold tracking-wide text-slate-200 flex items-center gap-2">
               <FileText size={16} className="text-slate-400" />
               Investigation Case Record
             </h3>

@@ -183,16 +183,18 @@ export const SystemHealth: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-800/60 pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-100">
-            System Health &amp; Observability
-          </h2>
-          <p className="mt-1 text-sm text-slate-400">
-            Live backend, database pool, velocity cache, and model inference status.
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+              System Health &amp; Observability
+            </h2>
+          </div>
+          <p className="mt-1 text-xs text-slate-400">
+          Live backend, database pool, velocity cache, and model inference status.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
           {loading ? (
             <LoaderCircle className="animate-spin text-cyan-400" size={14} />
           ) : (
@@ -229,12 +231,12 @@ export const SystemHealth: React.FC = () => {
           }) => (
             <section
               key={title}
-              className="space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6"
+              className="space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-slate-700/80"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-slate-300">
                   <Icon size={20} className="text-cyan-400" />
-                  <h3 className="text-sm font-semibold">{title}</h3>
+                  <h3 className="font-display text-sm font-semibold tracking-wide text-slate-200">{title}</h3>
                 </div>
                 <StatusIcon operational={Boolean(operational)} />
               </div>

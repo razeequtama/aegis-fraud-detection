@@ -145,18 +145,24 @@ export const ModelLab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-100">Model Lab &amp; Replay Simulator</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Evaluate model decision thresholds against historical transactions.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+              Model Lab &amp; Replay Simulator
+            </h2>
+          </div>
+          <p className="mt-1 text-xs text-slate-400">
+            Evaluate model decision thresholds against historical transactions.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center gap-2">
             <Cpu className="text-cyan-400" size={18} />
-            <h3 className="text-lg font-semibold text-slate-200">Replay Configuration</h3>
+            <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Replay Configuration</h3>
           </div>
 
           <div>
@@ -222,7 +228,7 @@ export const ModelLab: React.FC = () => {
 
         <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6 lg:col-span-2">
           <div>
-            <h3 className="text-lg font-semibold text-slate-200">Simulation Impact Analysis</h3>
+            <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Simulation Impact Analysis</h3>
             <p className="mt-1 text-xs text-slate-400">
               Comparison uses the baseline policy threshold of 0.75.
             </p>

@@ -10,8 +10,8 @@ import {
   Activity,
   Menu,
   X,
-  ShieldCheck,
 } from 'lucide-react';
+import { AegisWordmark } from './AegisWordmark';
 
 export const Layout: React.FC = () => {
   const location = useLocation();
@@ -52,11 +52,7 @@ export const Layout: React.FC = () => {
       {/* Desktop Sidebar (hidden on phone & tablet, visible on lg screens) */}
       <aside className="hidden lg:flex w-64 bg-slate-900 border-r border-slate-800 flex-col shrink-0">
         <div className="p-6 border-b border-slate-800">
-          <div className="flex items-center gap-2">
-            <img className="w-16 py-2" src="../public/logo.svg" alt="" />
-            <h1 className="text-4xl font-bold tracking-wider text-cyan-400">AEGIS</h1>
-          </div>
-          <p className="text-xs text-slate-400 mt-1">Fraud Detection Platform</p>
+          <AegisWordmark size="lg" withLogo showSubtitle asLink logoClassName="w-12 h-12" />
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
@@ -81,13 +77,6 @@ export const Layout: React.FC = () => {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
-          <span>Engine: aegis-rf-0.1.0</span>
-          <span className="flex items-center gap-1 text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Live
-          </span>
-        </div>
       </aside>
 
       {/* Mobile / Tablet Drawer Menu Modal */}
@@ -103,13 +92,7 @@ export const Layout: React.FC = () => {
           {/* Drawer content */}
           <aside className="relative flex flex-col w-72 max-w-[85vw] h-full bg-slate-900 border-r border-slate-800 shadow-2xl z-10 animate-in slide-in-from-left duration-200">
             <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="text-cyan-400" size={22} />
-                <div>
-                  <h1 className="text-lg font-bold tracking-wider text-cyan-400">AEGIS</h1>
-                  <p className="text-[10px] text-slate-400">Fraud Detection Platform</p>
-                </div>
-              </div>
+              <AegisWordmark size="md" withLogo showSubtitle asLink logoClassName="w-8 h-8" />
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
@@ -145,9 +128,9 @@ export const Layout: React.FC = () => {
               })}
             </nav>
 
-            <div className="p-4 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-800 text-[11px] font-mono text-slate-500 flex items-center justify-between">
               <span>Engine: aegis-rf-0.1.0</span>
-              <span className="flex items-center gap-1 text-emerald-400">
+              <span className="flex items-center gap-1 text-emerald-400 font-sans">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Live
               </span>
@@ -161,15 +144,13 @@ export const Layout: React.FC = () => {
         {/* Mobile / Tablet Top Header Bar (hidden on lg screens) */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 shrink-0 sticky top-0 z-30">
           <div className="flex items-center gap-2.5 min-w-0">
-            <ShieldCheck className="text-cyan-400 shrink-0" size={20} />
-            <span className="text-base font-bold tracking-wider text-cyan-400 shrink-0">
-              AEGIS
-            </span>
-            <span className="text-slate-600">/</span>
-            <span className="text-xs font-medium text-slate-300 truncate">
+            <AegisWordmark size="sm" withLogo asLink logoClassName="w-5 h-5" />
+            <span className="text-slate-700">/</span>
+            <span className="text-xs font-sans font-medium text-slate-300 truncate">
               {currentNav?.label ?? 'Command Center'}
             </span>
           </div>
+
 
           <button
             type="button"

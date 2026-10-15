@@ -195,7 +195,18 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-slate-100">Command Center</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+              Command Center
+            </h2>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            Real-time fraud oversight, operational metrics, and activity telemetry
+          </p>
+        </div>
+      </div>
 
       {errorMessage && (
         <div
@@ -228,14 +239,14 @@ export const Dashboard: React.FC = () => {
           : metricCards.map(({ title, value, detail, Icon, color }) => (
               <div
                 key={title}
-                className="rounded-xl border border-slate-800 bg-slate-900 p-6"
+                className="rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-slate-700/80"
               >
                 <div className="flex items-center justify-between text-slate-400">
-                  <span className="text-sm font-medium">{title}</span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-slate-400 font-sans">{title}</span>
                   <Icon size={20} className={color} />
                 </div>
-                <p className={`mt-4 text-3xl font-bold ${color}`}>{value}</p>
-                <span className="mt-2 inline-block text-xs text-slate-400">
+                <p className={`mt-4 text-3xl font-fantasy font-bold ${color}`}>{value}</p>
+                <span className="mt-2 inline-block text-xs text-slate-400 font-sans">
                   {detail}
                 </span>
               </div>
@@ -245,9 +256,10 @@ export const Dashboard: React.FC = () => {
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
         <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h3 className="text-base sm:text-lg font-semibold text-slate-200">
+            <h3 className="font-fantasy text-base sm:text-lg font-semibold tracking-wide text-slate-200">
               Transaction &amp; Suspicious Activity Trend
             </h3>
+
             <p className="mt-1 text-xs text-slate-400">
               These are dated from the transactions database.
             </p>

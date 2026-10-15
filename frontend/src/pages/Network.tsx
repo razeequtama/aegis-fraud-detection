@@ -413,9 +413,13 @@ export const Network: React.FC = () => {
 
   return (
     <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-100">Network Investigation</h2>
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+              Network Investigation
+            </h2>
+          </div>
           <p className="mt-1 text-xs text-slate-400">
             Explore connected accounts, shared devices, and transaction relationships.
           </p>
@@ -496,7 +500,7 @@ export const Network: React.FC = () => {
                   <Sparkles size={14} />
                   Database Pattern Showcase
                 </div>
-                <h3 className="mt-2 text-xl font-bold text-slate-100">
+                <h3 className="mt-2 text-xl sm:text-2xl font-fantasy font-bold tracking-wide text-slate-100">
                   Choose a Graph Pattern to Explore
                 </h3>
                 <p className="mx-auto mt-1 max-w-2xl text-xs text-slate-400">
@@ -524,7 +528,7 @@ export const Network: React.FC = () => {
                           {sample.type === 'accounts' ? 'Account' : 'Transaction'}
                         </span>
                       </div>
-                      <h4 className="text-sm font-semibold text-slate-100 group-hover:text-cyan-200">
+                      <h4 className="font-fantasy text-sm font-semibold tracking-wide text-slate-100 group-hover:text-cyan-200">
                         {sample.title}
                       </h4>
                       <p className="mt-1 font-mono text-xs text-cyan-400">

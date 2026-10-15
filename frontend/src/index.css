@@ -2,6 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================================================= */
+/* Self-Hosted Fantasy & Modern Typography System (Local WOFF2 Guarantee)   */
+/* ========================================================================= */
+
+/* 1. Arcane Decorative Wordmark Font (Curved Swashes & Ornamental Capitals) */
+@font-face {
+  font-family: 'Cinzel Decorative';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/cinzel-decorative-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel Decorative';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/cinzel-decorative-900.woff2') format('woff2');
+}
+
+/* 2. Fantasy Display Serif (Distinctive Curved Letterforms & Tapered Strokes) */
+@font-face {
+  font-family: 'Philosopher';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/philosopher-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Philosopher';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/philosopher-700.woff2') format('woff2');
+}
+
+/* 3. Renaissance Fantasy Serif with Needle Serifs & Elongated Tails */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-700.woff2') format('woff2');
+}
+
+/* 4. Clean Modern UI Body Font */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-700.woff2') format('woff2');
+}
+
+/* 5. Monospace Code & Quantitative Numbers */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-700.woff2') format('woff2');
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  /* Default heading family: refined fantasy-inspired serif with curved letterforms */
+  h1, h2 {
+    font-family: 'Philosopher', 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: 0.025em;
+  }
+}
+
+@layer utilities {
+  /* Signature AEGIS vertical gradient: transitioning from blue at bottom to cyan or light blue-ish at top */
+  .aegis-text-gradient {
+    background-image: linear-gradient(to top, #1e40af 0%, #0284c7 35%, #06b6d4 70%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Arcane ethereal ambient glow for AEGIS wordmark */
+  .aegis-glow {
+    filter: drop-shadow(0 2px 14px rgba(6, 182, 212, 0.4));
+  }
+
+  /* Fantasy title typography with distinctive curves and tapered strokes */
+  .font-fantasy-title {
+    font-family: 'Philosopher', 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: 0.025em;
+  }
+
+  /* Decorative wordmark font */
+  .font-arcane-title {
+    font-family: 'Cinzel Decorative', 'Philosopher', Georgia, serif;
+    letter-spacing: 0.16em;
+  }
+
+  /* Delicate ornamental hairline divider */
+  .arcane-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.35) 50%, transparent);
+  }
+}
+
 /* Custom scrollbar to match the sleek dark theme */
 ::-webkit-scrollbar {
   width: 6px;

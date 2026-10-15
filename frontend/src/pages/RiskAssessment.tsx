@@ -221,11 +221,17 @@ export const RiskAssessment: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-100">Interactive Risk Assessment</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Run a transaction simulation through the ML model and behavioral pattern engine. Submitted values are evaluated in real time.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
+              Interactive Risk Assessment
+            </h2>
+          </div>
+          <p className="mt-1 text-xs text-slate-400">
+            Run a transaction simulation through the ML model and behavioral pattern engine. Submitted values are evaluated in real time.
+          </p>
+        </div>
       </div>
       
       {errorMessage && (
@@ -239,7 +245,7 @@ export const RiskAssessment: React.FC = () => {
         {/* Form */}
         <div className="space-y-6">
         <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
-          <h3 className="text-lg font-semibold text-slate-200">Test Transaction Payload</h3>
+          <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Test Transaction Payload</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -367,7 +373,7 @@ export const RiskAssessment: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-cyan-400" />
-                <h3 className="text-lg font-semibold text-slate-200">Real Database Presets</h3>
+                <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Real Database Presets</h3>
               </div>
               <p className="mt-1 text-xs text-slate-400">
                 Load verified real transactions from the database directly into the simulation model.
@@ -459,7 +465,7 @@ export const RiskAssessment: React.FC = () => {
         {/* Result Panel */}
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4 flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">Risk Evaluation Result</h3>
+            <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200 mb-4">Risk Evaluation Result</h3>
             {result ? (
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between p-3 bg-slate-950 rounded-lg border border-slate-800">
