@@ -161,21 +161,24 @@ export const Dashboard: React.FC = () => {
           value: numberFormat.format(overview.metrics.total_transactions),
           detail: t.dashboard.totalTransactionsDesc,
           Icon: TrendingUp,
-          color: 'text-cyan-400',
+          color: 'text-slate-100',
+          iconColor: 'text-cyan-400',
         },
         {
           title: t.dashboard.reviewQueue,
           value: numberFormat.format(overview.metrics.review_queue_count),
           detail: t.dashboard.reviewQueueDesc,
           Icon: ShieldAlert,
-          color: 'text-amber-400',
+          color: 'text-cyan-300',
+          iconColor: 'text-cyan-400',
         },
         {
           title: t.dashboard.detectedFrauds,
           value: numberFormat.format(overview.metrics.detected_frauds),
           detail: t.dashboard.detectedFraudsDesc,
           Icon: Activity,
-          color: 'text-rose-400',
+          color: 'text-cyan-100',
+          iconColor: 'text-cyan-300',
         },
         {
           title: t.dashboard.modelStatus,
@@ -190,8 +193,12 @@ export const Dashboard: React.FC = () => {
           Icon: CheckCircle2,
           color:
             overview.metrics.model_status === 'online'
-              ? 'text-emerald-400'
-              : 'text-rose-400',
+              ? 'text-cyan-400'
+              : 'text-slate-400',
+          iconColor:
+            overview.metrics.model_status === 'online'
+              ? 'text-cyan-400'
+              : 'text-slate-500',
         },
       ]
     : [];
@@ -240,14 +247,14 @@ export const Dashboard: React.FC = () => {
                 <div className="mt-3 h-3 w-40 rounded bg-slate-800" />
               </div>
             ))
-          : metricCards.map(({ title, value, detail, Icon, color }) => (
+          : metricCards.map(({ title, value, detail, Icon, color, iconColor }) => (
               <div
                 key={title}
                 className="rounded-xl border border-slate-800 bg-slate-900 p-6 interactive-card hover:border-slate-700 group cursor-default"
               >
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="text-xs sm:text-sm uppercase tracking-wider font-semibold text-slate-300 font-mono">{title}</span>
-                  <Icon size={20} className={`${color} transition-transform duration-200 ease-out group-hover:scale-110`} />
+                  <Icon size={20} className={`${iconColor || color} transition-transform duration-200 ease-out group-hover:scale-110`} />
                 </div>
                 <p className={`mt-4 text-3xl font-mono font-bold tracking-tight ${color}`}>{value}</p>
                 <span className="mt-2 inline-block text-sm text-slate-300 font-sans">
@@ -258,7 +265,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-6 transition-colors duration-200">
-        <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-5 flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <div>
             <h3 className="font-display text-lg sm:text-xl font-semibold tracking-tight text-slate-100">
               {t.dashboard.chartTitle}
@@ -268,8 +275,8 @@ export const Dashboard: React.FC = () => {
               {t.dashboard.chartSubtitle}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 2xl:pb-0 max-w-full">
+            <div className="flex items-center gap-1.5 shrink-0">
               <button
                 type="button"
                 onClick={() => {
@@ -327,8 +334,11 @@ export const Dashboard: React.FC = () => {
                 {t.dashboard.btnFullMonth}
               </button>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <label htmlFor="dashboard-start-date" className="text-sm font-medium text-slate-300">
+
+            <div className="h-5 w-px bg-slate-800 shrink-0 mx-1" />
+
+            <div className="flex items-center gap-2 shrink-0">
+              <label htmlFor="dashboard-start-date" className="text-sm font-medium text-slate-300 whitespace-nowrap">
                 {t.dashboard.fromLabel}
               </label>
               <input
@@ -340,7 +350,7 @@ export const Dashboard: React.FC = () => {
                 onChange={(e) => handleStartDateChange(e.target.value)}
                 className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
               />
-              <label htmlFor="dashboard-end-date" className="text-sm font-medium text-slate-300">
+              <label htmlFor="dashboard-end-date" className="text-sm font-medium text-slate-300 whitespace-nowrap">
                 {t.dashboard.toLabel}
               </label>
               <input

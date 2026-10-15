@@ -38,7 +38,7 @@ export const networkSamples: NetworkSample[] = [
     type: 'accounts',
     title: '53-Account Fraud Ring',
     badge: 'Syndicate Ring',
-    badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+    badgeColor: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
     description: 'Shared emulator (DEV-SIM-995) links 53 accounts with 17 flagged fraud nodes.',
     stats: '56 Nodes · 17 Suspicious · 1 Shared Device',
     icon: 'syndicate',
@@ -48,7 +48,7 @@ export const networkSamples: NetworkSample[] = [
     type: 'accounts',
     title: 'High-Density Device Ring',
     badge: 'Device Multiplexing',
-    badgeColor: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+    badgeColor: 'border-cyan-600/40 bg-cyan-950/60 text-cyan-300 font-medium',
     description: 'Shared device DEV-SIM-236 links 54 accounts with 19 confirmed fraud nodes.',
     stats: '57 Nodes · 19 Suspicious · 1 Shared Device',
     icon: 'device',
@@ -58,7 +58,7 @@ export const networkSamples: NetworkSample[] = [
     type: 'transactions',
     title: 'Fraudulent Syndicate Transfer',
     badge: 'Flagged Transaction',
-    badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+    badgeColor: 'border-cyan-400/50 bg-cyan-500/20 text-cyan-200 font-semibold',
     description: 'Syndicate transfer executed within the DEV-SIM-995 multi-account ring.',
     stats: 'Linked to C376938867 & DEV-SIM-995',
     icon: 'transaction',
@@ -68,7 +68,7 @@ export const networkSamples: NetworkSample[] = [
     type: 'accounts',
     title: 'Mule Account Network',
     badge: 'Mule Ring',
-    badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+    badgeColor: 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold',
     description: 'Device DEV-SIM-278 connecting 47 accounts with multiple concurrent cash-outs.',
     stats: '50 Nodes · 17 Suspicious · 1 Shared Device',
     icon: 'syndicate',
@@ -78,7 +78,7 @@ export const networkSamples: NetworkSample[] = [
     type: 'transactions',
     title: 'High-Value Drain (Rp 3M)',
     badge: 'Decline Cluster',
-    badgeColor: 'border-purple-500/40 bg-purple-500/10 text-purple-300',
+    badgeColor: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
     description: 'Critical Rp 2,988,103 cash out on device DEV-SIM-360 with decline score 0.99.',
     stats: 'Score 0.99 · 100% Drain · DEV-SIM-360',
     icon: 'decline',
@@ -88,7 +88,7 @@ export const networkSamples: NetworkSample[] = [
     type: 'accounts',
     title: 'Clean Retail Customer',
     badge: 'Normal Baseline',
-    badgeColor: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+    badgeColor: 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium',
     description: 'Standard retail customer with normal transactions and zero fraud flags.',
     stats: 'Legitimate Baseline · Low Risk',
     icon: 'clean',
@@ -224,10 +224,10 @@ export const Network: React.FC = () => {
       .then((res) => {
         if (!active || !Array.isArray(res.data) || res.data.length === 0) return;
         const colorMap: Record<string, string> = {
-          rose: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
-          amber: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-          purple: 'border-purple-500/40 bg-purple-500/10 text-purple-300',
-          emerald: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+          rose: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
+          amber: 'border-cyan-600/40 bg-cyan-950/60 text-cyan-300 font-medium',
+          purple: 'border-cyan-400/50 bg-cyan-500/20 text-cyan-200 font-semibold',
+          emerald: 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium',
         };
         const iconMap: Record<string, NetworkSample['icon']> = {
           C376938867: 'syndicate',
@@ -353,14 +353,16 @@ export const Network: React.FC = () => {
               selector: 'node[type = "account"]',
               style: {
                 shape: 'ellipse',
-                'background-color': '#0e7490',
+                'background-color': '#0369a1',
+                'border-color': '#38bdf8',
+                'border-width': '1.5px',
               } as any,
             },
             {
               selector: 'node[type = "account"][suspicious = true]',
               style: {
-                'background-color': '#e11d48',
-                'border-color': '#fda4af',
+                'background-color': '#22d3ee',
+                'border-color': '#ecfeff',
                 'border-width': '3px',
               } as any,
             },
@@ -392,8 +394,9 @@ export const Network: React.FC = () => {
               selector: 'node[type = "transaction"]',
               style: {
                 shape: 'hexagon',
-                'background-color': '#7c3aed',
-                'border-color': '#c4b5fd',
+                'background-color': '#0e7490',
+                'border-color': '#67e8f9',
+                'border-width': '2px',
               } as any,
             },
             {
@@ -459,7 +462,7 @@ export const Network: React.FC = () => {
   return (
     <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
-        <div>
+        <div className="max-w-xl">
           <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
             <AegisWordmark size="xs" inline />{t.network.tag}
           </span>
@@ -470,7 +473,7 @@ export const Network: React.FC = () => {
             {t.network.subtitle}
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+        <form onSubmit={handleSubmit} className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
           <label htmlFor="network-entity-type" className="sr-only">
             Network entity type
           </label>
@@ -478,28 +481,30 @@ export const Network: React.FC = () => {
             id="network-entity-type"
             value={entityType}
             onChange={(event) => setEntityType(event.target.value as EntityType)}
-            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
+            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input shrink-0"
           >
             <option value="transactions">{t.network.transactionOption}</option>
             <option value="accounts">{t.network.accountOption}</option>
           </select>
-          <label htmlFor="network-entity-id" className="sr-only">
-            Transaction or account ID
-          </label>
-          <input
-            id="network-entity-id"
-            value={entityId}
-            onChange={(event) => setEntityId(event.target.value)}
-            placeholder={entityType === 'transactions' ? t.network.txIdPlaceholder : t.network.accIdPlaceholder}
-            className="flex-1 sm:w-48 sm:flex-initial rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
-          />
-          <button
-            type="submit"
-            className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
-          >
-            <Search size={16} />
-            {t.network.exploreBtn}
-          </button>
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0">
+            <label htmlFor="network-entity-id" className="sr-only">
+              Transaction or account ID
+            </label>
+            <input
+              id="network-entity-id"
+              value={entityId}
+              onChange={(event) => setEntityId(event.target.value)}
+              placeholder={entityType === 'transactions' ? t.network.txIdPlaceholder : t.network.accIdPlaceholder}
+              className="w-full sm:w-48 md:w-56 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input font-mono"
+            />
+            <button
+              type="submit"
+              className="shrink-0 flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 active:scale-[0.98] transition-all whitespace-nowrap interactive-btn"
+            >
+              <Search size={16} />
+              {t.network.exploreBtn}
+            </button>
+          </div>
         </form>
       </div>
 
@@ -650,11 +655,11 @@ export const Network: React.FC = () => {
             </div>
             <div className="animate-fade-in absolute bottom-4 right-4 z-10 space-y-2 rounded-lg border border-slate-700 bg-slate-950/90 p-3.5 text-sm text-slate-200">
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-rose-500" />
+                <span className="h-3 w-3 rounded-full bg-cyan-300 ring-2 ring-cyan-100" />
                 {t.network.suspiciousAccount}
               </div>
               <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-sm bg-cyan-400" />
+                <span className="h-3 w-3 rounded-sm bg-cyan-500" />
                 {t.network.sharedDevice}
               </div>
             </div>

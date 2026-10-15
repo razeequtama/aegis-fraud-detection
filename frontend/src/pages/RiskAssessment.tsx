@@ -432,10 +432,10 @@ export const RiskAssessment: React.FC = () => {
                     <span
                       className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded border ${
                         category === 'DECLINE'
-                          ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                          ? 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold'
                           : category === 'REVIEW'
-                            ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
-                            : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                            ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
+                            : 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium'
                       }`}
                     >
                       {category === 'DECLINE' ? t.common.decline : category === 'REVIEW' ? t.common.review : t.common.approve}
@@ -493,10 +493,10 @@ export const RiskAssessment: React.FC = () => {
                     <span
                       className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded uppercase border ${
                         result.risk_score >= 0.75
-                          ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                          ? 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold'
                           : result.risk_score >= 0.4
-                          ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
-                          : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                          ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
+                          : 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium'
                       }`}
                     >
                       {result.risk_score >= 0.75
@@ -510,10 +510,10 @@ export const RiskAssessment: React.FC = () => {
                     <span
                       className={`font-mono text-3xl font-bold tracking-tight ${
                         result.risk_score >= 0.75
-                          ? 'text-rose-400'
+                          ? 'text-cyan-200'
                           : result.risk_score >= 0.4
-                          ? 'text-amber-400'
-                          : 'text-emerald-400'
+                          ? 'text-cyan-300'
+                          : 'text-slate-200'
                       }`}
                     >
                       {typeof result.risk_score === 'number'
@@ -526,10 +526,10 @@ export const RiskAssessment: React.FC = () => {
                     <div
                       className={`h-full transition-all duration-500 ${
                         result.risk_score >= 0.75
-                          ? 'bg-rose-500'
+                          ? 'bg-cyan-400'
                           : result.risk_score >= 0.4
-                          ? 'bg-amber-500'
-                          : 'bg-emerald-500'
+                          ? 'bg-cyan-500'
+                          : 'bg-slate-600'
                       }`}
                       style={{
                         width: `${Math.min(100, Math.max(0, result.risk_score * 100))}%`,
@@ -546,10 +546,10 @@ export const RiskAssessment: React.FC = () => {
                     <span
                       className={`inline-block font-mono font-bold text-sm tracking-wide uppercase px-3 py-1 rounded-lg border ${
                         result.decision === 'DECLINE'
-                          ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                          ? 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold'
                           : result.decision === 'REVIEW'
-                          ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
-                          : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                          ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
+                          : 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium'
                       }`}
                     >
                       {result.decision === 'DECLINE' ? t.common.decline : result.decision === 'REVIEW' ? t.common.review : t.common.approve}
@@ -601,7 +601,7 @@ export const RiskAssessment: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-950 rounded-xl border border-slate-800/80 text-center">
-                    <ShieldCheck size={36} className="text-emerald-400 mb-2" />
+                    <ShieldCheck size={36} className="text-cyan-400 mb-2" />
                     <span className="text-sm font-semibold text-slate-200">
                       {t.riskAssessment.noSignalsTriggered}
                     </span>

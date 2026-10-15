@@ -155,7 +155,7 @@ export const Investigation: React.FC = () => {
       title: t.investigation.presetSyndicateTitle,
       type: 'TRANSFER',
       badge: t.network.badgeSyndicate,
-      badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+      badgeColor: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
       description: t.investigation.presetSyndicateDesc,
     },
     {
@@ -163,7 +163,7 @@ export const Investigation: React.FC = () => {
       title: t.investigation.presetDrainTitle,
       type: 'CASH_OUT',
       badge: `Critical Drain (${t.riskAssessment.riskScore} 0.99)`,
-      badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+      badgeColor: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
       description: t.investigation.presetDrainDesc,
     },
     {
@@ -171,7 +171,7 @@ export const Investigation: React.FC = () => {
       title: t.investigation.presetMuleTitle,
       type: 'CASH_OUT',
       badge: t.network.badgeMule,
-      badgeColor: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+      badgeColor: 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold',
       description: t.investigation.presetMuleDesc,
     },
     {
@@ -179,7 +179,7 @@ export const Investigation: React.FC = () => {
       title: t.investigation.presetCleanTitle,
       type: 'PAYMENT',
       badge: t.common.legitimate,
-      badgeColor: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+      badgeColor: 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium',
       description: t.investigation.presetCleanDesc,
     },
   ];
@@ -203,21 +203,21 @@ export const Investigation: React.FC = () => {
       label: 'confirmed_fraud',
       title: t.investigation.confirmFraud,
       className:
-        'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border-rose-500/40 hover:border-rose-500/60 shadow-sm shadow-rose-500/10',
+        'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 hover:bg-cyan-500/35 hover:border-cyan-400 font-bold shadow-sm shadow-cyan-500/10',
       Icon: XCircle,
     },
     {
       label: 'legitimate',
       title: t.investigation.markLegitimate,
       className:
-        'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/40 hover:border-emerald-500/60 shadow-sm shadow-emerald-500/10',
+        'border-slate-700 bg-slate-800/80 text-slate-200 hover:bg-slate-750 hover:border-cyan-500/40 hover:text-cyan-100 font-semibold shadow-sm',
       Icon: CheckCircle,
     },
     {
       label: 'inconclusive',
       title: t.investigation.markInconclusive,
       className:
-        'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40 hover:border-amber-500/60 shadow-sm shadow-amber-500/10',
+        'border-cyan-500/40 bg-cyan-950/60 text-cyan-300 hover:bg-cyan-900/50 hover:border-cyan-400/60 font-semibold shadow-sm',
       Icon: AlertTriangle,
     },
   ];
@@ -481,28 +481,28 @@ export const Investigation: React.FC = () => {
             <span className="mt-1 block text-sm text-slate-400">{t.investigation.trackedInDb}</span>
           </div>
 
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 interactive-card hover:border-amber-500/50 cursor-default">
-            <span className="text-sm font-medium text-amber-300">{t.investigation.pendingReviewCard}</span>
-            <div className="mt-2 text-2xl font-bold text-amber-400">
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 interactive-card hover:border-cyan-500/50 cursor-default">
+            <span className="text-sm font-medium text-cyan-300">{t.investigation.pendingReviewCard}</span>
+            <div className="mt-2 text-2xl font-bold text-cyan-400">
               {caseSummary ? caseSummary.open + caseSummary.in_review : '—'}
             </div>
-            <span className="mt-1 block text-sm text-amber-300/90">{t.investigation.requiresAction}</span>
+            <span className="mt-1 block text-sm text-cyan-300/90">{t.investigation.requiresAction}</span>
           </div>
 
-          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 interactive-card hover:border-rose-500/50 cursor-default">
-            <span className="text-sm font-medium text-rose-300">{t.investigation.confirmedFraudCard}</span>
-            <div className="mt-2 text-2xl font-bold text-rose-400">
+          <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/20 p-4 interactive-card hover:border-cyan-400/70 cursor-default shadow-sm shadow-cyan-950/30">
+            <span className="text-sm font-medium text-cyan-200">{t.investigation.confirmedFraudCard}</span>
+            <div className="mt-2 text-2xl font-bold text-cyan-100">
               {caseSummary ? caseSummary.confirmed_fraud : '—'}
             </div>
-            <span className="mt-1 block text-sm text-rose-300/90">{t.investigation.readyForTraining}</span>
+            <span className="mt-1 block text-sm text-cyan-200/90">{t.investigation.readyForTraining}</span>
           </div>
 
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 interactive-card hover:border-emerald-500/50 cursor-default">
-            <span className="text-sm font-medium text-emerald-300">{t.investigation.clearedLegitimateCard}</span>
-            <div className="mt-2 text-2xl font-bold text-emerald-400">
+          <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-4 interactive-card hover:border-slate-600 cursor-default">
+            <span className="text-sm font-medium text-slate-300">{t.investigation.clearedLegitimateCard}</span>
+            <div className="mt-2 text-2xl font-bold text-slate-200">
               {caseSummary ? caseSummary.legitimate : '—'}
             </div>
-            <span className="mt-1 block text-sm text-emerald-300/90">{t.investigation.falsePositiveMitigation}</span>
+            <span className="mt-1 block text-sm text-slate-400">{t.investigation.falsePositiveMitigation}</span>
           </div>
         </div>
 
@@ -652,10 +652,10 @@ export const Investigation: React.FC = () => {
                               <span
                                 className={`font-mono font-bold text-sm ${
                                   score >= 0.75
-                                    ? 'text-rose-400'
+                                    ? 'text-cyan-200'
                                     : score >= 0.4
-                                    ? 'text-amber-400'
-                                    : 'text-emerald-400'
+                                    ? 'text-cyan-300'
+                                    : 'text-slate-300'
                                 }`}
                               >
                                 {score.toFixed(2)}
@@ -665,10 +665,10 @@ export const Investigation: React.FC = () => {
                               <span
                                 className={`rounded-full px-2.5 py-0.5 text-xs sm:text-sm font-medium capitalize border transition-colors ${
                                   c.status === 'open'
-                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                    ? 'bg-cyan-500/20 text-cyan-200 border-cyan-400/40 font-semibold'
                                     : c.status === 'in_review'
-                                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                                    : 'bg-slate-700/40 text-slate-300 border border-slate-600'
+                                    ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
+                                    : 'bg-slate-800 text-slate-300 border-slate-700'
                                 }`}
                               >
                                 {c.status === 'open'
@@ -683,10 +683,10 @@ export const Investigation: React.FC = () => {
                                 <span
                                   className={`rounded-full px-2.5 py-0.5 text-xs sm:text-sm font-medium capitalize border transition-colors ${
                                     c.feedback_label === 'confirmed_fraud'
-                                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                                      : c.feedback_label === 'legitimate'
-                                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                      ? 'bg-cyan-500/25 text-cyan-100 border-cyan-400/50 font-semibold'
+                                      : c.feedback_label === 'inconclusive'
+                                      ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
+                                      : 'bg-slate-800 text-slate-300 border-slate-700'
                                   }`}
                                 >
                                   {c.feedback_label === 'confirmed_fraud'
@@ -748,13 +748,13 @@ export const Investigation: React.FC = () => {
 
           {/* Urgent Alerts Side Panel (1 Col) */}
           <div className="space-y-4">
-            <div className="rounded-xl border border-rose-500/30 bg-slate-900 p-5">
+            <div className="rounded-xl border border-cyan-500/30 bg-slate-900 p-5">
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldAlert size={16} className="text-rose-400" />
+                  <ShieldAlert size={16} className="text-cyan-400" />
                   <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">{t.investigation.urgentAttention}</h3>
                 </div>
-                <span className="rounded bg-rose-500/20 px-2.5 py-0.5 text-xs sm:text-sm font-semibold text-rose-300 animate-pulse-subtle">
+                <span className="rounded bg-cyan-500/20 px-2.5 py-0.5 text-xs sm:text-sm font-semibold text-cyan-200 border border-cyan-400/40">
                   {t.investigation.priorityBadge}
                 </span>
               </div>
@@ -767,14 +767,14 @@ export const Investigation: React.FC = () => {
                   urgentAlerts.map((alert) => (
                     <div
                       key={alert.transaction_id}
-                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-sm interactive-card hover:border-rose-500/40"
+                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-sm interactive-card hover:border-cyan-500/40"
                     >
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-medium text-cyan-400 text-sm">
                             {alert.transaction_id}
                           </span>
-                          <span className="rounded bg-rose-500/10 px-2 py-0.5 font-mono font-bold text-rose-400 text-sm">
+                          <span className="rounded bg-cyan-500/15 border border-cyan-500/30 px-2 py-0.5 font-mono font-bold text-cyan-200 text-sm">
                             {alert.risk_score.toFixed(2)}
                           </span>
                         </div>
@@ -785,7 +785,7 @@ export const Investigation: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => navigate(`/investigation/${alert.transaction_id}`)}
-                        className="rounded border border-rose-500/30 bg-rose-500/10 px-3.5 py-1.5 text-sm font-semibold text-rose-300 hover:bg-rose-500/20 interactive-btn"
+                        className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
                       >
                         {t.investigation.searchBtn}
                       </button>
@@ -872,7 +872,7 @@ export const Investigation: React.FC = () => {
               className={`rounded-full px-3 py-0.5 text-sm font-medium capitalize border ${
                 investigationCase?.status === 'closed'
                   ? 'border-slate-600 bg-slate-800 text-slate-300'
-                  : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                  : 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
               }`}
             >
               {investigationCase?.status === 'closed' ? t.common.closed : t.common.open}
@@ -928,10 +928,10 @@ export const Investigation: React.FC = () => {
               <span
                 className={`rounded-full px-3 py-0.5 text-sm font-semibold capitalize border ${
                   investigationCase.feedback_label === 'confirmed_fraud'
-                    ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                    ? 'border-cyan-400/50 bg-cyan-500/25 text-cyan-100'
                     : investigationCase.feedback_label === 'legitimate'
-                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
-                    : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                    ? 'border-slate-700 bg-slate-800 text-slate-300'
+                    : 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300'
                 }`}
               >
                 {investigationCase.feedback_label === 'confirmed_fraud'
@@ -995,8 +995,8 @@ export const Investigation: React.FC = () => {
         </div>
 
         {feedbackMessage && (
-          <div role="status" className="animate-slide-down flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-300">
-            <CheckCircle2 size={16} />
+          <div role="status" className="animate-slide-down flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 p-3 text-sm text-cyan-200">
+            <CheckCircle2 size={16} className="text-cyan-400" />
             {feedbackMessage}
           </div>
         )}
@@ -1021,10 +1021,10 @@ export const Investigation: React.FC = () => {
                 <span
                   className={`font-mono text-base font-bold ${
                     (transaction.risk_score ?? 0) >= 0.75
-                      ? 'text-rose-400'
+                      ? 'text-cyan-100'
                       : (transaction.risk_score ?? 0) >= 0.4
-                      ? 'text-amber-400'
-                      : 'text-emerald-400'
+                      ? 'text-cyan-300'
+                      : 'text-slate-300'
                   }`}
                 >
                   {typeof transaction.risk_score === 'number'
@@ -1034,10 +1034,10 @@ export const Investigation: React.FC = () => {
                 <span
                   className={`rounded-full px-3 py-1 text-sm font-semibold uppercase border ${
                     transaction.decision === 'decline'
-                      ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                      ? 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold'
                       : transaction.decision === 'review'
-                      ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
-                      : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                      ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
+                      : 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium'
                   }`}
                 >
                   {transaction.decision === 'decline'
@@ -1097,7 +1097,7 @@ export const Investigation: React.FC = () => {
                   transaction.oldbalance_org > 0 && (
                     <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
                       <span className="text-slate-300">{t.investigation.drainRatio}</span>
-                      <span className="font-mono font-bold text-amber-400">
+                      <span className="font-mono font-bold text-cyan-300">
                         {((transaction.amount / transaction.oldbalance_org) * 100).toFixed(1)}%
                       </span>
                     </div>
@@ -1153,11 +1153,11 @@ export const Investigation: React.FC = () => {
                       key={`${name}-${index}`}
                       className={`flex items-start gap-3 rounded-lg border p-3.5 text-sm ${
                         isCritical
-                          ? 'border-rose-500/30 bg-rose-500/10 text-rose-300'
-                          : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                          ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-100 font-semibold'
+                          : 'border-cyan-600/30 bg-cyan-950/40 text-cyan-300 font-medium'
                       }`}
                     >
-                      <AlertTriangle className="mt-0.5 shrink-0" size={18} />
+                      <AlertTriangle className="mt-0.5 shrink-0 text-cyan-400" size={18} />
                       <div>
                         <h4 className="font-bold uppercase tracking-wider text-sm">
                           {name.replace(/_/g, ' ')}
