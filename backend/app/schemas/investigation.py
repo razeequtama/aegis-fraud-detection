@@ -15,3 +15,4 @@ class AnalystFeedbackRequest(BaseModel):
     analyst_id: str
     label: str = Field(..., description="Confirmed label: confirmed_fraud, legitimate, inconclusive")
     reasoning: Optional[str] = Field(None, description="Explanation or notes from the fraud analyst")
+    notes: Optional[str] = Field(None, description="Additional investigation notes")

@@ -105,3 +105,21 @@ def test_risk_assessment_triggers_repeated_payment_attempts():
     })
     signal_names = [s["name"] for s in result["signals"]]
     assert "high_payment_attempts" in signal_names
+
+
+def test_get_risk_assessment_presets():
+    from app.api.routes.risk import get_risk_assessment_presets
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    with Session(engine) as db:
+        presets = get_risk_assessment_presets(db=db)
+        assert len(presets) >= 3
+        for preset in presets:
+            assert "title" in preset
+            assert "category" in preset
+            assert "payload" in preset
+            assert "transaction_id" in preset["payload"]
+            assert "amount" in preset["payload"]
+            assert not preset["payload"]["transaction_id"].startswith("TX-SAMPLE-")
+    engine.dispose()
+

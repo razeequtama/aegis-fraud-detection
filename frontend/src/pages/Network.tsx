@@ -54,10 +54,10 @@ export const networkSamples: NetworkSample[] = [
   {
     id: 'TX-100463',
     type: 'transactions',
-    title: 'Fraudulent Cash-Out',
+    title: 'Fraudulent Syndicate Transfer',
     badge: 'Flagged Transaction',
     badgeColor: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
-    description: 'Cash-out transaction executed within the DEV-SIM-995 multi-account ring.',
+    description: 'Syndicate transfer executed within the DEV-SIM-995 multi-account ring.',
     stats: 'Linked to C376938867 & DEV-SIM-995',
     icon: 'transaction',
   },
@@ -72,13 +72,13 @@ export const networkSamples: NetworkSample[] = [
     icon: 'syndicate',
   },
   {
-    id: 'TX-SAMPLE-DECLINE',
+    id: 'TX-140135',
     type: 'transactions',
-    title: 'High-Value Drain (Rp 2M)',
+    title: 'High-Value Drain (Rp 3M)',
     badge: 'Decline Cluster',
     badgeColor: 'border-purple-500/40 bg-purple-500/10 text-purple-300',
-    description: 'Critical Rp 2,000,000 cash out on shared device DEV-888 with decline score 0.99.',
-    stats: 'Score 0.99 · 100% Drain · 3 Attempts',
+    description: 'Critical Rp 2,988,103 cash out on device DEV-SIM-360 with decline score 0.99.',
+    stats: 'Score 0.99 · 100% Drain · DEV-SIM-360',
     icon: 'decline',
   },
   {
@@ -158,6 +158,64 @@ export const Network: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [graphSummary, setGraphSummary] = useState<GraphResponse | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [samples, setSamples] = useState<NetworkSample[]>(networkSamples);
+
+  useEffect(() => {
+    let active = true;
+    apiClient
+      .get<
+        Array<{
+          id: string;
+          type: EntityType;
+          title: string;
+          badge: string;
+          badge_color?: string;
+          badgeColor?: string;
+          description: string;
+          stats: string;
+          icon?: NetworkSample['icon'];
+        }>
+      >('/network/samples')
+      .then((res) => {
+        if (!active || !Array.isArray(res.data) || res.data.length === 0) return;
+        const colorMap: Record<string, string> = {
+          rose: 'border-rose-500/40 bg-rose-500/10 text-rose-300',
+          amber: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+          purple: 'border-purple-500/40 bg-purple-500/10 text-purple-300',
+          emerald: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
+        };
+        const iconMap: Record<string, NetworkSample['icon']> = {
+          C376938867: 'syndicate',
+          C1387708046: 'device',
+          'TX-100463': 'transaction',
+          C1791470904: 'syndicate',
+          'TX-140135': 'decline',
+          C1041698296: 'clean',
+        };
+        const loaded: NetworkSample[] = res.data.map((item) => ({
+          id: item.id,
+          type: item.type,
+          title: item.title,
+          badge: item.badge,
+          badgeColor:
+            item.badgeColor ||
+            (item.badge_color && colorMap[item.badge_color]
+              ? colorMap[item.badge_color]
+              : 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300'),
+          description: item.description,
+          stats: item.stats,
+          icon:
+            item.icon ||
+            iconMap[item.id] ||
+            (item.type === 'transactions' ? 'transaction' : 'syndicate'),
+        }));
+        setSamples(loaded);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (routeEntityType === 'accounts' || routeEntityType === 'transactions') {
@@ -401,7 +459,7 @@ export const Network: React.FC = () => {
           <Sparkles size={14} className="text-cyan-400" />
           Pattern Presets:
         </span>
-        {networkSamples.map((sample) => {
+        {samples.map((sample) => {
           const isActive = requestedId === sample.id && requestedType === sample.type;
           return (
             <button
@@ -447,7 +505,7 @@ export const Network: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {networkSamples.map((sample) => (
+                {samples.map((sample) => (
                   <button
                     key={sample.id}
                     type="button"

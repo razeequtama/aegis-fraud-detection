@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Send, Loader2, AlertCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Send, Loader2, AlertCircle, Sparkles, Database, Search } from 'lucide-react';
 import { isAxiosError } from 'axios';
 import { apiClient } from '../api/client';
 
@@ -17,69 +17,183 @@ interface RiskAssessmentResult {
   latency_ms: number;
 }
 
-const sampleTransactions = [
+interface PresetItem {
+  title: string;
+  category?: 'APPROVE' | 'REVIEW' | 'DECLINE' | string;
+  payload: {
+    transaction_id: string;
+    account_id: string;
+    type: string;
+    amount: number;
+    oldbalanceOrg: number;
+    newbalanceOrig: number;
+    oldbalanceDest: number;
+    newbalanceDest: number;
+    payment_attempts: number;
+    device_id?: string;
+    session_id?: string;
+  };
+}
+
+const defaultPresets: PresetItem[] = [
   {
-    title: 'Low risk payment',
+    title: 'Low risk retail payment',
+    category: 'APPROVE',
     payload: {
-      transaction_id: 'TX-SAMPLE-APPROVE',
-      account_id: 'ACC-LOW-001',
+      transaction_id: 'TX-100001',
+      account_id: 'C1551703422',
       type: 'PAYMENT',
-      amount: 1200,
-      oldbalanceOrg: 20000,
-      newbalanceOrig: 18800,
-      oldbalanceDest: 20000,
-      newbalanceDest: 21200,
+      amount: 3123.24,
+      oldbalanceOrg: 50036.0,
+      newbalanceOrig: 46912.76,
+      oldbalanceDest: 0,
+      newbalanceDest: 0,
       payment_attempts: 1,
+      device_id: 'DEV-SIM-946',
+      session_id: 'SES-SIM-1',
     },
   },
   {
-    title: 'Medium risk transfer',
+    title: 'Medium risk cash-out',
+    category: 'REVIEW',
     payload: {
-      transaction_id: 'TX-SAMPLE-REVIEW',
-      account_id: 'ACC-REVIEW-001',
-      type: 'TRANSFER',
-      amount: 85000,
-      oldbalanceOrg: 100000,
-      newbalanceOrig: 10000,
-      oldbalanceDest: 20000,
-      newbalanceDest: 105000,
-      payment_attempts: 2,
-    },
-  },
-  {
-    title: 'High risk cash out',
-    payload: {
-      transaction_id: 'TX-SAMPLE-DECLINE',
-      account_id: 'ACC-DECLINE-001',
+      transaction_id: 'TX-100017',
+      account_id: 'C640492983',
       type: 'CASH_OUT',
-      amount: 2000000,
-      oldbalanceOrg: 2000000,
+      amount: 36420.6,
+      oldbalanceOrg: 11650.0,
       newbalanceOrig: 0,
-      oldbalanceDest: 250000,
-      newbalanceDest: 2250000,
-      payment_attempts: 3,
+      oldbalanceDest: 1897757.8,
+      newbalanceDest: 1934178.41,
+      payment_attempts: 1,
+      device_id: 'DEV-SIM-367',
+      session_id: 'SES-SIM-17',
+    },
+  },
+  {
+    title: 'High risk account drain',
+    category: 'DECLINE',
+    payload: {
+      transaction_id: 'TX-140135',
+      account_id: 'C1655503661',
+      type: 'CASH_OUT',
+      amount: 2988103.3,
+      oldbalanceOrg: 2988103.3,
+      newbalanceOrig: 0,
+      oldbalanceDest: 1402954.55,
+      newbalanceDest: 4391057.85,
+      payment_attempts: 1,
+      device_id: 'DEV-SIM-360',
+      session_id: 'SES-SIM-40135',
+    },
+  },
+  {
+    title: 'High risk syndicate transfer',
+    category: 'DECLINE',
+    payload: {
+      transaction_id: 'TX-100002',
+      account_id: 'C1711670940',
+      type: 'TRANSFER',
+      amount: 305627.0,
+      oldbalanceOrg: 305627.0,
+      newbalanceOrig: 0,
+      oldbalanceDest: 0,
+      newbalanceDest: 0,
+      payment_attempts: 1,
+      device_id: 'DEV-SIM-807',
+      session_id: 'SES-SIM-2',
     },
   },
 ];
 
 export const RiskAssessment: React.FC = () => {
+  const [presets, setPresets] = useState<PresetItem[]>(defaultPresets);
   const [formData, setFormData] = useState({
-    transaction_id: 'TX-99901',
-    account_id: 'ACC-505',
-    amount: 85000.0,
-    type: 'TRANSFER',
-    oldbalanceOrg: 100000.0,
-    newbalanceOrig: 10000.0,
-    oldbalanceDest: 20000.0,
-    newbalanceDest: 105000.0,
-    device_id: 'DEV-888',
-    session_id: 'SES-102',
-    payment_attempts: 2,
+    transaction_id: 'TX-100001',
+    account_id: 'C1551703422',
+    amount: 3123.24,
+    type: 'PAYMENT',
+    oldbalanceOrg: 50036.0,
+    newbalanceOrig: 46912.76,
+    oldbalanceDest: 0.0,
+    newbalanceDest: 0.0,
+    device_id: 'DEV-SIM-946',
+    session_id: 'SES-SIM-1',
+    payment_attempts: 1,
   });
 
   const [result, setResult] = useState<RiskAssessmentResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [lookupId, setLookupId] = useState('');
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupError, setLookupError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    apiClient
+      .get<PresetItem[]>('/risk-assessments/presets')
+      .then((res) => {
+        if (active && Array.isArray(res.data) && res.data.length > 0) {
+          setPresets(res.data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleLookupTransaction = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const id = lookupId.trim();
+    if (!id) return;
+    setLookupLoading(true);
+    setLookupError(null);
+    try {
+      const res = await apiClient.get<{
+        data: {
+          transaction: {
+            transaction_id: string;
+            account_id: string | null;
+            amount: number | null;
+            type: string | null;
+            oldbalance_org?: number | null;
+            newbalance_orig?: number | null;
+            oldbalance_dest?: number | null;
+            newbalance_dest?: number | null;
+            payment_attempts?: number | null;
+            device_id?: string | null;
+            session_id?: string | null;
+          };
+        };
+      }>(`/transactions/${encodeURIComponent(id)}`);
+      const tx = res.data.data.transaction;
+      setFormData({
+        transaction_id: tx.transaction_id,
+        account_id: tx.account_id || '',
+        amount: Number(tx.amount || 0),
+        type: tx.type || 'TRANSFER',
+        oldbalanceOrg: Number(tx.oldbalance_org ?? 0),
+        newbalanceOrig: Number(tx.newbalance_orig ?? 0),
+        oldbalanceDest: Number(tx.oldbalance_dest ?? 0),
+        newbalanceDest: Number(tx.newbalance_dest ?? 0),
+        device_id: tx.device_id || '',
+        session_id: tx.session_id || '',
+        payment_attempts: Number(tx.payment_attempts || 1),
+      });
+      setResult(null);
+      setErrorMessage(null);
+    } catch (err: unknown) {
+      const msg = isAxiosError<{ detail?: string }>(err)
+        ? err.response?.data?.detail
+        : undefined;
+      setLookupError(msg || `Transaction "${id}" not found in database.`);
+    } finally {
+      setLookupLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,14 +363,51 @@ export const RiskAssessment: React.FC = () => {
           </button>
         </form>
         <section className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold text-slate-200">Try these!</h3>
-            <p className="mt-1 text-xs text-slate-400">
-              Load an example into the form, then click Analyze Transaction.
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-cyan-400" />
+                <h3 className="text-lg font-semibold text-slate-200">Real Database Presets</h3>
+              </div>
+              <p className="mt-1 text-xs text-slate-400">
+                Load verified real transactions from the database directly into the simulation model.
+              </p>
+            </div>
+            <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded">
+              Live DB
+            </span>
           </div>
+
+          {/* Quick Lookup Bar */}
+          <form onSubmit={handleLookupTransaction} className="flex flex-col gap-2 bg-slate-950 p-3 rounded-lg border border-slate-800">
+            <span className="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
+              <Database size={13} className="text-cyan-400" />
+              Load Any Real Transaction from Database
+            </span>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="e.g. TX-100463, TX-140135, TX-100003..."
+                value={lookupId}
+                onChange={(e) => setLookupId(e.target.value)}
+                className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
+              />
+              <button
+                type="submit"
+                disabled={lookupLoading || !lookupId.trim()}
+                className="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40"
+              >
+                {lookupLoading ? <Loader2 size={13} className="animate-spin" /> : <Search size={13} />}
+                Load
+              </button>
+            </div>
+            {lookupError && (
+              <span className="text-[11px] text-rose-400">{lookupError}</span>
+            )}
+          </form>
+
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {sampleTransactions.map(({ title, payload }) => (
+            {presets.map(({ title, category, payload }) => (
               <button
                 key={payload.transaction_id}
                 type="button"
@@ -265,10 +416,25 @@ export const RiskAssessment: React.FC = () => {
                   setResult(null);
                   setErrorMessage(null);
                 }}
-                className="rounded-lg border border-slate-800 bg-slate-950 p-3 text-left transition-colors hover:border-cyan-500/40 hover:bg-slate-900"
+                className="rounded-lg border border-slate-800 bg-slate-950 p-3 text-left transition-colors hover:border-cyan-500/40 hover:bg-slate-900 group"
               >
-                <span className="block text-sm font-semibold text-cyan-300">{title}</span>
-                <span className="mt-2 block text-xs text-slate-300">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="block text-sm font-semibold text-cyan-300 group-hover:underline">{title}</span>
+                  {category && (
+                    <span
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                        category === 'DECLINE'
+                          ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                          : category === 'REVIEW'
+                            ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                            : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                      }`}
+                    >
+                      {category}
+                    </span>
+                  )}
+                </div>
+                <span className="block text-xs font-mono text-slate-300">
                   {payload.transaction_id} · {payload.type}
                 </span>
                 <span className="mt-1 block text-xs text-slate-400">
@@ -278,11 +444,11 @@ export const RiskAssessment: React.FC = () => {
                   Balance: {new Intl.NumberFormat('id-ID').format(payload.oldbalanceOrg)} →{' '}
                   {new Intl.NumberFormat('id-ID').format(payload.newbalanceOrig)}
                 </span>
-                <span className="mt-1 block text-xs text-slate-500">
+                <span className="mt-1 block text-xs text-slate-500 font-mono">
                   Account: {payload.account_id}
                 </span>
-                <span className="mt-2 block text-[11px] text-slate-500">
-                  Select to fill the form
+                <span className="mt-2 block text-[11px] text-cyan-400 font-medium">
+                  Select to load payload →
                 </span>
               </button>
             ))}

@@ -94,6 +94,40 @@ def get_transaction_details(transaction_id: str, db: Session = Depends(get_db)):
                 raw_signals = []
         risk_signals = raw_signals if isinstance(raw_signals, list) else [raw_signals]
 
+    evaluated_result = None
+    if not risk_signals or values.get("risk_score") is None or values.get("decision") is None:
+        tx_payload = {
+            "transaction_id": transaction_id,
+            "account_id": values.get(account_column) if account_column else None,
+            "amount": values.get("amount", 0.0),
+            "type": values.get("type", "TRANSFER"),
+            "oldbalance_org": values.get("oldbalance_org", values.get("oldbalanceOrg", 0.0)),
+            "newbalance_orig": values.get("newbalance_orig", values.get("newbalanceOrig", 0.0)),
+            "oldbalance_dest": values.get("oldbalance_dest", values.get("oldbalanceDest", 0.0)),
+            "newbalance_dest": values.get("newbalance_dest", values.get("newbalanceDest", 0.0)),
+            "payment_attempts": values.get("payment_attempts", 1),
+            "device_id": values.get(device_column) if device_column else None,
+        }
+        try:
+            evaluated_result = risk_engine.evaluate_transaction(tx_payload, check_velocity=False)
+        except Exception:
+            evaluated_result = None
+
+    if not risk_signals and evaluated_result:
+        risk_signals = evaluated_result.get("signals", [])
+
+    final_risk_score = _serialize_value(values.get("risk_score"))
+    if final_risk_score is None and evaluated_result:
+        final_risk_score = evaluated_result.get("risk_score")
+
+    final_decision = _serialize_value(values.get("decision"))
+    if final_decision is None and evaluated_result:
+        final_decision = evaluated_result.get("decision")
+
+    final_model_version = _serialize_value(values.get("model_version"))
+    if final_model_version is None:
+        final_model_version = getattr(risk_engine, "model_version", "aegis-rf-0.1.0")
+
     case = None
     if "investigation_cases" in inspect(db.get_bind()).get_table_names():
         case_table = Table("investigation_cases", MetaData(), autoload_with=db.get_bind())
@@ -118,10 +152,15 @@ def get_transaction_details(transaction_id: str, db: Session = Depends(get_db)):
         "account_id": _serialize_value(values.get(account_column)) if account_column else None,
         "device_id": _serialize_value(values.get(device_column)) if device_column else None,
         "session_id": _serialize_value(values.get(session_column)) if session_column else None,
+        "oldbalance_org": _serialize_value(values.get("oldbalance_org", values.get("oldbalanceOrg", 0.0))),
+        "newbalance_orig": _serialize_value(values.get("newbalance_orig", values.get("newbalanceOrig", 0.0))),
+        "oldbalance_dest": _serialize_value(values.get("oldbalance_dest", values.get("oldbalanceDest", 0.0))),
+        "newbalance_dest": _serialize_value(values.get("newbalance_dest", values.get("newbalanceDest", 0.0))),
+        "payment_attempts": _serialize_value(values.get("payment_attempts", 1)),
         "label": _serialize_value(values.get(label_column)) if label_column else None,
-        "risk_score": _serialize_value(values.get("risk_score")) if "risk_score" in values else None,
-        "decision": _serialize_value(values.get("decision")) if "decision" in values else None,
-        "model_version": _serialize_value(values.get("model_version")) if "model_version" in values else None,
+        "risk_score": final_risk_score,
+        "decision": final_decision,
+        "model_version": final_model_version,
     }
     related_entities = {
         "account": _related_entity(

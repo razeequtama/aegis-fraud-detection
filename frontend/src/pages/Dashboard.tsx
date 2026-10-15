@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import {
   Activity,
-  CalendarDays,
   CheckCircle2,
   ShieldAlert,
   TrendingUp,
@@ -250,7 +249,7 @@ export const Dashboard: React.FC = () => {
               Transaction &amp; Suspicious Activity Trend
             </h3>
             <p className="mt-1 text-xs text-slate-400">
-              These are dated from the 50.000 transactions database.
+              These are dated from the transactions database.
             </p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
@@ -312,6 +311,32 @@ export const Dashboard: React.FC = () => {
                 Full Month
               </button>
             </div>
+            <div className="flex items-center gap-2">
+              <label htmlFor="dashboard-start-date" className="text-xs text-slate-400">
+                From:
+              </label>
+              <input
+                id="dashboard-start-date"
+                type="date"
+                value={startDate}
+                min={overview?.available_range?.start_date}
+                max={overview?.available_range?.end_date}
+                onChange={(e) => handleStartDateChange(e.target.value)}
+                className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-slate-200 focus:border-cyan-500 focus:outline-none"
+              />
+              <label htmlFor="dashboard-end-date" className="text-xs text-slate-400">
+                To:
+              </label>
+              <input
+                id="dashboard-end-date"
+                type="date"
+                value={endDate}
+                min={overview?.available_range?.start_date}
+                max={overview?.available_range?.end_date}
+                onChange={(e) => handleEndDateChange(e.target.value)}
+                className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-slate-200 focus:border-cyan-500 focus:outline-none"
+              />
+            </div>
           </div>
         </div>
         <div className="mb-4 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
@@ -321,10 +346,6 @@ export const Dashboard: React.FC = () => {
             {overview?.busiest_period
               ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
               : ''}
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-[11px] font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            {overview?.granularity === 'hourly' ? 'Hourly Timeline (24h View)' : 'Daily Timeline'}
           </span>
         </div>
         <div className="h-72 w-full">

@@ -91,29 +91,11 @@ def run_enrichment():
         """))
         conn.execute(text("DROP TABLE transactions_staging;"))
 
-        # Update manual/preset transactions
-        samples = [
-            ("TX-SAMPLE-APPROVE", "PAYMENT", 20000.0, 18800.0, 20000.0, 21200.0, 0, 1, 0.01),
-            ("TX-SAMPLE-REVIEW", "TRANSFER", 100000.0, 10000.0, 20000.0, 105000.0, 0, 2, 0.4978),
-            ("TX-SAMPLE-DECLINE", "CASH_OUT", 2000000.0, 0.0, 250000.0, 2250000.0, 1, 3, 0.99),
-            ("TX-99901", "TRANSFER", 100000.0, 10000.0, 20000.0, 105000.0, 0, 2, 0.4978),
-        ]
-        for tid, ttype, ob_org, nb_orig, ob_dest, nb_dest, is_f, p_att, r_score in samples:
-            conn.execute(text("""
-                UPDATE transactions
-                SET type = :ttype,
-                    oldbalance_org = :ob_org,
-                    newbalance_orig = :nb_orig,
-                    oldbalance_dest = :ob_dest,
-                    newbalance_dest = :nb_dest,
-                    is_fraud = :is_f,
-                    payment_attempts = :p_att,
-                    risk_score = :r_score
-                WHERE transaction_id = :tid;
-            """), {
-                "tid": tid, "ttype": ttype, "ob_org": ob_org, "nb_orig": nb_orig,
-                "ob_dest": ob_dest, "nb_dest": nb_dest, "is_f": is_f, "p_att": p_att, "r_score": r_score
-            })
+        # Clean up any legacy mock samples if present
+        conn.execute(text("""
+            DELETE FROM investigation_cases WHERE transaction_id LIKE '%SAMPLE%' OR transaction_id = 'TX-99901';
+            DELETE FROM transactions WHERE transaction_id LIKE '%SAMPLE%' OR transaction_id = 'TX-99901';
+        """))
 
     print("Data enrichment complete! Verifying database counts...")
     with engine.connect() as conn:
