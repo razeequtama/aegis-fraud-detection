@@ -152,7 +152,7 @@ export const ModelLab: React.FC = () => {
               Model Lab &amp; Replay Simulator
             </h2>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-sm text-slate-300">
             Evaluate model decision thresholds against historical transactions.
           </p>
         </div>
@@ -166,7 +166,7 @@ export const ModelLab: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="model-version" className="mb-1 block text-xs text-slate-400">
+            <label htmlFor="model-version" className="mb-1.5 block text-sm font-medium text-slate-300">
               Model Version
             </label>
             <select
@@ -185,9 +185,9 @@ export const ModelLab: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="decision-threshold" className="mb-2 flex justify-between text-xs text-slate-400">
+            <label htmlFor="decision-threshold" className="mb-2 flex justify-between text-sm font-medium text-slate-300">
               <span>Decision Threshold</span>
-              <span className="font-mono text-cyan-300">{threshold.toFixed(2)}</span>
+              <span className="font-mono text-cyan-300 font-bold">{threshold.toFixed(2)}</span>
             </label>
             <input
               id="decision-threshold"
@@ -198,9 +198,9 @@ export const ModelLab: React.FC = () => {
               value={threshold}
               onChange={(event) => setThreshold(Number(event.target.value))}
               disabled={isSimulating}
-              className="w-full accent-cyan-500 disabled:opacity-60"
+              className="w-full accent-cyan-500 disabled:opacity-60 cursor-pointer"
             />
-            <div className="mt-1 flex justify-between text-[11px] text-slate-500">
+            <div className="mt-1 flex justify-between text-xs text-slate-400 font-mono">
               <span>0.10</span>
               <span>0.99</span>
             </div>
@@ -210,7 +210,7 @@ export const ModelLab: React.FC = () => {
             type="button"
             onClick={() => void handleRunReplay()}
             disabled={isSimulating}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 py-2.5 font-semibold text-white transition-colors hover:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSimulating ? (
               <>
@@ -229,7 +229,7 @@ export const ModelLab: React.FC = () => {
         <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6 lg:col-span-2">
           <div>
             <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Simulation Impact Analysis</h3>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-sm text-slate-300">
               Comparison uses the baseline policy threshold of 0.75.
             </p>
           </div>
@@ -248,53 +248,53 @@ export const ModelLab: React.FC = () => {
                 <p className="font-medium">
                   {replay?.status === 'RUNNING' ? 'Replay simulation is running' : 'Replay job is queued'}
                 </p>
-                {replay && <p className="mt-1 text-xs text-slate-400">Job #{replay.replay_id}</p>}
+                {replay && <p className="mt-1 text-sm text-slate-300">Job #{replay.replay_id}</p>}
               </div>
             </div>
           )}
 
           {!metrics && !isSimulating && !error && (
-            <div className="rounded-lg border border-dashed border-slate-700 p-8 text-center text-sm text-slate-500">
+            <div className="rounded-lg border border-dashed border-slate-700 p-8 text-center text-sm text-slate-400">
               Run a replay to see its operational impact metrics.
             </div>
           )}
 
           {metrics && (
             <>
-              <div role="status" className="flex items-center gap-2 text-sm text-emerald-300">
+              <div role="status" className="flex items-center gap-2 text-sm text-emerald-300 font-medium">
                 <CheckCircle2 size={17} />
                 Replay completed for {replay?.model_version ?? 'unknown model'} at threshold {(replay?.threshold ?? 0).toFixed(2)}.
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <span className="block text-xs text-slate-400">Review Queue Load</span>
+                  <span className="block text-sm font-medium text-slate-300">Review Queue Load</span>
                   <span className="mt-2 inline-block text-2xl font-bold text-slate-100">
                     {formatCount(metrics.review_count)} <span className="text-sm font-medium text-slate-400">transactions</span>
                   </span>
-                  <span className={`mt-1 block text-xs ${reviewDifferenceClass}`}>
+                  <span className={`mt-1 block text-sm font-medium ${reviewDifferenceClass}`}>
                     {reviewDifference > 0 ? '+' : ''}
                     {formatCount(reviewDifference)} vs baseline
                     {metrics.review_queue_difference_percent !== null
                       ? ` (${metrics.review_queue_difference_percent > 0 ? '+' : ''}${metrics.review_queue_difference_percent.toFixed(1)}%)`
                       : ''}
                   </span>
-                  <span className="mt-1 block text-[11px] text-slate-500">
+                  <span className="mt-1 block text-xs text-slate-400">
                     Baseline: {formatCount(metrics.baseline_review_count)}
                   </span>
                 </div>
 
                 <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <span className="block text-xs text-slate-400">Fraud Captured</span>
+                  <span className="block text-sm font-medium text-slate-300">Fraud Captured</span>
                   <span className="mt-2 inline-block text-2xl font-bold text-emerald-400">
                     {formatCount(metrics.fraud_detected)} <span className="text-sm font-medium text-slate-400">cases</span>
                   </span>
-                  <span className="mt-1 block text-xs text-slate-500">
+                  <span className="mt-1 block text-xs text-slate-400">
                     Of {formatCount(metrics.total_processed)} transactions replayed
                   </span>
                 </div>
 
                 <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 sm:col-span-2">
-                  <span className="block text-xs text-slate-400">False Positive Metrics</span>
+                  <span className="block text-sm font-medium text-slate-300">False Positive Metrics</span>
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
                     <span className="text-2xl font-bold text-rose-300">
                       {formatCount(metrics.false_positives)}
@@ -303,7 +303,7 @@ export const ModelLab: React.FC = () => {
                       false positives · {(metrics.false_positive_rate * 100).toFixed(2)}% false-positive rate
                     </span>
                   </div>
-                  <span className="mt-1 block text-[11px] text-slate-500">
+                  <span className="mt-1 block text-xs text-slate-400">
                     Rate is false positives as a share of legitimate historical transactions.
                   </span>
                 </div>

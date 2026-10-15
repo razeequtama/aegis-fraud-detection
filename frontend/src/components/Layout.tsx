@@ -52,7 +52,7 @@ export const Layout: React.FC = () => {
       {/* Desktop Sidebar (hidden on phone & tablet, visible on lg screens) */}
       <aside className="hidden lg:flex w-64 bg-slate-900 border-r border-slate-800 flex-col shrink-0">
         <div className="p-6 border-b border-slate-800">
-          <AegisWordmark size="lg" withLogo showSubtitle asLink logoClassName="w-12 h-12" />
+          <AegisWordmark size="lg" withLogo showSubtitle asLink />
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
@@ -68,15 +68,22 @@ export const Layout: React.FC = () => {
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
               >
-                <Icon size={18} />
+                <Icon size={19} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
+        <div className="p-4 border-t border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
+          <span>Engine: aegis-rf-0.1.0</span>
+          <span className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Live
+          </span>
+        </div>
       </aside>
 
       {/* Mobile / Tablet Drawer Menu Modal */}
@@ -92,14 +99,14 @@ export const Layout: React.FC = () => {
           {/* Drawer content */}
           <aside className="relative flex flex-col w-72 max-w-[85vw] h-full bg-slate-900 border-r border-slate-800 shadow-2xl z-10 animate-in slide-in-from-left duration-200">
             <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-              <AegisWordmark size="md" withLogo showSubtitle asLink logoClassName="w-8 h-8" />
+              <AegisWordmark size="md" withLogo showSubtitle asLink />
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200"
+                className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-white"
                 aria-label="Close navigation menu"
               >
-                <X size={18} />
+                <X size={19} />
               </button>
             </div>
 
@@ -118,20 +125,20 @@ export const Layout: React.FC = () => {
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
-                        : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                     }`}
                   >
-                    <Icon size={18} />
+                    <Icon size={19} />
                     {item.label}
                   </Link>
                 );
               })}
             </nav>
 
-            <div className="p-4 border-t border-slate-800 text-[11px] font-mono text-slate-500 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
               <span>Engine: aegis-rf-0.1.0</span>
-              <span className="flex items-center gap-1 text-emerald-400 font-sans">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 Live
               </span>
             </div>
@@ -144,18 +151,17 @@ export const Layout: React.FC = () => {
         {/* Mobile / Tablet Top Header Bar (hidden on lg screens) */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 shrink-0 sticky top-0 z-30">
           <div className="flex items-center gap-2.5 min-w-0">
-            <AegisWordmark size="sm" withLogo asLink logoClassName="w-5 h-5" />
-            <span className="text-slate-700">/</span>
-            <span className="text-xs font-sans font-medium text-slate-300 truncate">
+            <AegisWordmark size="sm" withLogo asLink />
+            <span className="text-slate-600">/</span>
+            <span className="text-sm font-sans font-medium text-slate-200 truncate">
               {currentNav?.label ?? 'Command Center'}
             </span>
           </div>
 
-
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="p-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-colors"
+            className="p-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 transition-colors"
             aria-label="Open navigation menu"
           >
             <Menu size={20} />

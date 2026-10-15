@@ -442,7 +442,7 @@ export const Investigation: React.FC = () => {
                 Fraud Investigation Hub
               </h2>
             </div>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-sm text-slate-300">
               Review case queues, analyze explainable ML signals, and record feedback decisions for retraining.
             </p>
           </div>
@@ -471,35 +471,35 @@ export const Investigation: React.FC = () => {
         {/* KPI Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-            <span className="text-xs font-medium text-slate-400">Total Cases</span>
+            <span className="text-sm font-medium text-slate-300">Total Cases</span>
             <div className="mt-2 text-2xl font-bold text-slate-100">
               {caseSummary ? caseSummary.total_cases : '—'}
             </div>
-            <span className="mt-1 block text-[11px] text-slate-500">Tracked in database</span>
+            <span className="mt-1 block text-xs text-slate-400">Tracked in database</span>
           </div>
 
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-            <span className="text-xs font-medium text-amber-300">Open / Pending Review</span>
+            <span className="text-sm font-medium text-amber-300">Open / Pending Review</span>
             <div className="mt-2 text-2xl font-bold text-amber-400">
               {caseSummary ? caseSummary.open + caseSummary.in_review : '—'}
             </div>
-            <span className="mt-1 block text-[11px] text-amber-300/80">Requires analyst action</span>
+            <span className="mt-1 block text-xs text-amber-300/90">Requires analyst action</span>
           </div>
 
           <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4">
-            <span className="text-xs font-medium text-rose-300">Confirmed Fraud</span>
+            <span className="text-sm font-medium text-rose-300">Confirmed Fraud</span>
             <div className="mt-2 text-2xl font-bold text-rose-400">
               {caseSummary ? caseSummary.confirmed_fraud : '—'}
             </div>
-            <span className="mt-1 block text-[11px] text-rose-300/80">Ready for training loop</span>
+            <span className="mt-1 block text-xs text-rose-300/90">Ready for training loop</span>
           </div>
 
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-            <span className="text-xs font-medium text-emerald-300">Cleared / Legitimate</span>
+            <span className="text-sm font-medium text-emerald-300">Cleared / Legitimate</span>
             <div className="mt-2 text-2xl font-bold text-emerald-400">
               {caseSummary ? caseSummary.legitimate : '—'}
             </div>
-            <span className="mt-1 block text-[11px] text-emerald-300/80">False positive mitigation</span>
+            <span className="mt-1 block text-xs text-emerald-300/90">False positive mitigation</span>
           </div>
         </div>
 
@@ -508,9 +508,9 @@ export const Investigation: React.FC = () => {
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-cyan-400" />
-              <h3 className="font-display text-sm font-semibold tracking-wide text-slate-200">Curated Investigation Presets</h3>
+              <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Curated Investigation Presets</h3>
             </div>
-            <span className="text-xs text-slate-400">1-click select real database patterns</span>
+            <span className="text-sm text-slate-300">1-click select real database patterns</span>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {curatedCasePresets.map((preset) => (
@@ -522,22 +522,22 @@ export const Investigation: React.FC = () => {
               >
                 <div>
                   <div className="mb-1.5 flex items-center justify-between">
-                    <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${preset.badgeColor}`}>
+                    <span className={`rounded px-2 py-0.5 text-xs font-semibold border ${preset.badgeColor}`}>
                       {preset.badge}
                     </span>
-                    <span className="font-mono text-[11px] text-cyan-400 group-hover:underline">
+                    <span className="font-mono text-xs text-cyan-400 group-hover:underline">
                       {preset.txId}
                     </span>
                   </div>
-                  <h4 className="text-xs font-semibold text-slate-100 group-hover:text-cyan-200">
+                  <h4 className="text-sm font-semibold text-slate-100 group-hover:text-cyan-200">
                     {preset.title}
                   </h4>
-                  <p className="mt-1 text-[11px] text-slate-400 line-clamp-2">
+                  <p className="mt-1 text-xs text-slate-300 line-clamp-2">
                     {preset.description}
                   </p>
                 </div>
-                <div className="mt-3 flex items-center justify-end text-[11px] font-semibold text-cyan-400">
-                  Open Case <ArrowRight size={12} className="ml-1" />
+                <div className="mt-3 flex items-center justify-end text-xs font-semibold text-cyan-400">
+                  Open Case <ArrowRight size={13} className="ml-1" />
                 </div>
               </button>
             ))}
@@ -562,7 +562,7 @@ export const Investigation: React.FC = () => {
                           setStatusFilter(st);
                           setPage(1);
                         }}
-                        className={`rounded px-2.5 py-1 text-xs font-medium capitalize transition-colors ${
+                        className={`rounded px-2.5 py-1 text-xs sm:text-sm font-medium capitalize transition-colors ${
                           statusFilter === st
                             ? 'bg-cyan-500/20 text-cyan-300'
                             : 'text-slate-400 hover:text-slate-200'
@@ -575,7 +575,7 @@ export const Investigation: React.FC = () => {
                 </div>
 
                 <div className="relative">
-                  <Search size={14} className="absolute left-2.5 top-2 text-slate-500" />
+                  <Search size={14} className="absolute left-2.5 top-2.5 text-slate-500" />
                   <input
                     type="text"
                     value={searchFilter}
@@ -584,7 +584,7 @@ export const Investigation: React.FC = () => {
                       setPage(1);
                     }}
                     placeholder="Filter cases…"
-                    className="w-44 rounded-lg border border-slate-700 bg-slate-950 py-1.5 pl-8 pr-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-48 rounded-lg border border-slate-700 bg-slate-950 py-1.5 pl-8 pr-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -607,8 +607,8 @@ export const Investigation: React.FC = () => {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[660px] text-left text-xs">
-                    <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                  <table className="w-full min-w-[660px] text-left text-sm">
+                    <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-xs font-semibold text-slate-300 whitespace-nowrap">
                       <tr>
                         <th className="px-4 py-3">Case ID</th>
                         <th className="px-4 py-3">Transaction</th>
@@ -634,7 +634,7 @@ export const Investigation: React.FC = () => {
                               >
                                 {c.transaction_id}
                               </Link>
-                              <span className="block text-[10px] text-slate-500">{c.type ?? 'TRANSFER'}</span>
+                              <span className="block text-xs text-slate-400 mt-0.5">{c.type ?? 'TRANSFER'}</span>
                             </td>
                             <td className="px-4 py-3 font-medium text-slate-200">
                               {formatIDR(c.amount)}
@@ -654,7 +654,7 @@ export const Investigation: React.FC = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
+                                className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
                                   c.status === 'open'
                                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                     : c.status === 'in_review'
@@ -668,7 +668,7 @@ export const Investigation: React.FC = () => {
                             <td className="px-4 py-3">
                               {c.feedback_label ? (
                                 <span
-                                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
+                                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
                                     c.feedback_label === 'confirmed_fraud'
                                       ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                                       : c.feedback_label === 'legitimate'
@@ -679,14 +679,14 @@ export const Investigation: React.FC = () => {
                                   {c.feedback_label.replace('_', ' ')}
                                 </span>
                               ) : (
-                                <span className="text-slate-500 italic">Pending</span>
+                                <span className="text-slate-400 italic">Pending</span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <button
                                 type="button"
                                 onClick={() => navigate(`/investigation/${c.transaction_id}`)}
-                                className="rounded border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20"
+                                className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20"
                               >
                                 Review
                               </button>
@@ -700,7 +700,7 @@ export const Investigation: React.FC = () => {
               )}
 
               {/* Pagination Footer */}
-              <div className="flex items-center justify-between border-t border-slate-800 p-4 text-xs text-slate-400">
+              <div className="flex items-center justify-between border-t border-slate-800 p-4 text-sm text-slate-300">
                 <span>
                   Showing {cases.length} of {totalCases} cases
                 </span>
@@ -733,13 +733,13 @@ export const Investigation: React.FC = () => {
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldAlert size={16} className="text-rose-400" />
-                  <h3 className="font-display text-sm font-semibold tracking-wide text-slate-100">Critical Alerts Inbox</h3>
+                  <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">Critical Alerts Inbox</h3>
                 </div>
-                <span className="rounded bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-rose-300">
+                <span className="rounded bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-300">
                   Priority
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mb-4">
+              <p className="text-sm text-slate-300 mb-4">
                 High-risk transactions exceeding decline threshold that require urgent review.
               </p>
 
@@ -748,14 +748,14 @@ export const Investigation: React.FC = () => {
                   urgentAlerts.map((alert) => (
                     <div
                       key={alert.transaction_id}
-                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-xs"
+                      className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-sm"
                     >
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-medium text-cyan-400">
                             {alert.transaction_id}
                           </span>
-                          <span className="rounded bg-rose-500/10 px-1.5 py-0.2 font-mono font-bold text-rose-400 text-[10px]">
+                          <span className="rounded bg-rose-500/10 px-1.5 py-0.5 font-mono font-bold text-rose-400 text-xs">
                             {alert.risk_score.toFixed(2)}
                           </span>
                         </div>
@@ -766,14 +766,14 @@ export const Investigation: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => navigate(`/investigation/${alert.transaction_id}`)}
-                        className="rounded border border-rose-500/30 bg-rose-500/10 px-2.5 py-1 font-semibold text-rose-300 hover:bg-rose-500/20"
+                        className="rounded border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20"
                       >
                         Investigate
                       </button>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-slate-500 italic">No pending urgent alerts.</p>
+                  <p className="text-sm text-slate-400 italic">No pending urgent alerts.</p>
                 )}
               </div>
             </div>
@@ -833,12 +833,12 @@ export const Investigation: React.FC = () => {
           <div className="flex items-center gap-2 mb-1">
             <Link
               to="/investigation"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-400 hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-400 hover:underline"
             >
-              <ArrowLeft size={13} /> Back to Case Queue
+              <ArrowLeft size={15} /> Back to Case Queue
             </Link>
             <span className="text-slate-600">/</span>
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-sm text-slate-300 font-mono">
               {investigationCase?.case_id ?? 'Auto-Assigned Case'}
             </span>
           </div>
@@ -850,7 +850,7 @@ export const Investigation: React.FC = () => {
               </h2>
             </div>
             <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize border ${
+              className={`rounded-full px-3 py-0.5 text-sm font-medium capitalize border ${
                 investigationCase?.status === 'closed'
                   ? 'border-slate-600 bg-slate-800 text-slate-300'
                   : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
@@ -859,7 +859,7 @@ export const Investigation: React.FC = () => {
               {investigationCase?.status ?? 'open'}
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400 pl-3">
+          <p className="mt-1 text-sm text-slate-300 pl-3">
             {transaction.model_version ? (
               `Inference Engine: ${transaction.model_version}`
             ) : (
@@ -876,9 +876,9 @@ export const Investigation: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to={`/network/transactions/${encodeURIComponent(transaction.transaction_id)}`}
-            className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-xs font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20"
+            className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20"
           >
-            <Network size={15} />
+            <Network size={16} />
             Explore in Network Graph
           </Link>
           {isCaseClosed && (
@@ -886,9 +886,9 @@ export const Investigation: React.FC = () => {
               type="button"
               onClick={handleReopenCase}
               disabled={isUpdatingStatus}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50"
             >
-              <RotateCcw size={13} />
+              <RotateCcw size={14} />
               Reopen Case
             </button>
           )}
@@ -900,15 +900,15 @@ export const Investigation: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">Analyst Case Disposition</h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-sm text-slate-300">
               Record ground-truth feedback. Labeled feedback feeds into future model calibration and replay simulations.
             </p>
           </div>
           {investigationCase?.feedback_label && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Recorded Label:</span>
+              <span className="text-sm text-slate-300">Recorded Label:</span>
               <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-bold capitalize border ${
+                className={`rounded-full px-3 py-0.5 text-sm font-semibold capitalize border ${
                   investigationCase.feedback_label === 'confirmed_fraud'
                     ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                     : investigationCase.feedback_label === 'legitimate'
@@ -924,7 +924,7 @@ export const Investigation: React.FC = () => {
 
         {/* Quick Reasoning Tags */}
         <div>
-          <span className="block text-xs font-medium text-slate-400 mb-2">Quick Reasoning Tags:</span>
+          <span className="block text-sm font-medium text-slate-300 mb-2">Quick Reasoning Tags:</span>
           <div className="flex flex-wrap gap-1.5">
             {quickReasoningTags.map((tag) => (
               <button
@@ -933,7 +933,7 @@ export const Investigation: React.FC = () => {
                 onClick={() => {
                   setAnalystReasoning((prev) => (prev ? `${prev}, ${tag}` : tag));
                 }}
-                className="rounded-full border border-slate-700 bg-slate-950 px-2.5 py-1 text-[11px] text-slate-300 hover:border-cyan-500/50 hover:text-cyan-200"
+                className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs sm:text-sm text-slate-200 hover:border-cyan-500/50 hover:text-cyan-200 transition-colors"
               >
                 + {tag}
               </button>
@@ -943,7 +943,7 @@ export const Investigation: React.FC = () => {
 
         {/* Reasoning Text Input */}
         <div>
-          <label htmlFor="analyst-reasoning" className="block text-xs font-medium text-slate-400 mb-1">
+          <label htmlFor="analyst-reasoning" className="block text-sm font-medium text-slate-300 mb-1.5">
             Analyst Notes &amp; Justification
           </label>
           <textarea
@@ -952,7 +952,7 @@ export const Investigation: React.FC = () => {
             value={analystReasoning}
             onChange={(e) => setAnalystReasoning(e.target.value)}
             placeholder="Document observed pattern, device links, or reason for clearance…"
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-xs text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
           />
         </div>
 
@@ -964,7 +964,7 @@ export const Investigation: React.FC = () => {
               type="button"
               onClick={() => void submitFeedback(label, title)}
               disabled={submittingLabel !== null}
-              className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 rounded-lg border px-3 sm:px-4 py-2.5 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+              className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 rounded-lg border px-3 sm:px-4 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
             >
               <Icon size={16} />
               {submittingLabel === label ? 'Saving Decision…' : title}
@@ -973,13 +973,13 @@ export const Investigation: React.FC = () => {
         </div>
 
         {feedbackMessage && (
-          <div role="status" className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300">
+          <div role="status" className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-300">
             <CheckCircle2 size={16} />
             {feedbackMessage}
           </div>
         )}
         {feedbackError && (
-          <div role="alert" className="flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+          <div role="alert" className="flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">
             <AlertCircle size={16} />
             {feedbackError}
           </div>
@@ -995,7 +995,7 @@ export const Investigation: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Transaction Profile</h3>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">Risk Score:</span>
+                <span className="text-sm text-slate-300">Risk Score:</span>
                 <span
                   className={`font-mono text-base font-bold ${
                     (transaction.risk_score ?? 0) >= 0.75
@@ -1010,7 +1010,7 @@ export const Investigation: React.FC = () => {
                     : transaction.risk_score ?? 'N/A'}
                 </span>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase border ${
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase border ${
                     transaction.decision === 'decline'
                       ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                       : transaction.decision === 'review'
@@ -1023,23 +1023,23 @@ export const Investigation: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-2">
-              <div className="rounded-lg bg-slate-950 p-3">
-                <span className="block text-slate-400">Transaction Amount</span>
-                <span className="text-lg font-bold text-slate-100">{formatIDR(transaction.amount)}</span>
+            <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+              <div className="rounded-lg bg-slate-950 p-3.5">
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">Transaction Amount</span>
+                <span className="text-xl font-bold text-slate-100">{formatIDR(transaction.amount)}</span>
               </div>
-              <div className="rounded-lg bg-slate-950 p-3">
-                <span className="block text-slate-400">Type</span>
-                <span className="text-sm font-semibold text-slate-200">{transaction.type ?? 'TRANSFER'}</span>
+              <div className="rounded-lg bg-slate-950 p-3.5">
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">Type</span>
+                <span className="text-base font-semibold text-slate-200">{transaction.type ?? 'TRANSFER'}</span>
               </div>
-              <div className="rounded-lg bg-slate-950 p-3">
-                <span className="block text-slate-400">Timestamp</span>
+              <div className="rounded-lg bg-slate-950 p-3.5">
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">Timestamp</span>
                 <span className="font-medium text-slate-200">
                   {transaction.timestamp ? new Date(transaction.timestamp).toLocaleString() : 'Not available'}
                 </span>
               </div>
-              <div className="rounded-lg bg-slate-950 p-3">
-                <span className="block text-slate-400">Payment Attempts</span>
+              <div className="rounded-lg bg-slate-950 p-3.5">
+                <span className="block text-xs font-medium text-slate-400 mb-0.5">Payment Attempts</span>
                 <span className="font-medium text-slate-200">
                   {transaction.payment_attempts ?? 1} attempt(s)
                 </span>
@@ -1050,25 +1050,25 @@ export const Investigation: React.FC = () => {
           {/* Ledger & Balance Progression */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Ledger Balance State &amp; Account Depletion</h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-xs">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-sm">
               {/* Origin Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
-                <span className="font-semibold text-cyan-400 uppercase tracking-wider text-[10px]">
+                <span className="font-semibold text-cyan-400 uppercase tracking-wider text-xs">
                   Origin Account (Source)
                 </span>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Old Balance:</span>
+                  <span className="text-slate-300">Old Balance:</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.oldbalance_org)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">New Balance:</span>
+                  <span className="text-slate-300">New Balance:</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.newbalance_orig)}</span>
                 </div>
                 {typeof transaction.oldbalance_org === 'number' &&
                   typeof transaction.amount === 'number' &&
                   transaction.oldbalance_org > 0 && (
                     <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
-                      <span className="text-slate-400">Balance Drain Ratio:</span>
+                      <span className="text-slate-300">Balance Drain Ratio:</span>
                       <span className="font-mono font-bold text-amber-400">
                         {((transaction.amount / transaction.oldbalance_org) * 100).toFixed(1)}%
                       </span>
@@ -1078,20 +1078,20 @@ export const Investigation: React.FC = () => {
 
               {/* Destination Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
-                <span className="font-semibold text-slate-300 uppercase tracking-wider text-[10px]">
+                <span className="font-semibold text-slate-300 uppercase tracking-wider text-xs">
                   Destination Account
                 </span>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Old Balance:</span>
+                  <span className="text-slate-300">Old Balance:</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.oldbalance_dest)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">New Balance:</span>
+                  <span className="text-slate-300">New Balance:</span>
                   <span className="font-mono text-slate-200">{formatIDR(transaction.newbalance_dest)}</span>
                 </div>
                 <div className="border-t border-slate-800/80 pt-2 flex items-center justify-between">
-                  <span className="text-slate-400">Destination Account ID:</span>
-                  <span className="font-mono text-slate-300">
+                  <span className="text-slate-300">Destination Account ID:</span>
+                  <span className="font-mono text-slate-200">
                     {displayEntityId(entities.account)}
                   </span>
                 </div>
@@ -1103,7 +1103,7 @@ export const Investigation: React.FC = () => {
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Explainable Risk Signals</h3>
-              <span className="text-xs text-slate-400">{signals.length} triggered signal(s)</span>
+              <span className="text-sm text-slate-300">{signals.length} triggered signal(s)</span>
             </div>
 
             {signals.length ? (
@@ -1123,25 +1123,25 @@ export const Investigation: React.FC = () => {
                   return (
                     <div
                       key={`${name}-${index}`}
-                      className={`flex items-start gap-3 rounded-lg border p-3 text-xs ${
+                      className={`flex items-start gap-3 rounded-lg border p-3.5 text-sm ${
                         isCritical
                           ? 'border-rose-500/30 bg-rose-500/10 text-rose-300'
                           : 'border-amber-500/30 bg-amber-500/10 text-amber-300'
                       }`}
                     >
-                      <AlertTriangle className="mt-0.5 shrink-0" size={17} />
+                      <AlertTriangle className="mt-0.5 shrink-0" size={18} />
                       <div>
-                        <h4 className="font-bold uppercase tracking-wider text-[11px]">
+                        <h4 className="font-bold uppercase tracking-wider text-xs">
                           {name.replace(/_/g, ' ')}
                         </h4>
-                        <p className="mt-1 text-slate-200 text-xs leading-relaxed">{description}</p>
+                        <p className="mt-1 text-slate-200 text-sm leading-relaxed">{description}</p>
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <p className="text-xs text-slate-500 italic">No stored risk signals are available for this transaction.</p>
+              <p className="text-sm text-slate-400 italic">No stored risk signals are available for this transaction.</p>
             )}
           </section>
         </div>
@@ -1151,48 +1151,48 @@ export const Investigation: React.FC = () => {
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">Entity Relationships</h3>
 
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-sm">
               {/* Account Link */}
-              <div className="flex items-start justify-between rounded-lg bg-slate-950 p-3">
+              <div className="flex items-start justify-between rounded-lg bg-slate-950 p-3.5">
                 <div className="flex items-start gap-2.5">
-                  <User size={16} className="mt-0.5 text-cyan-400" />
+                  <User size={18} className="mt-0.5 text-cyan-400" />
                   <div>
-                    <span className="block text-slate-400 font-medium">Source Account</span>
-                    <span className="font-mono text-slate-200">{transaction.account_id ?? 'N/A'}</span>
+                    <span className="block text-xs text-slate-400 font-medium">Source Account</span>
+                    <span className="font-mono text-sm text-slate-200">{transaction.account_id ?? 'N/A'}</span>
                   </div>
                 </div>
                 {transaction.account_id && (
                   <Link
                     to={`/network/accounts/${encodeURIComponent(transaction.account_id)}`}
-                    className="flex items-center gap-1 text-[11px] font-semibold text-cyan-400 hover:underline"
+                    className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-cyan-400 hover:underline"
                   >
-                    Graph <ExternalLink size={12} />
+                    Graph <ExternalLink size={13} />
                   </Link>
                 )}
               </div>
 
               {/* Device Link */}
-              <div className="flex items-start justify-between rounded-lg bg-slate-950 p-3">
+              <div className="flex items-start justify-between rounded-lg bg-slate-950 p-3.5">
                 <div className="flex items-start gap-2.5">
-                  <Monitor size={16} className="mt-0.5 text-cyan-400" />
+                  <Monitor size={18} className="mt-0.5 text-cyan-400" />
                   <div>
-                    <span className="block text-slate-400 font-medium">Device Hardware</span>
-                    <span className="font-mono text-slate-200">{transaction.device_id ?? 'N/A'}</span>
+                    <span className="block text-xs text-slate-400 font-medium">Device Hardware</span>
+                    <span className="font-mono text-sm text-slate-200">{transaction.device_id ?? 'N/A'}</span>
                   </div>
                 </div>
                 {transaction.device_id && (
-                  <span className="rounded bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-mono text-cyan-300">
+                  <span className="rounded bg-cyan-500/10 px-2 py-0.5 text-xs font-mono text-cyan-300">
                     Shared
                   </span>
                 )}
               </div>
 
               {/* Session Link */}
-              <div className="flex items-start gap-2.5 rounded-lg bg-slate-950 p-3">
-                <Clock size={16} className="mt-0.5 text-cyan-400" />
+              <div className="flex items-start gap-2.5 rounded-lg bg-slate-950 p-3.5">
+                <Clock size={18} className="mt-0.5 text-cyan-400" />
                 <div>
-                  <span className="block text-slate-400 font-medium">Session ID</span>
-                  <span className="font-mono text-slate-200">{transaction.session_id ?? 'N/A'}</span>
+                  <span className="block text-xs text-slate-400 font-medium">Session ID</span>
+                  <span className="font-mono text-sm text-slate-200">{transaction.session_id ?? 'N/A'}</span>
                 </div>
               </div>
             </div>
@@ -1201,39 +1201,39 @@ export const Investigation: React.FC = () => {
             <div className="pt-2">
               <Link
                 to={`/network/transactions/${encodeURIComponent(transaction.transaction_id)}`}
-                className="flex items-center justify-center gap-2 w-full rounded-lg border border-cyan-500/40 bg-cyan-500/10 py-2.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 transition-colors"
+                className="flex items-center justify-center gap-2 w-full rounded-lg border border-cyan-500/40 bg-cyan-500/10 py-2.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 transition-colors"
               >
-                <Network size={15} />
+                <Network size={16} />
                 Visualize Full Syndicate Ring
               </Link>
             </div>
           </section>
 
           {/* Case Audit Trail */}
-          <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-3 text-xs">
+          <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-3 text-sm">
             <h3 className="font-display text-base font-semibold tracking-wide text-slate-200 flex items-center gap-2">
-              <FileText size={16} className="text-slate-400" />
+              <FileText size={17} className="text-slate-400" />
               Investigation Case Record
             </h3>
-            <div className="space-y-2 text-slate-400">
+            <div className="space-y-2.5 text-slate-300">
               <div className="flex justify-between">
-                <span>Case ID:</span>
-                <span className="font-mono text-slate-300">{investigationCase?.case_id ?? 'Not Assigned'}</span>
+                <span className="text-slate-400">Case ID:</span>
+                <span className="font-mono text-slate-200">{investigationCase?.case_id ?? 'Not Assigned'}</span>
               </div>
               <div className="flex justify-between">
-                <span>Status:</span>
-                <span className="capitalize font-semibold text-slate-200">
+                <span className="text-slate-400">Status:</span>
+                <span className="capitalize font-semibold text-slate-100">
                   {investigationCase?.status ?? 'Open'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span>Assigned Analyst:</span>
+                <span className="text-slate-400">Assigned Analyst:</span>
                 <span className="text-slate-200">{investigationCase?.assigned_analyst ?? 'Unassigned'}</span>
               </div>
               {investigationCase?.feedback_reasoning && (
-                <div className="border-t border-slate-800 pt-2">
-                  <span className="block text-slate-500 font-medium mb-1">Saved Reasoning:</span>
-                  <p className="rounded bg-slate-950 p-2 text-slate-300 italic">
+                <div className="border-t border-slate-800 pt-2.5">
+                  <span className="block text-slate-400 font-medium mb-1">Saved Reasoning:</span>
+                  <p className="rounded bg-slate-950 p-2.5 text-slate-200 italic">
                     "{investigationCase.feedback_reasoning}"
                   </p>
                 </div>

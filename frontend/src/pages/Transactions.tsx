@@ -83,7 +83,7 @@ export const Transactions: React.FC = () => {
               Transaction Explorer
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-sm text-slate-300 mt-1">
             Live fraud evaluation records and real-time inference scores
           </p>
         </div>
@@ -99,14 +99,14 @@ export const Transactions: React.FC = () => {
               setTransferDecision(e.target.value as 'ALL' | 'APPROVE' | 'DECLINE');
               setPage(1);
             }}
-            className="flex-1 sm:flex-initial bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-cyan-500"
+            className="flex-1 sm:flex-initial bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-medium"
           >
             <option value="ALL">All decisions</option>
             <option value="DECLINE">Declined only</option>
             <option value="APPROVE">Approved only</option>
           </select>
           <div className="relative flex-1 sm:flex-initial">
-            <Search className="absolute left-3 top-2.5 text-slate-500" size={17} />
+            <Search className="absolute left-3 top-3 text-slate-500" size={17} />
             <input
               type="text"
               placeholder="Search ID or Account..."
@@ -115,7 +115,7 @@ export const Transactions: React.FC = () => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 w-full sm:w-64"
+              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-64"
             />
           </div>
         </div>
@@ -124,11 +124,11 @@ export const Transactions: React.FC = () => {
       {/* Risk Score Range Filter Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 flex-1">
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-300 min-w-fit">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-200 min-w-fit">
             <Sliders size={18} className="text-cyan-400" />
             <span>Risk Score:</span>
             <span
-              className={`px-2 py-0.5 rounded text-xs font-mono font-bold border ${
+              className={`px-2.5 py-1 rounded text-xs sm:text-sm font-mono font-bold border ${
                 minRiskScore >= 0.75
                   ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
                   : minRiskScore >= 0.4
@@ -145,7 +145,7 @@ export const Transactions: React.FC = () => {
           {/* Dual Sliders and Exact Number Inputs */}
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 font-mono">Min</span>
+              <span className="text-xs sm:text-sm text-slate-300 font-mono font-medium">Min</span>
               <input
                 type="number"
                 min="0"
@@ -157,7 +157,7 @@ export const Transactions: React.FC = () => {
                   setMinRiskScore(Number(val.toFixed(2)));
                   setPage(1);
                 }}
-                className="w-16 bg-slate-950 border border-slate-750 rounded px-2 py-1 text-xs text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500"
+                className="w-16 bg-slate-950 border border-slate-750 rounded px-2 py-1 text-sm text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500 font-semibold"
               />
               <input
                 type="range"
@@ -201,9 +201,9 @@ export const Transactions: React.FC = () => {
                   setMaxRiskScore(Number(val.toFixed(2)));
                   setPage(1);
                 }}
-                className="w-16 bg-slate-950 border border-slate-750 rounded px-2 py-1 text-xs text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500"
+                className="w-16 bg-slate-950 border border-slate-750 rounded px-2 py-1 text-sm text-slate-100 font-mono text-center focus:outline-none focus:border-cyan-500 font-semibold"
               />
-              <span className="text-xs text-slate-400 font-mono">Max</span>
+              <span className="text-xs sm:text-sm text-slate-300 font-mono font-medium">Max</span>
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
-            className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.0 && maxRiskScore === 1.0
                 ? 'bg-slate-750 border-slate-600 text-slate-100 font-semibold'
                 : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
@@ -224,7 +224,7 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(0.39); setPage(1); }}
-            className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.0 && maxRiskScore === 0.39
                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold'
                 : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-emerald-400 hover:bg-slate-800'
@@ -235,7 +235,7 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.40); setMaxRiskScore(0.74); setPage(1); }}
-            className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.40 && maxRiskScore === 0.74
                 ? 'bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold'
                 : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-amber-400 hover:bg-slate-800'
@@ -246,7 +246,7 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.75); setMaxRiskScore(1.0); setPage(1); }}
-            className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.75 && maxRiskScore === 1.0
                 ? 'bg-rose-500/20 border-rose-500/40 text-rose-300 font-semibold'
                 : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-rose-400 hover:bg-slate-800'
@@ -259,10 +259,10 @@ export const Transactions: React.FC = () => {
             <button
               type="button"
               onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
-              className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-colors ml-1"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-colors ml-1 font-medium"
               title="Reset Risk Filter"
             >
-              <RotateCcw size={12} />
+              <RotateCcw size={13} />
               Reset
             </button>
           )}
@@ -281,7 +281,7 @@ export const Transactions: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[680px]">
               <thead>
-                <tr className="border-b border-slate-800 text-xs text-slate-400 uppercase bg-slate-900/50">
+                <tr className="border-b border-slate-800 text-xs font-bold uppercase tracking-wider text-slate-300 bg-slate-900/70">
                   <th className="p-4 whitespace-nowrap">Transaction ID</th>
                   <th className="p-4 whitespace-nowrap">Timestamp</th>
                   <th className="p-4 whitespace-nowrap">Account</th>
@@ -295,7 +295,7 @@ export const Transactions: React.FC = () => {
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
                     <tr key={tx.id} className="hover:bg-slate-850 transition-colors">
-                      <td className="p-4 font-medium text-cyan-400 whitespace-nowrap">
+                      <td className="p-4 font-mono font-medium text-cyan-400 whitespace-nowrap text-sm">
                         <Link
                           to={`/investigation/${encodeURIComponent(tx.id)}`}
                           className="hover:text-cyan-300 hover:underline"
@@ -303,13 +303,13 @@ export const Transactions: React.FC = () => {
                           {tx.id}
                         </Link>
                       </td>
-                      <td className="p-4 text-slate-400 whitespace-nowrap">{tx.time}</td>
-                      <td className="p-4 text-slate-300 whitespace-nowrap">{tx.account}</td>
-                      <td className="p-4 text-slate-300 whitespace-nowrap">{tx.type}</td>
-                      <td className="p-4 text-slate-200 font-semibold whitespace-nowrap">{tx.amount}</td>
+                      <td className="p-4 text-slate-300 whitespace-nowrap text-sm">{tx.time}</td>
+                      <td className="p-4 text-slate-200 whitespace-nowrap text-sm font-mono">{tx.account}</td>
+                      <td className="p-4 text-slate-200 whitespace-nowrap text-sm font-medium">{tx.type}</td>
+                      <td className="p-4 text-slate-100 font-semibold whitespace-nowrap text-sm">{tx.amount}</td>
                       <td className="p-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className={`font-bold font-mono ${tx.riskScore >= 0.75 ? 'text-rose-400' : tx.riskScore >= 0.4 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                          <span className={`font-bold font-mono text-sm ${tx.riskScore >= 0.75 ? 'text-rose-400' : tx.riskScore >= 0.4 ? 'text-amber-400' : 'text-emerald-400'}`}>
                             {typeof tx.riskScore === 'number' ? tx.riskScore.toFixed(2) : tx.riskScore}
                           </span>
                           <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden hidden sm:block">
@@ -321,7 +321,7 @@ export const Transactions: React.FC = () => {
                         </div>
                       </td>
                       <td className="p-4 whitespace-nowrap">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getDecisionBadge(tx.decision)}`}>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getDecisionBadge(tx.decision)}`}>
                           {tx.decision}
                         </span>
                       </td>
@@ -329,7 +329,7 @@ export const Transactions: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500">No transactions found.</td>
+                    <td colSpan={7} className="p-8 text-center text-slate-400 text-sm">No transactions found.</td>
                   </tr>
                 )}
               </tbody>
@@ -338,7 +338,7 @@ export const Transactions: React.FC = () => {
         )}
 
         {/* Pagination Footer */}
-        <div className="p-4 border-t border-slate-800 flex items-center justify-between text-sm text-slate-400">
+        <div className="p-4 border-t border-slate-800 flex items-center justify-between text-sm text-slate-300">
           <span>Page {page}</span>
           <div className="flex items-center gap-2">
             <button

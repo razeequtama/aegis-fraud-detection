@@ -37,31 +37,32 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   className = '',
   logoClassName = '',
 }) => {
+  // Balanced sizing: logo height is optically on-par with the main "AEGIS" text height
   const sizeStyles = {
     xs: {
-      text: 'text-sm font-bold tracking-[0.14em]',
-      logo: 'w-4 h-4',
-      subtitle: 'text-[8px] tracking-[0.2em] -mt-0.5',
+      text: 'text-sm font-bold tracking-[0.14em] leading-none',
+      logo: 'h-4 w-4',
+      subtitle: 'text-xs tracking-[0.18em] mt-1 text-slate-400 font-medium',
     },
     sm: {
-      text: 'text-base font-bold tracking-[0.16em]',
-      logo: 'w-5 h-5',
-      subtitle: 'text-[9px] tracking-[0.22em] -mt-0.5',
+      text: 'text-lg font-bold tracking-[0.16em] leading-none',
+      logo: 'h-5 w-5',
+      subtitle: 'text-xs tracking-[0.18em] mt-1 text-slate-400 font-medium',
     },
     md: {
-      text: 'text-2xl font-bold tracking-[0.18em]',
-      logo: 'w-8 h-8',
-      subtitle: 'text-[10px] tracking-[0.24em] mt-0.5',
+      text: 'text-2xl font-bold tracking-[0.18em] leading-none',
+      logo: 'h-6 w-6 sm:h-7 sm:w-7',
+      subtitle: 'text-xs tracking-[0.2em] mt-1.5 text-slate-400 font-medium',
     },
     lg: {
-      text: 'text-3xl sm:text-4xl font-extrabold tracking-[0.2em]',
-      logo: 'w-11 h-11',
-      subtitle: 'text-xs tracking-[0.26em] mt-1',
+      text: 'text-3xl sm:text-4xl font-extrabold tracking-[0.2em] leading-none',
+      logo: 'h-8 w-8 sm:h-9 sm:w-9',
+      subtitle: 'text-xs sm:text-sm tracking-[0.22em] mt-2 text-slate-300 font-medium',
     },
     xl: {
-      text: 'text-5xl sm:text-6xl font-extrabold tracking-[0.22em]',
-      logo: 'w-16 h-16',
-      subtitle: 'text-sm tracking-[0.28em] mt-1.5',
+      text: 'text-5xl sm:text-6xl font-extrabold tracking-[0.22em] leading-none',
+      logo: 'h-12 w-12 sm:h-14 sm:w-14',
+      subtitle: 'text-sm sm:text-base tracking-[0.24em] mt-2.5 text-slate-400 font-medium',
     },
   }[size];
 
@@ -71,7 +72,6 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
     <span
       className={`font-arcane select-none transition-all duration-300 ${sizeStyles.text} aegis-text-gradient aegis-glow relative inline-block`}
       style={{
-        // Fallback gradient inline style to guarantee exact blue-to-cyan gradient on all browsers
         backgroundImage: 'linear-gradient(to top, #1e40af 0%, #0284c7 35%, #06b6d4 70%, #67e8f9 100%)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
@@ -94,31 +94,27 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
     );
   }
 
+  // The logo is placed directly beside the main "AEGIS" text with matching optical height
   const innerContent = (
-    <div className={`flex items-center gap-3 ${className}`}>
-      {withLogo && (
-        <div className="relative shrink-0 flex items-center justify-center">
+    <div className={`flex flex-col min-w-0 ${className}`}>
+      <div className="flex items-center gap-3">
+        {withLogo && (
           <img
             src="/logo.svg"
             alt="AEGIS Crest"
-            className={`${logoClassName || sizeStyles.logo} object-contain transition-transform duration-300 hover:scale-105 filter drop-shadow-[0_2px_10px_rgba(6,182,212,0.35)]`}
+            className={`${logoClassName || sizeStyles.logo} object-contain shrink-0 transition-transform duration-300 hover:scale-105 filter drop-shadow-[0_2px_8px_rgba(6,182,212,0.35)]`}
           />
-        </div>
-      )}
-
-      <div className="flex flex-col min-w-0">
-        <div className="flex items-center gap-2">
-          {wordmarkContent}
-        </div>
-
-        {showSubtitle && (
-          <p
-            className={`font-sans font-medium uppercase text-slate-400 ${sizeStyles.subtitle} transition-colors`}
-          >
-            {subtitle}
-          </p>
         )}
+        {wordmarkContent}
       </div>
+
+      {showSubtitle && (
+        <p
+          className={`font-sans uppercase ${sizeStyles.subtitle} transition-colors pl-0.5`}
+        >
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 
@@ -126,7 +122,7 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
     return (
       <Link
         to="/"
-        className="group inline-flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-md transition-opacity hover:opacity-95"
+        className="group inline-flex flex-col justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-md transition-opacity hover:opacity-95"
       >
         {innerContent}
       </Link>
@@ -137,4 +133,3 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
 };
 
 export default AegisWordmark;
-

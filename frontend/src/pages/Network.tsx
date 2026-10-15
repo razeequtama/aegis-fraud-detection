@@ -420,7 +420,7 @@ export const Network: React.FC = () => {
               Network Investigation
             </h2>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-sm text-slate-300">
             Explore connected accounts, shared devices, and transaction relationships.
           </p>
         </div>
@@ -459,7 +459,7 @@ export const Network: React.FC = () => {
 
       {/* Pattern Showcase Quick-Select Pills (Horizontally scrollable on mobile) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
-        <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">
+        <span className="flex shrink-0 items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300 mr-1">
           <Sparkles size={14} className="text-cyan-400" />
           Pattern Presets:
         </span>
@@ -470,7 +470,7 @@ export const Network: React.FC = () => {
               key={sample.id}
               type="button"
               onClick={() => handleSelectSample(sample)}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
+              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-medium transition-all ${
                 isActive
                   ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-sm shadow-cyan-500/20 ring-1 ring-cyan-400/40'
                   : 'border-slate-800 bg-slate-900/90 text-slate-300 hover:border-slate-700 hover:bg-slate-800'
@@ -481,7 +481,7 @@ export const Network: React.FC = () => {
               </span>
               <span>{sample.title}</span>
               <span
-                className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${sample.badgeColor}`}
+                className={`rounded px-2 py-0.5 text-xs font-semibold border ${sample.badgeColor}`}
               >
                 {sample.type === 'accounts' ? 'Account' : 'TX'}
               </span>
@@ -496,14 +496,14 @@ export const Network: React.FC = () => {
           <div className="absolute inset-0 z-10 overflow-y-auto bg-slate-950/85 p-6 backdrop-blur-sm">
             <div className="mx-auto max-w-5xl space-y-6">
               <div className="text-center">
-                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-medium text-cyan-300">
+                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-sm font-medium text-cyan-300">
                   <Sparkles size={14} />
                   Database Pattern Showcase
                 </div>
                 <h3 className="mt-2 text-xl sm:text-2xl font-fantasy font-bold tracking-wide text-slate-100">
                   Choose a Graph Pattern to Explore
                 </h3>
-                <p className="mx-auto mt-1 max-w-2xl text-xs text-slate-400">
+                <p className="mx-auto mt-1 max-w-2xl text-sm text-slate-300">
                   Select any curated entity from the live database below to visualize device-sharing rings, emulator syndicates, mule networks, or clean retail baselines in Cytoscape.
                 </p>
               </div>
@@ -519,30 +519,30 @@ export const Network: React.FC = () => {
                     <div>
                       <div className="mb-2.5 flex items-center justify-between gap-2">
                         <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${sample.badgeColor}`}
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${sample.badgeColor}`}
                         >
                           {renderSampleIcon(sample.icon, 'w-3 h-3')}
                           {sample.badge}
                         </span>
-                        <span className="font-mono text-[11px] text-slate-400 group-hover:text-cyan-300">
+                        <span className="font-mono text-xs text-slate-300 group-hover:text-cyan-300">
                           {sample.type === 'accounts' ? 'Account' : 'Transaction'}
                         </span>
                       </div>
-                      <h4 className="font-fantasy text-sm font-semibold tracking-wide text-slate-100 group-hover:text-cyan-200">
+                      <h4 className="font-fantasy text-base font-semibold tracking-wide text-slate-100 group-hover:text-cyan-200">
                         {sample.title}
                       </h4>
-                      <p className="mt-1 font-mono text-xs text-cyan-400">
+                      <p className="mt-1 font-mono text-sm text-cyan-400">
                         {sample.id}
                       </p>
-                      <p className="mt-2 text-xs text-slate-400 line-clamp-2">
+                      <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2">
                         {sample.description}
                       </p>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-[11px]">
-                      <span className="font-medium text-slate-400">{sample.stats}</span>
+                    <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs sm:text-sm">
+                      <span className="font-medium text-slate-300">{sample.stats}</span>
                       <span className="flex items-center gap-1 font-semibold text-cyan-400 transition-transform group-hover:translate-x-0.5">
-                        Explore <ArrowRight size={13} />
+                        Explore <ArrowRight size={14} />
                       </span>
                     </div>
                   </button>
@@ -569,7 +569,7 @@ export const Network: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setRetryCount((count) => count + 1)}
-                className="shrink-0 rounded border border-rose-500/30 px-3 py-1 text-xs font-semibold hover:bg-rose-500/10"
+                className="shrink-0 rounded border border-rose-500/30 px-3 py-1.5 text-sm font-semibold hover:bg-rose-500/10"
               >
                 Retry
               </button>
@@ -578,7 +578,7 @@ export const Network: React.FC = () => {
         )}
         {graphSummary && !loading && (
           <>
-            <div className="absolute left-4 top-4 z-10 flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/90 px-3 py-2 text-xs text-slate-300 shadow-md backdrop-blur-sm">
+            <div className="absolute left-4 top-4 z-10 flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/90 px-3.5 py-2 text-sm text-slate-200 shadow-md backdrop-blur-sm">
               <span>
                 <strong className="text-cyan-300">{graphSummary.center_node}</strong> ·{' '}
                 {graphSummary.metrics?.neighborhood_size ?? graphSummary.nodes.length} nodes ·{' '}
@@ -587,12 +587,12 @@ export const Network: React.FC = () => {
               <button
                 type="button"
                 onClick={handleClear}
-                className="rounded border border-slate-700 bg-slate-800/80 px-2 py-0.5 text-[11px] font-medium text-slate-300 hover:border-slate-500 hover:bg-slate-700 hover:text-white"
+                className="rounded border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-slate-500 hover:bg-slate-700 hover:text-white"
               >
                 Clear View
               </button>
             </div>
-            <div className="absolute bottom-4 right-4 z-10 space-y-2 rounded-lg border border-slate-700 bg-slate-950/90 p-3 text-xs text-slate-300">
+            <div className="absolute bottom-4 right-4 z-10 space-y-2 rounded-lg border border-slate-700 bg-slate-950/90 p-3.5 text-sm text-slate-200">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-rose-500" />
                 Suspicious account

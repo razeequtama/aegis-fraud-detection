@@ -190,15 +190,15 @@ export const SystemHealth: React.FC = () => {
               System Health &amp; Observability
             </h2>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
-          Live backend, database pool, velocity cache, and model inference status.
+          <p className="mt-1 text-sm text-slate-300">
+            Live backend, database pool, velocity cache, and model inference status.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-400 font-mono">
           {loading ? (
-            <LoaderCircle className="animate-spin text-cyan-400" size={14} />
+            <LoaderCircle className="animate-spin text-cyan-400" size={15} />
           ) : (
-            <Activity className="text-cyan-400" size={14} />
+            <Activity className="text-cyan-400" size={15} />
           )}
           <span>
             {lastUpdated
@@ -236,7 +236,7 @@ export const SystemHealth: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-slate-300">
                   <Icon size={20} className="text-cyan-400" />
-                  <h3 className="font-display text-sm font-semibold tracking-wide text-slate-200">{title}</h3>
+                  <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{title}</h3>
                 </div>
                 <StatusIcon operational={Boolean(operational)} />
               </div>
@@ -248,13 +248,13 @@ export const SystemHealth: React.FC = () => {
                 >
                   {status}
                 </p>
-                <span className="mt-4 block text-xs text-slate-400">
+                <span className="mt-4 block text-sm font-medium text-slate-300">
                   {metricLabel}
                 </span>
                 <p className="mt-1 break-words text-lg font-semibold text-slate-100">
                   {metric}
                 </p>
-                <span className="mt-2 block text-xs text-slate-500">{detail}</span>
+                <span className="mt-2 block text-xs sm:text-sm text-slate-400">{detail}</span>
               </div>
             </section>
           )
