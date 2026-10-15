@@ -412,7 +412,7 @@ export const Network: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-120px)] flex-col space-y-4">
+    <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
           <h2 className="text-2xl font-bold text-slate-100">Network Investigation</h2>
@@ -420,7 +420,7 @@ export const Network: React.FC = () => {
             Explore connected accounts, shared devices, and transaction relationships.
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
           <label htmlFor="network-entity-type" className="sr-only">
             Network entity type
           </label>
@@ -441,7 +441,7 @@ export const Network: React.FC = () => {
             value={entityId}
             onChange={(event) => setEntityId(event.target.value)}
             placeholder={entityType === 'transactions' ? 'Transaction ID' : 'Account ID'}
-            className="w-48 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+            className="flex-1 sm:w-48 sm:flex-initial rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
           />
           <button
             type="submit"
@@ -453,9 +453,9 @@ export const Network: React.FC = () => {
         </form>
       </div>
 
-      {/* Pattern Showcase Quick-Select Pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">
+      {/* Pattern Showcase Quick-Select Pills (Horizontally scrollable on mobile) */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
+        <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">
           <Sparkles size={14} className="text-cyan-400" />
           Pattern Presets:
         </span>
@@ -466,7 +466,7 @@ export const Network: React.FC = () => {
               key={sample.id}
               type="button"
               onClick={() => handleSelectSample(sample)}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
+              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
                 isActive
                   ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-sm shadow-cyan-500/20 ring-1 ring-cyan-400/40'
                   : 'border-slate-800 bg-slate-900/90 text-slate-300 hover:border-slate-700 hover:bg-slate-800'
@@ -486,7 +486,7 @@ export const Network: React.FC = () => {
         })}
       </div>
 
-      <div className="relative min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="relative min-h-[440px] lg:min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />
         {!loadRequest && !loading && (
           <div className="absolute inset-0 z-10 overflow-y-auto bg-slate-950/85 p-6 backdrop-blur-sm">

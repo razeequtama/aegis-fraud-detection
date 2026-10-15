@@ -152,7 +152,7 @@ export const ModelLab: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center gap-2">
             <Cpu className="text-cyan-400" size={18} />
@@ -220,7 +220,7 @@ export const ModelLab: React.FC = () => {
           </button>
         </section>
 
-        <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6 md:col-span-2">
+        <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-6 lg:col-span-2">
           <div>
             <h3 className="text-lg font-semibold text-slate-200">Simulation Impact Analysis</h3>
             <p className="mt-1 text-xs text-slate-400">

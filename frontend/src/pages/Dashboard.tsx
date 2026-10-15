@@ -213,7 +213,7 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {loading
           ? Array.from({ length: 4 }, (_, index) => (
               <div
@@ -242,25 +242,25 @@ export const Dashboard: React.FC = () => {
             ))}
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
+        <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-200">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-200">
               Transaction &amp; Suspicious Activity Trend
             </h3>
             <p className="mt-1 text-xs text-slate-400">
               These are dated from the transactions database.
             </p>
           </div>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-wrap items-center gap-1.5 mr-2">
+          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
               <button
                 type="button"
                 onClick={() => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-01');
                 }}
-                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
                   startDate === '2026-01-01' && endDate === '2026-01-01'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
                     : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
@@ -274,7 +274,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-02');
                   setEndDate('2026-01-02');
                 }}
-                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
                   startDate === '2026-01-02' && endDate === '2026-01-02'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
                     : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
@@ -288,7 +288,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-07');
                 }}
-                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
                   startDate === '2026-01-01' && endDate === '2026-01-07'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
                     : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
@@ -302,7 +302,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-31');
                 }}
-                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                className={`whitespace-nowrap px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
                   startDate === '2026-01-01' && endDate === '2026-01-31'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
                     : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
@@ -311,7 +311,7 @@ export const Dashboard: React.FC = () => {
                 Full Month
               </button>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <label htmlFor="dashboard-start-date" className="text-xs text-slate-400">
                 From:
               </label>
@@ -347,8 +347,12 @@ export const Dashboard: React.FC = () => {
               ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
               : ''}
           </span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-[11px] font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            {overview?.granularity === 'hourly' ? 'Hourly Timeline (24h View)' : 'Daily Timeline'}
+          </span>
         </div>
-        <div className="h-72 w-full">
+        <div className="h-64 sm:h-72 lg:h-80 w-full">
           {loading ? (
             <div className="h-full animate-pulse rounded-lg bg-slate-800/50" />
           ) : errorMessage ? (

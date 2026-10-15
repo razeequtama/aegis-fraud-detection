@@ -241,7 +241,7 @@ export const RiskAssessment: React.FC = () => {
         <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
           <h3 className="text-lg font-semibold text-slate-200">Test Transaction Payload</h3>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-slate-400 mb-1">Transaction ID</label>
               <input
@@ -262,7 +262,7 @@ export const RiskAssessment: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-slate-400 mb-1">Transaction Type</label>
               <select
@@ -288,7 +288,7 @@ export const RiskAssessment: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-slate-400 mb-1">Origin Old Balance</label>
               <input
@@ -309,7 +309,7 @@ export const RiskAssessment: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-slate-400 mb-1">Destination Old Balance</label>
               <input
@@ -330,7 +330,7 @@ export const RiskAssessment: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-slate-400 mb-1">Payment Attempts</label>
               <input

@@ -81,7 +81,7 @@ export const Transactions: React.FC = () => {
           <h2 className="text-2xl font-bold text-slate-100">Transaction Explorer</h2>
           <p className="text-xs text-slate-400 mt-1">Live fraud evaluation records and real-time inference scores</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
           <label htmlFor="transfer-decision-filter" className="sr-only">
             Filter transfers by decision
           </label>
@@ -92,14 +92,14 @@ export const Transactions: React.FC = () => {
               setTransferDecision(e.target.value as 'ALL' | 'APPROVE' | 'DECLINE');
               setPage(1);
             }}
-            className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-300 focus:outline-none focus:border-cyan-500"
+            className="flex-1 sm:flex-initial bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-cyan-500"
           >
             <option value="ALL">All decisions</option>
             <option value="DECLINE">Declined only</option>
             <option value="APPROVE">Approved only</option>
           </select>
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-2.5 text-slate-500" size={17} />
             <input
               type="text"
               placeholder="Search ID or Account..."
@@ -108,7 +108,7 @@ export const Transactions: React.FC = () => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 w-56 sm:w-64"
+              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 w-full sm:w-64"
             />
           </div>
         </div>
@@ -271,61 +271,63 @@ export const Transactions: React.FC = () => {
             Could not load transactions: {errorMessage}
           </div>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-800 text-xs text-slate-400 uppercase bg-slate-900/50">
-                <th className="p-4">Transaction ID</th>
-                <th className="p-4">Timestamp</th>
-                <th className="p-4">Account</th>
-                <th className="p-4">Type</th>
-                <th className="p-4">Amount</th>
-                <th className="p-4">Risk Score</th>
-                <th className="p-4">Decision</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800 text-sm">
-              {transactions.length > 0 ? (
-                transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-850 transition-colors">
-                    <td className="p-4 font-medium text-cyan-400">
-                      <Link
-                        to={`/investigation/${encodeURIComponent(tx.id)}`}
-                        className="hover:text-cyan-300 hover:underline"
-                      >
-                        {tx.id}
-                      </Link>
-                    </td>
-                    <td className="p-4 text-slate-400">{tx.time}</td>
-                    <td className="p-4 text-slate-300">{tx.account}</td>
-                    <td className="p-4 text-slate-300">{tx.type}</td>
-                    <td className="p-4 text-slate-200 font-semibold">{tx.amount}</td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <span className={`font-bold font-mono ${tx.riskScore >= 0.75 ? 'text-rose-400' : tx.riskScore >= 0.4 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                          {typeof tx.riskScore === 'number' ? tx.riskScore.toFixed(2) : tx.riskScore}
-                        </span>
-                        <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden hidden sm:block">
-                          <div
-                            className={`h-full ${tx.riskScore >= 0.75 ? 'bg-rose-500' : tx.riskScore >= 0.4 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                            style={{ width: `${Math.min(100, Math.max(0, tx.riskScore * 100))}%` }}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getDecisionBadge(tx.decision)}`}>
-                        {tx.decision}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-500">No transactions found.</td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[680px]">
+              <thead>
+                <tr className="border-b border-slate-800 text-xs text-slate-400 uppercase bg-slate-900/50">
+                  <th className="p-4 whitespace-nowrap">Transaction ID</th>
+                  <th className="p-4 whitespace-nowrap">Timestamp</th>
+                  <th className="p-4 whitespace-nowrap">Account</th>
+                  <th className="p-4 whitespace-nowrap">Type</th>
+                  <th className="p-4 whitespace-nowrap">Amount</th>
+                  <th className="p-4 whitespace-nowrap">Risk Score</th>
+                  <th className="p-4 whitespace-nowrap">Decision</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-800 text-sm">
+                {transactions.length > 0 ? (
+                  transactions.map((tx) => (
+                    <tr key={tx.id} className="hover:bg-slate-850 transition-colors">
+                      <td className="p-4 font-medium text-cyan-400 whitespace-nowrap">
+                        <Link
+                          to={`/investigation/${encodeURIComponent(tx.id)}`}
+                          className="hover:text-cyan-300 hover:underline"
+                        >
+                          {tx.id}
+                        </Link>
+                      </td>
+                      <td className="p-4 text-slate-400 whitespace-nowrap">{tx.time}</td>
+                      <td className="p-4 text-slate-300 whitespace-nowrap">{tx.account}</td>
+                      <td className="p-4 text-slate-300 whitespace-nowrap">{tx.type}</td>
+                      <td className="p-4 text-slate-200 font-semibold whitespace-nowrap">{tx.amount}</td>
+                      <td className="p-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-bold font-mono ${tx.riskScore >= 0.75 ? 'text-rose-400' : tx.riskScore >= 0.4 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                            {typeof tx.riskScore === 'number' ? tx.riskScore.toFixed(2) : tx.riskScore}
+                          </span>
+                          <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden hidden sm:block">
+                            <div
+                              className={`h-full ${tx.riskScore >= 0.75 ? 'bg-rose-500' : tx.riskScore >= 0.4 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                              style={{ width: `${Math.min(100, Math.max(0, tx.riskScore * 100))}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 whitespace-nowrap">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getDecisionBadge(tx.decision)}`}>
+                          {tx.decision}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-slate-500">No transactions found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {/* Pagination Footer */}

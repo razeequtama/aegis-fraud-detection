@@ -443,20 +443,20 @@ export const Investigation: React.FC = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSearchJump} className="flex items-center gap-2">
-            <div className="relative">
+          <form onSubmit={handleSearchJump} className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial">
               <Search size={15} className="absolute left-3 top-2.5 text-slate-500" />
               <input
                 type="text"
                 value={searchJumpInput}
                 onChange={(e) => setSearchJumpInput(e.target.value)}
                 placeholder="Enter Transaction or Case ID…"
-                className="w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
+                className="w-full sm:w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none"
               />
             </div>
             <button
               type="submit"
-              className="flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20"
+              className="shrink-0 flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 sm:px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20"
             >
               Investigate <ArrowRight size={15} />
             </button>
@@ -464,7 +464,7 @@ export const Investigation: React.FC = () => {
         </div>
 
         {/* KPI Summary Cards */}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
             <span className="text-xs font-medium text-slate-400">Total Cases</span>
             <div className="mt-2 text-2xl font-bold text-slate-100">
@@ -602,8 +602,8 @@ export const Investigation: React.FC = () => {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-slate-400">
+                  <table className="w-full min-w-[660px] text-left text-xs">
+                    <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-slate-400 whitespace-nowrap">
                       <tr>
                         <th className="px-4 py-3">Case ID</th>
                         <th className="px-4 py-3">Transaction</th>
@@ -614,7 +614,7 @@ export const Investigation: React.FC = () => {
                         <th className="px-4 py-3 text-right">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-800/60 whitespace-nowrap">
                       {cases.map((c) => {
                         const score = c.risk_score ?? 0;
                         return (
@@ -837,8 +837,8 @@ export const Investigation: React.FC = () => {
               {investigationCase?.case_id ?? 'Auto-Assigned Case'}
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-slate-100">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-100 break-all sm:break-normal">
               Case Investigation: {transaction.transaction_id}
             </h2>
             <span
@@ -944,14 +944,14 @@ export const Investigation: React.FC = () => {
         </div>
 
         {/* Feedback Buttons */}
-        <div className="flex flex-wrap items-center gap-3 pt-1">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-1">
           {feedbackActions.map(({ label, title, className, Icon }) => (
             <button
               key={label}
               type="button"
               onClick={() => void submitFeedback(label, title)}
               disabled={submittingLabel !== null}
-              className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+              className={`flex-1 sm:flex-initial justify-center flex items-center gap-2 rounded-lg border px-3 sm:px-4 py-2.5 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
             >
               <Icon size={16} />
               {submittingLabel === label ? 'Saving Decision…' : title}
@@ -974,9 +974,9 @@ export const Investigation: React.FC = () => {
       </div>
 
       {/* Main 2-Column Layout */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left Column: Transaction Details, Ledger Progression, and Risk Signals */}
-        <div className="space-y-6 md:col-span-2">
+        <div className="space-y-6 lg:col-span-2">
           {/* Transaction Metadata & Risk Gauge */}
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-6 space-y-4">
             <div className="flex items-center justify-between">
