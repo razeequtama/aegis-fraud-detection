@@ -157,8 +157,8 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-cyan-400 font-semibold flex items-center gap-1.5">
-                  <Sparkles size={12} className="text-cyan-400" />
+                <span className="text-xs sm:text-sm font-mono uppercase tracking-[0.2em] text-cyan-400 font-semibold flex items-center gap-1.5">
+                  <Sparkles size={13} className="text-cyan-400" />
                   {t.welcomeModal.badge}
                 </span>
               </div>
@@ -177,7 +177,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
                   AEGIS
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 font-medium">
+              <p className="text-sm text-slate-300 font-medium">
                 {t.welcomeModal.tagline}
               </p>
             </div>
@@ -201,14 +201,14 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
           <div className="rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 via-slate-900/90 to-blue-950/40 p-4 sm:p-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
               <div>
-                <span className="text-xs font-mono uppercase tracking-wider text-cyan-400 font-semibold">
+                <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold">
                   LANGUAGE PREFERENCE
                 </span>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-100">
+                <h3 className="text-base font-semibold text-slate-100">
                   {t.welcomeModal.chooseLanguage}
                 </h3>
               </div>
-              <span className="text-xs text-slate-400 sm:text-right max-w-xs">
+              <span className="text-xs sm:text-sm text-slate-300 sm:text-right max-w-xs">
                 {t.welcomeModal.chooseLanguageHint}
               </span>
             </div>
@@ -230,7 +230,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
                   </div>
                   <div>
                     <span className="block text-sm font-bold text-slate-100">English</span>
-                    <span className="block text-xs text-slate-400">Default International (EN)</span>
+                    <span className="block text-xs sm:text-sm text-slate-300">Default International (EN)</span>
                   </div>
                 </div>
                 {language === 'en' && (
@@ -256,7 +256,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
                   </div>
                   <div>
                     <span className="block text-sm font-bold text-slate-100">Bahasa Indonesia</span>
-                    <span className="block text-xs text-slate-400">Indonesian Localization (ID)</span>
+                    <span className="block text-xs sm:text-sm text-slate-300">Indonesian Localization (ID)</span>
                   </div>
                 </div>
                 {language === 'id' && (
@@ -276,7 +276,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
                 {t.welcomeModal.aboutTitle}
               </h3>
             </div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-200 leading-relaxed">
               {t.welcomeModal.aboutDescription}
             </p>
           </div>
@@ -284,11 +284,11 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
           {/* Platform Architecture & Core Modules */}
           <div>
             <div className="flex items-center justify-between mb-3.5">
-              <h3 className="font-display text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
+              <h3 className="font-display text-base sm:text-lg font-bold text-slate-100 flex items-center gap-2">
                 <Sparkles size={16} className="text-cyan-400" />
                 {t.welcomeModal.modulesTitle}
               </h3>
-              <span className="text-xs text-slate-400">7 Connected Intelligence Modules</span>
+              <span className="text-xs sm:text-sm text-slate-300">7 Connected Intelligence Modules</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -306,7 +306,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
                       <h4 className="text-sm font-semibold text-slate-200">
                         {module.title}
                       </h4>
-                      <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+                      <p className="mt-1 text-xs sm:text-sm text-slate-300 leading-relaxed">
                         {module.desc}
                       </p>
                     </div>
@@ -319,7 +319,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
 
         {/* Modal Footer */}
         <div className="px-6 py-4 sm:px-8 border-t border-slate-800/80 bg-slate-900/90 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
-          <span className="text-xs text-slate-400 text-center sm:text-left">
+          <span className="text-sm text-slate-300 text-center sm:text-left">
             {language === 'en'
               ? 'Click below to enter the live command console.'
               : 'Klik di bawah untuk masuk ke konsol kendali langsung.'}

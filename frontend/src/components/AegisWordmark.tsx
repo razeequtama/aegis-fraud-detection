@@ -52,27 +52,27 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
     xs: {
       text: 'text-sm leading-none',
       logo: 'h-4 w-4',
-      subtitle: 'text-xs tracking-[0.18em] mt-1 text-slate-400 font-medium',
+      subtitle: 'text-xs sm:text-sm tracking-[0.18em] mt-1 text-slate-300 font-medium',
     },
     sm: {
       text: 'text-lg leading-none',
       logo: 'h-5 w-5',
-      subtitle: 'text-xs tracking-[0.18em] mt-1 text-slate-400 font-medium',
+      subtitle: 'text-xs sm:text-sm tracking-[0.18em] mt-1 text-slate-300 font-medium',
     },
     md: {
       text: 'text-2xl leading-none',
       logo: 'h-6 w-6 sm:h-7 sm:w-7',
-      subtitle: 'text-xs tracking-[0.2em] mt-1.5 text-slate-400 font-medium',
+      subtitle: 'text-xs sm:text-sm tracking-[0.2em] mt-1.5 text-slate-300 font-medium',
     },
     lg: {
       text: 'text-2xl sm:text-3xl leading-none',
       logo: 'h-8 w-8 sm:h-9 sm:w-9',
-      subtitle: 'text-xs sm:text-sm tracking-[0.2em] mt-2 text-slate-300 font-medium',
+      subtitle: 'text-sm tracking-[0.2em] mt-2 text-slate-300 font-medium',
     },
     xl: {
       text: 'text-4xl sm:text-5xl leading-none',
       logo: 'h-12 w-12 sm:h-14 sm:w-14',
-      subtitle: 'text-sm sm:text-base tracking-[0.22em] mt-2.5 text-slate-400 font-medium',
+      subtitle: 'text-sm sm:text-base tracking-[0.22em] mt-2.5 text-slate-300 font-medium',
     },
   }[size];
 

@@ -90,13 +90,13 @@ export const Transactions: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
             <AegisWordmark size="xs" inline /> {t.transactions.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
             {t.transactions.title}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-sm sm:text-base text-slate-300 mt-1">
             {t.transactions.subtitle}
           </p>
         </div>
@@ -141,7 +141,7 @@ export const Transactions: React.FC = () => {
             <Sliders size={18} className="text-cyan-400 shrink-0" />
             <span className="shrink-0">{t.transactions.riskScore}</span>
             <span
-              className={`inline-block min-w-[7.5rem] text-center px-2.5 py-1 rounded text-xs sm:text-sm font-mono font-bold border transition-colors shrink-0 ${
+              className={`inline-block min-w-[7.5rem] text-center px-2.5 py-1 rounded text-sm font-mono font-bold border transition-colors shrink-0 ${
                 minRiskScore >= 0.75
                   ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
                   : minRiskScore >= 0.4
@@ -240,10 +240,10 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
-            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
+            className={`px-3.5 py-2 text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.0 && maxRiskScore === 1.0
                 ? 'bg-slate-700 border-slate-600 text-slate-100 font-semibold'
-                : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'bg-slate-800/60 border-slate-800 text-slate-300 hover:text-slate-100 hover:bg-slate-800'
             }`}
           >
             {t.transactions.allRange}
@@ -251,10 +251,10 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(0.39); setPage(1); }}
-            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
+            className={`px-3.5 py-2 text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.0 && maxRiskScore === 0.39
                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold'
-                : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-emerald-400 hover:bg-slate-800'
+                : 'bg-slate-800/60 border-slate-800 text-slate-300 hover:text-emerald-400 hover:bg-slate-800'
             }`}
           >
             {t.transactions.lowRange}
@@ -262,10 +262,10 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.40); setMaxRiskScore(0.74); setPage(1); }}
-            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
+            className={`px-3.5 py-2 text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.40 && maxRiskScore === 0.74
                 ? 'bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold'
-                : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-amber-400 hover:bg-slate-800'
+                : 'bg-slate-800/60 border-slate-800 text-slate-300 hover:text-amber-400 hover:bg-slate-800'
             }`}
           >
             {t.transactions.medRange}
@@ -273,10 +273,10 @@ export const Transactions: React.FC = () => {
           <button
             type="button"
             onClick={() => { setMinRiskScore(0.75); setMaxRiskScore(1.0); setPage(1); }}
-            className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg border transition-colors ${
+            className={`px-3.5 py-2 text-sm rounded-lg border transition-colors ${
               minRiskScore === 0.75 && maxRiskScore === 1.0
                 ? 'bg-rose-500/20 border-rose-500/40 text-rose-300 font-semibold'
-                : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-rose-400 hover:bg-slate-800'
+                : 'bg-slate-800/60 border-slate-800 text-slate-300 hover:text-rose-400 hover:bg-slate-800'
             }`}
           >
             {t.transactions.highRange}
@@ -286,14 +286,14 @@ export const Transactions: React.FC = () => {
             type="button"
             disabled={minRiskScore === 0.0 && maxRiskScore === 1.0}
             onClick={() => { setMinRiskScore(0.0); setMaxRiskScore(1.0); setPage(1); }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm rounded-lg border font-medium transition-all duration-150 ml-1 ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 text-sm rounded-lg border font-medium transition-all duration-150 ml-1 ${
               minRiskScore !== 0.0 || maxRiskScore !== 1.0
                 ? 'bg-rose-500/10 border-rose-500/20 text-rose-400 hover:bg-rose-500/20 cursor-pointer opacity-100'
                 : 'opacity-0 pointer-events-none invisible border-transparent'
             }`}
             title={t.transactions.resetFilterTooltip}
           >
-            <RotateCcw size={13} />
+            <RotateCcw size={14} />
             {t.transactions.resetFilter}
           </button>
         </div>
@@ -302,16 +302,16 @@ export const Transactions: React.FC = () => {
       {/* Table */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-slate-400">{t.transactions.loadingPostgres}</div>
+          <div className="p-8 text-center text-slate-400 text-sm">{t.transactions.loadingPostgres}</div>
         ) : errorMessage ? (
-          <div role="alert" className="p-8 text-center text-rose-400">
+          <div role="alert" className="p-8 text-center text-rose-400 text-sm">
             {t.transactions.errorPrefix} {errorMessage}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[680px]">
               <thead>
-                <tr className="border-b border-slate-800 text-xs font-bold uppercase tracking-wider text-slate-300 bg-slate-900/70">
+                <tr className="border-b border-slate-800 text-sm font-semibold uppercase tracking-wider text-slate-300 bg-slate-900/70">
                   <th className="p-4 whitespace-nowrap">{t.transactions.thTxId}</th>
                   <th className="p-4 whitespace-nowrap">{t.transactions.thTimestamp}</th>
                   <th className="p-4 whitespace-nowrap">{t.transactions.thAccount}</th>
@@ -351,7 +351,7 @@ export const Transactions: React.FC = () => {
                         </div>
                       </td>
                       <td className="p-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getDecisionBadge(tx.decision)}`}>
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getDecisionBadge(tx.decision)}`}>
                           {getDecisionLabel(tx.decision)}
                         </span>
                       </td>

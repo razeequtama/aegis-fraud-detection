@@ -34,7 +34,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
         className={`group inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/90 hover:bg-slate-850 hover:border-cyan-500/40 text-slate-200 transition-all duration-200 active:scale-95 shadow-sm ${className}`}
       >
         {isEn ? <CircleFlagEn size={18} /> : <CircleFlagId size={18} />}
-        <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300 group-hover:text-cyan-300">
+        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-slate-300 group-hover:text-cyan-300">
           {language.toUpperCase()}
         </span>
       </button>
@@ -42,7 +42,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   }
 
   const flagSize = size === 'sm' ? 16 : 18;
-  const paddingClass = size === 'sm' ? 'px-2 py-1 text-xs' : 'px-2.5 py-1 text-xs';
+  const paddingClass = size === 'sm' ? 'px-2.5 py-1 text-xs sm:text-sm' : 'px-3 py-1.5 text-sm';
 
   return (
     <div

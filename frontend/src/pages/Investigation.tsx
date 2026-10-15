@@ -440,13 +440,13 @@ export const Investigation: React.FC = () => {
         {/* Header & Direct ID Search */}
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
               <AegisWordmark size="xs" inline />{t.investigation.hubTag}
             </span>
             <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
               {t.investigation.title}
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            <p className="mt-1 text-sm sm:text-base text-slate-300">
               {t.investigation.subtitle}
             </p>
           </div>
@@ -478,7 +478,7 @@ export const Investigation: React.FC = () => {
             <div className="mt-2 text-2xl font-bold text-slate-100">
               {caseSummary ? caseSummary.total_cases : '—'}
             </div>
-            <span className="mt-1 block text-xs text-slate-400">{t.investigation.trackedInDb}</span>
+            <span className="mt-1 block text-sm text-slate-400">{t.investigation.trackedInDb}</span>
           </div>
 
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 interactive-card hover:border-amber-500/50 cursor-default">
@@ -486,7 +486,7 @@ export const Investigation: React.FC = () => {
             <div className="mt-2 text-2xl font-bold text-amber-400">
               {caseSummary ? caseSummary.open + caseSummary.in_review : '—'}
             </div>
-            <span className="mt-1 block text-xs text-amber-300/90">{t.investigation.requiresAction}</span>
+            <span className="mt-1 block text-sm text-amber-300/90">{t.investigation.requiresAction}</span>
           </div>
 
           <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 interactive-card hover:border-rose-500/50 cursor-default">
@@ -494,7 +494,7 @@ export const Investigation: React.FC = () => {
             <div className="mt-2 text-2xl font-bold text-rose-400">
               {caseSummary ? caseSummary.confirmed_fraud : '—'}
             </div>
-            <span className="mt-1 block text-xs text-rose-300/90">{t.investigation.readyForTraining}</span>
+            <span className="mt-1 block text-sm text-rose-300/90">{t.investigation.readyForTraining}</span>
           </div>
 
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 interactive-card hover:border-emerald-500/50 cursor-default">
@@ -502,7 +502,7 @@ export const Investigation: React.FC = () => {
             <div className="mt-2 text-2xl font-bold text-emerald-400">
               {caseSummary ? caseSummary.legitimate : '—'}
             </div>
-            <span className="mt-1 block text-xs text-emerald-300/90">{t.investigation.falsePositiveMitigation}</span>
+            <span className="mt-1 block text-sm text-emerald-300/90">{t.investigation.falsePositiveMitigation}</span>
           </div>
         </div>
 
@@ -525,22 +525,22 @@ export const Investigation: React.FC = () => {
               >
                 <div>
                   <div className="mb-1.5 flex items-center justify-between">
-                    <span className={`rounded px-2 py-0.5 text-xs font-semibold border ${preset.badgeColor}`}>
+                    <span className={`rounded px-2.5 py-0.5 text-xs sm:text-sm font-semibold border ${preset.badgeColor}`}>
                       {preset.badge}
                     </span>
-                    <span className="font-mono text-xs text-cyan-400 group-hover:underline">
+                    <span className="font-mono text-sm text-cyan-400 group-hover:underline">
                       {preset.txId}
                     </span>
                   </div>
-                  <h4 className="text-sm font-semibold text-slate-100 group-hover:text-cyan-200 transition-colors">
+                  <h4 className="text-sm sm:text-base font-semibold text-slate-100 group-hover:text-cyan-200 transition-colors">
                     {preset.title}
                   </h4>
-                  <p className="mt-1 text-xs text-slate-300 line-clamp-2">
+                  <p className="mt-1 text-sm text-slate-300 line-clamp-2">
                     {preset.description}
                   </p>
                 </div>
-                <div className="mt-3 flex items-center justify-end text-xs font-semibold text-cyan-400">
-                  {t.investigation.openCaseBtn} <ArrowRight size={13} className="ml-1 transition-transform duration-200 group-hover:translate-x-1" />
+                <div className="mt-3 flex items-center justify-end text-sm font-semibold text-cyan-400">
+                  {t.investigation.openCaseBtn} <ArrowRight size={14} className="ml-1 transition-transform duration-200 group-hover:translate-x-1" />
                 </div>
               </button>
             ))}
@@ -565,7 +565,7 @@ export const Investigation: React.FC = () => {
                           setStatusFilter(st);
                           setPage(1);
                         }}
-                        className={`rounded px-2.5 py-1 text-xs sm:text-sm font-medium capitalize transition-all duration-150 interactive-btn ${
+                        className={`rounded px-3 py-1.5 text-sm font-medium capitalize transition-all duration-150 interactive-btn ${
                           statusFilter === st
                             ? 'bg-cyan-500/20 text-cyan-300 shadow-sm shadow-cyan-500/10'
                             : 'text-slate-400 hover:text-slate-200'
@@ -617,7 +617,7 @@ export const Investigation: React.FC = () => {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[660px] text-left text-sm">
-                    <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-xs font-semibold text-slate-300 whitespace-nowrap">
+                    <thead className="border-b border-slate-800 bg-slate-950/50 uppercase tracking-wider text-sm font-semibold text-slate-300 whitespace-nowrap">
                       <tr>
                         <th className="px-4 py-3">{t.investigation.thCaseId}</th>
                         <th className="px-4 py-3">{t.investigation.thTransaction}</th>
@@ -633,7 +633,7 @@ export const Investigation: React.FC = () => {
                         const score = c.risk_score ?? 0;
                         return (
                           <tr key={c.case_id} className="transition-colors duration-150 hover:bg-slate-800/50">
-                            <td className="px-4 py-3 font-mono font-medium text-slate-300">
+                            <td className="px-4 py-3 font-mono font-medium text-slate-200">
                               {c.case_id}
                             </td>
                             <td className="px-4 py-3">
@@ -643,14 +643,14 @@ export const Investigation: React.FC = () => {
                               >
                                 {c.transaction_id}
                               </Link>
-                              <span className="block text-xs text-slate-400 mt-0.5">{c.type ?? 'TRANSFER'}</span>
+                              <span className="block text-sm text-slate-300 mt-0.5">{c.type ?? 'TRANSFER'}</span>
                             </td>
                             <td className="px-4 py-3 font-medium text-slate-200">
                               {formatIDR(c.amount)}
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`font-mono font-bold ${
+                                className={`font-mono font-bold text-sm ${
                                   score >= 0.75
                                     ? 'text-rose-400'
                                     : score >= 0.4
@@ -663,7 +663,7 @@ export const Investigation: React.FC = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize border transition-colors ${
+                                className={`rounded-full px-2.5 py-0.5 text-xs sm:text-sm font-medium capitalize border transition-colors ${
                                   c.status === 'open'
                                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                     : c.status === 'in_review'
@@ -681,7 +681,7 @@ export const Investigation: React.FC = () => {
                             <td className="px-4 py-3">
                               {c.feedback_label ? (
                                 <span
-                                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize border transition-colors ${
+                                  className={`rounded-full px-2.5 py-0.5 text-xs sm:text-sm font-medium capitalize border transition-colors ${
                                     c.feedback_label === 'confirmed_fraud'
                                       ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                                       : c.feedback_label === 'legitimate'
@@ -696,14 +696,14 @@ export const Investigation: React.FC = () => {
                                     : t.common.inconclusive}
                                 </span>
                               ) : (
-                                <span className="text-slate-400 italic">{t.investigation.pending}</span>
+                                <span className="text-slate-400 italic text-sm">{t.investigation.pending}</span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <button
                                 type="button"
                                 onClick={() => navigate(`/investigation/${c.transaction_id}`)}
-                                className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
+                                className="rounded border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
                               >
                                 {t.investigation.btnReview}
                               </button>
@@ -754,7 +754,7 @@ export const Investigation: React.FC = () => {
                   <ShieldAlert size={16} className="text-rose-400" />
                   <h3 className="font-display text-base font-semibold tracking-wide text-slate-100">{t.investigation.urgentAttention}</h3>
                 </div>
-                <span className="rounded bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-300 animate-pulse-subtle">
+                <span className="rounded bg-rose-500/20 px-2.5 py-0.5 text-xs sm:text-sm font-semibold text-rose-300 animate-pulse-subtle">
                   {t.investigation.priorityBadge}
                 </span>
               </div>
@@ -771,21 +771,21 @@ export const Investigation: React.FC = () => {
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-medium text-cyan-400">
+                          <span className="font-mono font-medium text-cyan-400 text-sm">
                             {alert.transaction_id}
                           </span>
-                          <span className="rounded bg-rose-500/10 px-1.5 py-0.5 font-mono font-bold text-rose-400 text-xs">
+                          <span className="rounded bg-rose-500/10 px-2 py-0.5 font-mono font-bold text-rose-400 text-sm">
                             {alert.risk_score.toFixed(2)}
                           </span>
                         </div>
-                        <span className="mt-1 block font-medium text-slate-300">
+                        <span className="mt-1 block font-medium text-slate-200 text-sm">
                           {formatIDR(alert.amount)} · {alert.type}
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => navigate(`/investigation/${alert.transaction_id}`)}
-                        className="rounded border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 interactive-btn"
+                        className="rounded border border-rose-500/30 bg-rose-500/10 px-3.5 py-1.5 text-sm font-semibold text-rose-300 hover:bg-rose-500/20 interactive-btn"
                       >
                         {t.investigation.searchBtn}
                       </button>
@@ -878,7 +878,7 @@ export const Investigation: React.FC = () => {
               {investigationCase?.status === 'closed' ? t.common.closed : t.common.open}
             </span>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400 pl-3">
+          <p className="mt-1 text-sm sm:text-base text-slate-300 pl-3">
             {transaction.model_version ? (
               `${t.investigation.inferenceEngine} ${transaction.model_version}`
             ) : (
@@ -955,7 +955,7 @@ export const Investigation: React.FC = () => {
                 onClick={() => {
                   setAnalystReasoning((prev) => (prev ? `${prev}, ${tag}` : tag));
                 }}
-                className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs sm:text-sm text-slate-200 hover:border-cyan-500/50 hover:text-cyan-200 interactive-btn"
+                className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-200 hover:border-cyan-500/50 hover:text-cyan-200 interactive-btn"
               >
                 + {tag}
               </button>
@@ -1032,7 +1032,7 @@ export const Investigation: React.FC = () => {
                     : transaction.risk_score ?? 'N/A'}
                 </span>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase border ${
+                  className={`rounded-full px-3 py-1 text-sm font-semibold uppercase border ${
                     transaction.decision === 'decline'
                       ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                       : transaction.decision === 'review'
@@ -1051,15 +1051,15 @@ export const Investigation: React.FC = () => {
 
             <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.amountLabel}</span>
+                <span className="block text-sm font-medium text-slate-300 mb-0.5">{t.investigation.amountLabel}</span>
                 <span className="text-xl font-bold text-slate-100">{formatIDR(transaction.amount)}</span>
               </div>
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.typeLabel}</span>
+                <span className="block text-sm font-medium text-slate-300 mb-0.5">{t.investigation.typeLabel}</span>
                 <span className="text-base font-semibold text-slate-200">{transaction.type ?? 'TRANSFER'}</span>
               </div>
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.timeLabel}</span>
+                <span className="block text-sm font-medium text-slate-300 mb-0.5">{t.investigation.timeLabel}</span>
                 <span className="font-medium text-slate-200">
                   {transaction.timestamp
                     ? new Date(transaction.timestamp).toLocaleString(language === 'id' ? 'id-ID' : 'en-US')
@@ -1067,7 +1067,7 @@ export const Investigation: React.FC = () => {
                 </span>
               </div>
               <div className="rounded-lg bg-slate-950 p-3.5">
-                <span className="block text-xs font-medium text-slate-400 mb-0.5">{t.investigation.attemptsLabel}</span>
+                <span className="block text-sm font-medium text-slate-300 mb-0.5">{t.investigation.attemptsLabel}</span>
                 <span className="font-medium text-slate-200">
                   {transaction.payment_attempts ?? 1} {t.investigation.attemptsUnit}
                 </span>
@@ -1081,7 +1081,7 @@ export const Investigation: React.FC = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-sm">
               {/* Origin Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
-                <span className="font-semibold text-cyan-400 uppercase tracking-wider text-xs">
+                <span className="font-semibold text-cyan-400 uppercase tracking-wider text-sm">
                   {t.investigation.originAccount}
                 </span>
                 <div className="flex items-center justify-between">
@@ -1106,7 +1106,7 @@ export const Investigation: React.FC = () => {
 
               {/* Destination Account */}
               <div className="rounded-lg border border-slate-800 bg-slate-950 p-4 space-y-2">
-                <span className="font-semibold text-slate-300 uppercase tracking-wider text-xs">
+                <span className="font-semibold text-slate-300 uppercase tracking-wider text-sm">
                   {t.investigation.destinationAccount}
                 </span>
                 <div className="flex items-center justify-between">
@@ -1159,7 +1159,7 @@ export const Investigation: React.FC = () => {
                     >
                       <AlertTriangle className="mt-0.5 shrink-0" size={18} />
                       <div>
-                        <h4 className="font-bold uppercase tracking-wider text-xs">
+                        <h4 className="font-bold uppercase tracking-wider text-sm">
                           {name.replace(/_/g, ' ')}
                         </h4>
                         <p className="mt-1 text-slate-200 text-sm leading-relaxed">{description}</p>
@@ -1185,16 +1185,16 @@ export const Investigation: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <User size={18} className="mt-0.5 text-cyan-400" />
                   <div>
-                    <span className="block text-xs text-slate-400 font-medium">{t.investigation.sourceAccount}</span>
+                    <span className="block text-sm text-slate-300 font-medium">{t.investigation.sourceAccount}</span>
                     <span className="font-mono text-sm text-slate-200">{transaction.account_id ?? 'N/A'}</span>
                   </div>
                 </div>
                 {transaction.account_id && (
                   <Link
                     to={`/network/accounts/${encodeURIComponent(transaction.account_id)}`}
-                    className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-cyan-400 hover:underline"
+                    className="flex items-center gap-1 text-sm font-semibold text-cyan-400 hover:underline"
                   >
-                    Graph <ExternalLink size={13} />
+                    Graph <ExternalLink size={14} />
                   </Link>
                 )}
               </div>
@@ -1204,12 +1204,12 @@ export const Investigation: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <Monitor size={18} className="mt-0.5 text-cyan-400" />
                   <div>
-                    <span className="block text-xs text-slate-400 font-medium">{t.investigation.deviceHardware}</span>
+                    <span className="block text-sm text-slate-300 font-medium">{t.investigation.deviceHardware}</span>
                     <span className="font-mono text-sm text-slate-200">{transaction.device_id ?? 'N/A'}</span>
                   </div>
                 </div>
                 {transaction.device_id && (
-                  <span className="rounded bg-cyan-500/10 px-2 py-0.5 text-xs font-mono text-cyan-300">
+                  <span className="rounded bg-cyan-500/10 px-2.5 py-0.5 text-sm font-mono text-cyan-300">
                     {t.investigation.sharedBadge}
                   </span>
                 )}
@@ -1219,7 +1219,7 @@ export const Investigation: React.FC = () => {
               <div className="flex items-start gap-2.5 rounded-lg bg-slate-950 p-3.5">
                 <Clock size={18} className="mt-0.5 text-cyan-400" />
                 <div>
-                  <span className="block text-xs text-slate-400 font-medium">{t.investigation.sessionId}</span>
+                  <span className="block text-sm text-slate-300 font-medium">{t.investigation.sessionId}</span>
                   <span className="font-mono text-sm text-slate-200">{transaction.session_id ?? 'N/A'}</span>
                 </div>
               </div>

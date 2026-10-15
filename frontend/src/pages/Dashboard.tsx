@@ -200,13 +200,13 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
             <AegisWordmark size="xs" inline /> {t.dashboard.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
             {t.dashboard.title}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-sm sm:text-base text-slate-300 mt-1">
             {t.dashboard.subtitle}
           </p>
         </div>
@@ -221,7 +221,7 @@ export const Dashboard: React.FC = () => {
           <button
             type="button"
             onClick={() => setRefreshKey((key) => key + 1)}
-            className="rounded-lg border border-rose-400/30 px-3 py-1.5 font-medium text-rose-200 hover:bg-rose-500/20 interactive-btn"
+            className="rounded-lg border border-rose-400/30 px-3.5 py-1.5 font-medium text-rose-200 hover:bg-rose-500/20 interactive-btn text-sm"
           >
             {t.common.retry}
           </button>
@@ -246,11 +246,11 @@ export const Dashboard: React.FC = () => {
                 className="rounded-xl border border-slate-800 bg-slate-900 p-6 interactive-card hover:border-slate-700 group cursor-default"
               >
                 <div className="flex items-center justify-between text-slate-400">
-                  <span className="text-xs uppercase tracking-wider font-semibold text-slate-300 font-mono">{title}</span>
+                  <span className="text-xs sm:text-sm uppercase tracking-wider font-semibold text-slate-300 font-mono">{title}</span>
                   <Icon size={20} className={`${color} transition-transform duration-200 ease-out group-hover:scale-110`} />
                 </div>
                 <p className={`mt-4 text-3xl font-mono font-bold tracking-tight ${color}`}>{value}</p>
-                <span className="mt-2 inline-block text-xs sm:text-sm text-slate-400 font-sans">
+                <span className="mt-2 inline-block text-sm text-slate-300 font-sans">
                   {detail}
                 </span>
               </div>
@@ -264,7 +264,7 @@ export const Dashboard: React.FC = () => {
               {t.dashboard.chartTitle}
             </h3>
 
-            <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            <p className="mt-1 text-sm text-slate-300">
               {t.dashboard.chartSubtitle}
             </p>
           </div>
@@ -276,7 +276,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-01');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
+                className={`whitespace-nowrap px-3.5 py-1.5 text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-01' && endDate === '2026-01-01'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
@@ -290,7 +290,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-02');
                   setEndDate('2026-01-02');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
+                className={`whitespace-nowrap px-3.5 py-1.5 text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-02' && endDate === '2026-01-02'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
@@ -304,7 +304,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-07');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
+                className={`whitespace-nowrap px-3.5 py-1.5 text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-01' && endDate === '2026-01-07'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
@@ -318,7 +318,7 @@ export const Dashboard: React.FC = () => {
                   setStartDate('2026-01-01');
                   setEndDate('2026-01-31');
                 }}
-                className={`whitespace-nowrap px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
+                className={`whitespace-nowrap px-3.5 py-1.5 text-sm rounded-lg font-medium transition-all duration-150 border interactive-btn ${
                   startDate === '2026-01-01' && endDate === '2026-01-31'
                     ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm shadow-cyan-500/10'
                     : 'bg-slate-950 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700'
@@ -328,7 +328,7 @@ export const Dashboard: React.FC = () => {
               </button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <label htmlFor="dashboard-start-date" className="text-xs sm:text-sm font-medium text-slate-300">
+              <label htmlFor="dashboard-start-date" className="text-sm font-medium text-slate-300">
                 {t.dashboard.fromLabel}
               </label>
               <input
@@ -338,9 +338,9 @@ export const Dashboard: React.FC = () => {
                 min={overview?.available_range?.start_date}
                 max={overview?.available_range?.end_date}
                 onChange={(e) => handleStartDateChange(e.target.value)}
-                className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
+                className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
               />
-              <label htmlFor="dashboard-end-date" className="text-xs sm:text-sm font-medium text-slate-300">
+              <label htmlFor="dashboard-end-date" className="text-sm font-medium text-slate-300">
                 {t.dashboard.toLabel}
               </label>
               <input
@@ -350,12 +350,12 @@ export const Dashboard: React.FC = () => {
                 min={overview?.available_range?.start_date}
                 max={overview?.available_range?.end_date}
                 onChange={(e) => handleEndDateChange(e.target.value)}
-                className="rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
+                className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input"
               />
             </div>
           </div>
         </div>
-        <div className="mb-4 flex flex-wrap items-center justify-between text-xs sm:text-sm text-slate-300 gap-2">
+        <div className="mb-4 flex flex-wrap items-center justify-between text-sm text-slate-300 gap-2">
           <span>
             {startDate || overview?.available_range?.start_date || t.dashboard.noStartDate} –{' '}
             {endDate || overview?.available_range?.end_date || t.dashboard.noEndDate}
@@ -363,7 +363,7 @@ export const Dashboard: React.FC = () => {
               ? ` · ${t.dashboard.busiestMonthPrefix} ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} ${t.dashboard.transactionsWord})`
               : ''}
           </span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-xs font-medium">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-xs sm:text-sm font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
             {overview?.granularity === 'hourly' ? t.dashboard.hourlyView : t.dashboard.dailyView}
           </span>

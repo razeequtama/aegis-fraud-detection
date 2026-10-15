@@ -210,21 +210,21 @@ export const SystemHealth: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
               <AegisWordmark size="xs" inline /> {t.systemHealth.tag}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
             {t.systemHealth.title}
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          <p className="mt-1 text-sm sm:text-base text-slate-300">
             {t.systemHealth.subtitle}
           </p>
         </div>
 
         {/* Status indicator & Refresh button */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-1.5 text-xs text-slate-300 font-mono">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3.5 py-1.5 text-xs sm:text-sm text-slate-300 font-mono">
             <span>
               {loading
                 ? (language === 'id' ? 'Menghubungkan ke backend…' : 'Connecting to backend…')
@@ -239,7 +239,7 @@ export const SystemHealth: React.FC = () => {
             onClick={() => void fetchHealth(true)}
             disabled={refreshing || loading}
             title={t.systemHealth.refreshBtn}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 hover:border-cyan-500/40 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors disabled:opacity-50 interactive-btn"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 hover:border-cyan-500/40 px-3.5 py-1.5 text-sm font-semibold text-slate-200 transition-colors disabled:opacity-50 interactive-btn"
           >
             <RefreshCw size={13} className={refreshing ? 'animate-spin text-cyan-400' : 'text-slate-400'} />
             <span className="hidden sm:inline">{refreshing ? t.systemHealth.refreshing : t.systemHealth.refreshBtn}</span>
@@ -260,7 +260,7 @@ export const SystemHealth: React.FC = () => {
           <button
             type="button"
             onClick={() => void fetchHealth(true)}
-            className="rounded-lg border border-rose-400/40 bg-rose-500/20 px-3 py-1 text-xs font-semibold text-rose-200 hover:bg-rose-500/30 transition-colors interactive-btn"
+            className="rounded-lg border border-rose-400/40 bg-rose-500/20 px-3.5 py-1.5 text-sm font-semibold text-rose-200 hover:bg-rose-500/30 transition-colors interactive-btn"
           >
             {t.common.retry}
           </button>
@@ -288,7 +288,7 @@ export const SystemHealth: React.FC = () => {
                   <div className="rounded-lg bg-cyan-500/10 p-2 text-cyan-400 group-hover:scale-105 transition-transform">
                     <Icon size={18} />
                   </div>
-                  <h3 className="font-display text-sm sm:text-base font-semibold tracking-tight text-slate-200">
+                  <h3 className="font-display text-base font-semibold tracking-tight text-slate-200">
                     {title}
                   </h3>
                 </div>
@@ -311,13 +311,13 @@ export const SystemHealth: React.FC = () => {
                 >
                   {status}
                 </p>
-                <span className="mt-3 block text-xs font-medium text-slate-400 uppercase tracking-wider font-mono">
+                <span className="mt-3 block text-sm font-medium text-slate-300 uppercase tracking-wider font-mono">
                   {metricLabel}
                 </span>
                 <p className="mt-1 break-words text-base sm:text-lg font-semibold font-mono text-slate-100">
                   {metric}
                 </p>
-                <span className="mt-2 block text-xs text-slate-400 font-sans">{detail}</span>
+                <span className="mt-2 block text-sm text-slate-300 font-sans">{detail}</span>
               </div>
             </section>
           )
@@ -329,38 +329,38 @@ export const SystemHealth: React.FC = () => {
         <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
           <div className="flex items-center gap-2">
             <ShieldCheck className="text-cyan-400" size={18} />
-            <h3 className="font-display text-base font-semibold text-slate-200">
+            <h3 className="font-display text-base sm:text-lg font-semibold text-slate-200">
               Architecture &amp; Cluster Telemetry
             </h3>
           </div>
-          <span className="rounded-full bg-slate-800 border border-slate-700/60 px-2.5 py-0.5 text-xs font-mono text-slate-300">
+          <span className="rounded-full bg-slate-800 border border-slate-700/60 px-3 py-1 text-xs sm:text-sm font-mono text-slate-300">
             Stack v1.0.0
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-            <span className="text-slate-400 block font-mono text-xs">DATABASE INSTANCE</span>
+            <span className="text-slate-400 block font-mono text-xs sm:text-sm font-medium">DATABASE INSTANCE</span>
             <p className="text-slate-200 font-semibold font-mono">PostgreSQL (Port 5433)</p>
-            <p className="text-slate-400 text-xs">
+            <p className="text-slate-300 text-sm">
               Connection pooling with SQLAlchemy engine. Dynamic overflow allocation enabled.
             </p>
           </div>
 
           <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-            <span className="text-slate-400 block font-mono text-xs">INFERENCE PIPELINE</span>
+            <span className="text-slate-400 block font-mono text-xs sm:text-sm font-medium">INFERENCE PIPELINE</span>
             <p className="text-slate-200 font-semibold font-mono">
               {health?.inference_engine.model_version ?? 'aegis-rf-0.1.0'}
             </p>
-            <p className="text-slate-400 text-xs">
+            <p className="text-slate-300 text-sm">
               Random Forest with 100 estimators, standardized scaling, and explainable signal telemetry.
             </p>
           </div>
 
           <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-            <span className="text-slate-400 block font-mono text-xs">VELOCITY TRACKER</span>
+            <span className="text-slate-400 block font-mono text-xs sm:text-sm font-medium">VELOCITY TRACKER</span>
             <p className="text-slate-200 font-semibold font-mono">Redis sliding-window</p>
-            <p className="text-slate-400 text-xs">
+            <p className="text-slate-300 text-sm">
               Sub-millisecond rapid burst detection for coordinated entity card-testing attacks.
             </p>
           </div>

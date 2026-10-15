@@ -202,13 +202,13 @@ export const ModelLab: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
             <AegisWordmark size="xs" inline /> {t.modelLab.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
             {t.modelLab.title}
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          <p className="mt-1 text-sm sm:text-base text-slate-300">
             {t.modelLab.subtitle}
           </p>
         </div>
@@ -219,13 +219,13 @@ export const ModelLab: React.FC = () => {
         <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
           <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3">
             <Cpu className="text-cyan-400" size={18} />
-            <h3 className="font-display text-base font-semibold tracking-tight text-slate-200">
+            <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">
               {t.modelLab.configTitle}
             </h3>
           </div>
 
           <div>
-            <label htmlFor="model-version" className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-slate-400">
+            <label htmlFor="model-version" className="mb-1.5 block text-sm font-mono uppercase tracking-wider text-slate-300">
               {t.modelLab.modelSelect}
             </label>
             <select
@@ -244,9 +244,9 @@ export const ModelLab: React.FC = () => {
           </div>
 
           <div>
-            <div className="mb-2 flex justify-between items-center text-xs font-mono">
-              <span className="text-slate-400 uppercase tracking-wider">{t.modelLab.thresholdSelect}</span>
-              <span className="text-cyan-300 font-bold text-sm bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded">
+            <div className="mb-2 flex justify-between items-center text-sm font-mono">
+              <span className="text-slate-300 uppercase tracking-wider">{t.modelLab.thresholdSelect}</span>
+              <span className="text-cyan-300 font-bold text-sm bg-cyan-950/60 border border-cyan-800/40 px-2.5 py-1 rounded">
                 {threshold.toFixed(2)}
               </span>
             </div>
@@ -261,7 +261,7 @@ export const ModelLab: React.FC = () => {
               disabled={isSimulating}
               className="w-full accent-cyan-500 disabled:opacity-60 cursor-pointer h-2 bg-slate-800 rounded-lg"
             />
-            <div className="mt-1 flex justify-between text-[11px] text-slate-500 font-mono">
+            <div className="mt-1 flex justify-between text-xs sm:text-sm text-slate-400 font-mono">
               <span>0.10 (Sensitive)</span>
               <span>0.75 (Live)</span>
               <span>0.99 (Strict)</span>
@@ -270,7 +270,7 @@ export const ModelLab: React.FC = () => {
 
           {/* Quick presets */}
           <div>
-            <span className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+            <span className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-2 flex items-center gap-1.5">
               <Sliders size={13} className="text-cyan-400" /> {t.modelLab.quickThresholdPresets}
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -280,7 +280,7 @@ export const ModelLab: React.FC = () => {
                   type="button"
                   onClick={() => setThreshold(p.value)}
                   disabled={isSimulating}
-                  className={`rounded-lg border px-2.5 py-1 text-xs font-mono transition-all ${
+                  className={`rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-mono transition-all ${
                     Math.abs(threshold - p.value) < 0.005
                       ? 'border-cyan-500/60 bg-cyan-500/15 text-cyan-200 font-semibold shadow-sm shadow-cyan-950'
                       : 'border-slate-800 bg-slate-950/80 text-slate-400 hover:border-slate-700 hover:text-slate-200'
@@ -316,15 +316,15 @@ export const ModelLab: React.FC = () => {
         <section className="space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-5 sm:p-6 lg:col-span-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
             <div>
-              <h3 className="font-display text-base font-semibold tracking-tight text-slate-200">
+              <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">
                 {t.modelLab.summaryTitle}
               </h3>
-              <p className="mt-0.5 text-xs text-slate-400">
+              <p className="mt-0.5 text-sm text-slate-300">
                 {t.modelLab.impactSubtitle}
               </p>
             </div>
             {replay && (
-              <span className="rounded-full bg-slate-800 border border-slate-700/60 px-2.5 py-0.5 text-xs font-mono text-cyan-300">
+              <span className="rounded-full bg-slate-800 border border-slate-700/60 px-3 py-1 text-xs sm:text-sm font-mono text-cyan-300">
                 Job #{replay.replay_id}
               </span>
             )}
@@ -344,7 +344,7 @@ export const ModelLab: React.FC = () => {
                 <p className="font-semibold text-slate-100">
                   {replay?.status === 'RUNNING' ? 'Simulating Historical Transactions…' : 'Replay Job Queued'}
                 </p>
-                <p className="mt-0.5 text-xs text-slate-400 font-mono">
+                <p className="mt-0.5 text-sm text-slate-300 font-mono">
                   Vectorizing features and running Random Forest inference against 50,000 ledger records
                 </p>
               </div>
@@ -355,7 +355,7 @@ export const ModelLab: React.FC = () => {
             <div className="rounded-xl border border-dashed border-slate-800 p-8 text-center text-sm text-slate-400">
               <Sparkles className="mx-auto mb-2 text-cyan-400" size={24} />
               <p className="font-medium text-slate-300">{t.modelLab.noReplayLoaded}</p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-sm text-slate-400 mt-1">
                 {t.modelLab.clickToRun}
               </p>
             </div>
@@ -363,7 +363,7 @@ export const ModelLab: React.FC = () => {
 
           {metrics && (
             <div className="space-y-4 animate-slide-down">
-              <div role="status" className="flex items-center gap-2 text-xs sm:text-sm text-emerald-300 font-medium bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5">
+              <div role="status" className="flex items-center gap-2 text-sm sm:text-base text-emerald-300 font-medium bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
                 <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
                 <span>
                   Replay completed for <strong className="font-mono text-emerald-200">{replay?.model_version}</strong> at threshold <strong className="font-mono text-emerald-200">{(replay?.threshold ?? 0).toFixed(2)}</strong>.
@@ -372,43 +372,43 @@ export const ModelLab: React.FC = () => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">{t.modelLab.reviewQueueLoad}</span>
+                  <span className="block text-sm font-mono uppercase tracking-wider text-slate-300">{t.modelLab.reviewQueueLoad}</span>
                   <span className="mt-2 inline-block text-2xl font-bold font-mono text-slate-100">
-                    {formatCount(metrics.review_count)} <span className="text-xs font-sans text-slate-400 font-normal">{t.modelLab.transactions}</span>
+                    {formatCount(metrics.review_count)} <span className="text-sm font-sans text-slate-300 font-normal">{t.modelLab.transactions}</span>
                   </span>
-                  <span className={`mt-1 block text-xs font-medium font-mono ${reviewDifferenceClass}`}>
+                  <span className={`mt-1 block text-sm font-medium font-mono ${reviewDifferenceClass}`}>
                     {reviewDifference > 0 ? '+' : ''}
                     {formatCount(reviewDifference)} {t.modelLab.vsBaseline}
                     {metrics.review_queue_difference_percent !== null
                       ? ` (${metrics.review_queue_difference_percent > 0 ? '+' : ''}${metrics.review_queue_difference_percent.toFixed(1)}%)`
                       : ''}
                   </span>
-                  <span className="mt-1 block text-[11px] text-slate-500 font-mono">
+                  <span className="mt-1 block text-xs sm:text-sm text-slate-400 font-mono">
                     Baseline (0.75): {formatCount(metrics.baseline_review_count)}
                   </span>
                 </div>
 
                 <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">{t.modelLab.fraudCasesCaptured}</span>
+                  <span className="block text-sm font-mono uppercase tracking-wider text-slate-300">{t.modelLab.fraudCasesCaptured}</span>
                   <span className="mt-2 inline-block text-2xl font-bold font-mono text-emerald-400">
-                    {formatCount(metrics.fraud_detected)} <span className="text-xs font-sans text-slate-400 font-normal">{t.modelLab.cases}</span>
+                    {formatCount(metrics.fraud_detected)} <span className="text-sm font-sans text-slate-300 font-normal">{t.modelLab.cases}</span>
                   </span>
-                  <span className="mt-1 block text-xs text-slate-400 font-mono">
+                  <span className="mt-1 block text-sm text-slate-300 font-mono">
                     Of {formatCount(metrics.total_processed)} {t.modelLab.transactions} replayed
                   </span>
                 </div>
 
                 <div className="interactive-card rounded-xl border border-slate-800 bg-slate-950 p-4 sm:col-span-2">
-                  <span className="block text-xs font-mono uppercase tracking-wider text-slate-400">{t.modelLab.falsePositiveRatio}</span>
+                  <span className="block text-sm font-mono uppercase tracking-wider text-slate-300">{t.modelLab.falsePositiveRatio}</span>
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
                     <span className="text-2xl font-bold font-mono text-rose-300">
                       {formatCount(metrics.false_positives)}
                     </span>
-                    <span className="text-xs text-slate-300 font-mono">
+                    <span className="text-sm text-slate-200 font-mono">
                       false positive alerts · {(metrics.false_positive_rate * 100).toFixed(3)}% FP rate
                     </span>
                   </div>
-                  <span className="mt-1 block text-[11px] text-slate-500">
+                  <span className="mt-1 block text-xs sm:text-sm text-slate-400">
                     {t.modelLab.rateExplainer}
                   </span>
                 </div>
@@ -424,18 +424,18 @@ export const ModelLab: React.FC = () => {
           <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div className="flex items-center gap-2">
               <History size={16} className="text-cyan-400" />
-              <h3 className="font-display text-base font-semibold text-slate-200">
+              <h3 className="font-display text-base sm:text-lg font-semibold text-slate-200">
                 {t.modelLab.recentRuns}
               </h3>
             </div>
-            <span className="text-xs font-mono text-slate-400">
+            <span className="text-sm font-mono text-slate-300">
               {recentReplays.length} benchmark(s) logged
             </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
-              <thead className="border-b border-slate-800 text-slate-400">
+            <table className="w-full text-left text-sm font-mono">
+              <thead className="border-b border-slate-800 text-slate-300 text-xs sm:text-sm uppercase tracking-wider">
                 <tr>
                   <th className="pb-2 font-medium">{t.modelLab.thRunId}</th>
                   <th className="pb-2 font-medium">{t.modelLab.thModel}</th>
@@ -455,7 +455,7 @@ export const ModelLab: React.FC = () => {
                       <td className="py-2.5 font-semibold text-slate-100">
                         #{r.replay_id}
                         {isCurrent && (
-                          <span className="ml-1.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 px-1 py-0.2 text-[10px]">
+                          <span className="ml-1.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 px-1.5 py-0.5 text-xs">
                             {t.modelLab.activeBadge}
                           </span>
                         )}
@@ -479,7 +479,7 @@ export const ModelLab: React.FC = () => {
                             setThreshold(r.threshold);
                             setModelVersion(r.model_version);
                           }}
-                          className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-200 hover:border-cyan-500 hover:text-cyan-300 transition-colors"
+                          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-200 hover:border-cyan-500 hover:text-cyan-300 transition-colors"
                         >
                           {t.modelLab.loadMetrics}
                         </button>

@@ -105,13 +105,13 @@ export const Layout: React.FC = () => {
           <button
             type="button"
             onClick={() => setWelcomeOpen(true)}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-slate-700/80 bg-slate-950/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.98] transition-all text-xs font-semibold group shadow-sm"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-slate-700/80 bg-slate-950/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.98] transition-all text-sm font-semibold group shadow-sm"
           >
             <span className="flex items-center gap-2">
-              <HelpCircle size={15} className="text-cyan-400 group-hover:scale-110 transition-transform" />
+              <HelpCircle size={16} className="text-cyan-400 group-hover:scale-110 transition-transform" />
               <span>{t.welcomeModal.reopenGuide}</span>
             </span>
-            <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+            <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
               INFO
             </span>
           </button>
@@ -119,7 +119,7 @@ export const Layout: React.FC = () => {
 
         {/* Language Switcher in Desktop Sidebar */}
         <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
-          <span className="text-xs text-slate-400 font-medium">{t.common.language}</span>
+          <span className="text-sm text-slate-300 font-medium">{t.common.language}</span>
           <LanguageSwitcher size="sm" />
         </div>
       </aside>
@@ -197,13 +197,13 @@ export const Layout: React.FC = () => {
                 setMobileMenuOpen(false);
                 setWelcomeOpen(true);
               }}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-slate-700/80 bg-slate-950/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.98] transition-all text-xs font-semibold group shadow-sm"
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-slate-700/80 bg-slate-950/60 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.98] transition-all text-sm font-semibold group shadow-sm"
             >
               <span className="flex items-center gap-2">
-                <HelpCircle size={15} className="text-cyan-400 group-hover:scale-110 transition-transform" />
+                <HelpCircle size={16} className="text-cyan-400 group-hover:scale-110 transition-transform" />
                 <span>{t.welcomeModal.reopenGuide}</span>
               </span>
-              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+              <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
                 INFO
               </span>
             </button>
@@ -211,7 +211,7 @@ export const Layout: React.FC = () => {
 
           {/* Language Switcher in Mobile Drawer */}
           <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
-            <span className="text-xs text-slate-400 font-medium">{t.common.language}</span>
+            <span className="text-sm text-slate-300 font-medium">{t.common.language}</span>
             <LanguageSwitcher size="sm" />
           </div>
         </aside>
@@ -224,7 +224,7 @@ export const Layout: React.FC = () => {
           <div className="flex items-center gap-2 min-w-0">
             <AegisWordmark size="sm" withLogo asLink />
             <span className="text-slate-600">/</span>
-            <span className="text-xs sm:text-sm font-sans font-medium text-slate-200 truncate">
+            <span className="text-sm font-sans font-medium text-slate-200 truncate">
               {currentNav?.label ?? t.nav.commandCenter}
             </span>
           </div>

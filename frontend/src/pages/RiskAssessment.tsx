@@ -225,13 +225,13 @@ export const RiskAssessment: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+        <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
           <AegisWordmark size="xs" inline />{t.riskAssessment.tag}
         </span>
         <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
           {t.riskAssessment.title}
         </h2>
-        <p className="text-xs sm:text-sm text-slate-400 font-normal">
+        <p className="text-sm sm:text-base text-slate-300 font-normal">
           {t.riskAssessment.subtitle}
         </p>
       </div>
@@ -251,7 +251,7 @@ export const RiskAssessment: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldTxId}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldTxId}</label>
               <input
                 type="text"
                 value={formData.transaction_id}
@@ -260,7 +260,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldAccountId}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldAccountId}</label>
               <input
                 type="text"
                 value={formData.account_id}
@@ -272,7 +272,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldType}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldType}</label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -286,7 +286,7 @@ export const RiskAssessment: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldAmount}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldAmount}</label>
               <input
                 type="number"
                 value={formData.amount}
@@ -298,7 +298,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldOldOrig}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldOldOrig}</label>
               <input
                 type="number"
                 value={formData.oldbalanceOrg}
@@ -307,7 +307,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldNewOrig}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldNewOrig}</label>
               <input
                 type="number"
                 value={formData.newbalanceOrig}
@@ -319,7 +319,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldOldDest}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldOldDest}</label>
               <input
                 type="number"
                 value={formData.oldbalanceDest}
@@ -328,7 +328,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldNewDest}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldNewDest}</label>
               <input
                 type="number"
                 value={formData.newbalanceDest}
@@ -340,7 +340,7 @@ export const RiskAssessment: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldAttempts}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldAttempts}</label>
               <input
                 type="number"
                 min="1"
@@ -351,7 +351,7 @@ export const RiskAssessment: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">{t.riskAssessment.fieldDevice}</label>
+              <label className="block text-sm font-mono uppercase tracking-wider text-slate-300 mb-1.5">{t.riskAssessment.fieldDevice}</label>
               <input
                 type="text"
                 value={formData.device_id}
@@ -377,18 +377,18 @@ export const RiskAssessment: React.FC = () => {
                 <Sparkles size={16} className="text-cyan-400" />
                 <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">{t.riskAssessment.realDbPresets}</h3>
               </div>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-sm text-slate-300">
                 {t.riskAssessment.realDbPresetsDesc}
               </p>
             </div>
-            <span className="text-xs font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 rounded font-medium">
+            <span className="text-xs sm:text-sm font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded font-medium">
               Live DB
             </span>
           </div>
 
           {/* Quick Lookup Bar */}
           <form onSubmit={handleLookupTransaction} className="flex flex-col gap-2 bg-slate-950 p-3.5 rounded-lg border border-slate-800">
-            <span className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+            <span className="text-sm font-medium text-slate-200 flex items-center gap-1.5">
               <Database size={14} className="text-cyan-400" />
               {t.riskAssessment.loadAnyRealTx}
             </span>
@@ -403,14 +403,14 @@ export const RiskAssessment: React.FC = () => {
               <button
                 type="submit"
                 disabled={lookupLoading || !lookupId.trim()}
-                className="flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 px-3.5 py-2 text-xs sm:text-sm font-semibold transition-colors disabled:opacity-40"
+                className="flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 px-3.5 py-2 text-sm font-semibold transition-colors disabled:opacity-40"
               >
                 {lookupLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
                 {t.riskAssessment.loadBtn}
               </button>
             </div>
             {lookupError && (
-              <span className="text-xs text-rose-400 animate-slide-down">{lookupError}</span>
+              <span className="text-sm text-rose-400 animate-slide-down">{lookupError}</span>
             )}
           </form>
 
@@ -430,7 +430,7 @@ export const RiskAssessment: React.FC = () => {
                   <span className="block text-sm font-semibold text-cyan-300 group-hover:underline">{title}</span>
                   {category && (
                     <span
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+                      className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded border ${
                         category === 'DECLINE'
                           ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                           : category === 'REVIEW'
@@ -442,19 +442,19 @@ export const RiskAssessment: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <span className="block text-xs font-mono text-slate-300">
+                <span className="block text-sm font-mono text-slate-200">
                   {payload.transaction_id} · {payload.type}
                 </span>
-                <span className="mt-1 block text-xs font-mono text-slate-400">
+                <span className="mt-1 block text-sm font-mono text-slate-300">
                   Amount: {new Intl.NumberFormat('id-ID').format(payload.amount)}
                 </span>
-                <span className="mt-0.5 block text-xs font-mono text-slate-500">
+                <span className="mt-0.5 block text-xs sm:text-sm font-mono text-slate-400">
                   Balance: {new Intl.NumberFormat('id-ID').format(payload.oldbalanceOrg)} → {new Intl.NumberFormat('id-ID').format(payload.newbalanceOrig)}
                 </span>
-                <span className="mt-0.5 block text-xs text-slate-500 font-mono">
+                <span className="mt-0.5 block text-xs sm:text-sm text-slate-400 font-mono">
                   Account: {payload.account_id}
                 </span>
-                <span className="mt-2 block text-xs text-cyan-400 font-medium group-hover:underline">
+                <span className="mt-2 block text-sm text-cyan-400 font-medium group-hover:underline">
                   {t.riskAssessment.selectToLoad}
                 </span>
               </button>
@@ -470,12 +470,12 @@ export const RiskAssessment: React.FC = () => {
               <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-100">
                 {t.riskAssessment.riskEvaluationResult}
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-sm text-slate-300 mt-0.5">
                 {t.riskAssessment.realTimeInferenceTelemetry}
               </p>
             </div>
             {result && (
-              <span className="font-mono text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-medium">
+              <span className="font-mono text-sm px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-medium">
                 {result.transaction_id}
               </span>
             )}
@@ -487,11 +487,11 @@ export const RiskAssessment: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col justify-between">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
+                    <span className="text-sm font-mono uppercase tracking-wider text-slate-300 font-medium">
                       {t.riskAssessment.riskScore}
                     </span>
                     <span
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded uppercase border ${
+                      className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded uppercase border ${
                         result.risk_score >= 0.75
                           ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                           : result.risk_score >= 0.4
@@ -539,7 +539,7 @@ export const RiskAssessment: React.FC = () => {
                 </div>
 
                 <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
+                  <span className="text-sm font-mono uppercase tracking-wider text-slate-300 font-medium">
                     {t.riskAssessment.suggestedDecision}
                   </span>
                   <div className="mt-2">
@@ -555,7 +555,7 @@ export const RiskAssessment: React.FC = () => {
                       {result.decision === 'DECLINE' ? t.common.decline : result.decision === 'REVIEW' ? t.common.review : t.common.approve}
                     </span>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-slate-500 border-t border-slate-800/80 pt-2">
+                  <div className="mt-3 flex items-center justify-between text-xs sm:text-sm font-mono text-slate-400 border-t border-slate-800/80 pt-2">
                     <span className="truncate">{result.model_version}</span>
                     {typeof result.latency_ms === 'number' && (
                       <span className="text-cyan-400/90 font-medium shrink-0 ml-2">
@@ -575,7 +575,7 @@ export const RiskAssessment: React.FC = () => {
                       {t.riskAssessment.triggeredSignals}
                     </span>
                   </div>
-                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium">
+                  <span className="font-mono text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-200 border border-slate-700 font-medium">
                     {result.signals.length} {result.signals.length === 1 ? 'Signal' : 'Signals'}
                   </span>
                 </div>
@@ -589,11 +589,11 @@ export const RiskAssessment: React.FC = () => {
                       >
                         <div className="flex items-center gap-2 mb-1.5">
                           <Zap size={14} className="text-cyan-400 shrink-0" />
-                          <strong className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-300">
+                          <strong className="font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300">
                             {sig.name.replace(/_/g, ' ')}
                           </strong>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed pl-5">
+                        <p className="text-sm text-slate-200 leading-relaxed pl-5">
                           {sig.description}
                         </p>
                       </div>
@@ -605,7 +605,7 @@ export const RiskAssessment: React.FC = () => {
                     <span className="text-sm font-semibold text-slate-200">
                       {t.riskAssessment.noSignalsTriggered}
                     </span>
-                    <p className="text-xs text-slate-400 mt-1 max-w-xs">
+                    <p className="text-sm text-slate-300 mt-1 max-w-xs">
                       {t.riskAssessment.noSignalsDesc}
                     </p>
                   </div>
@@ -620,7 +620,7 @@ export const RiskAssessment: React.FC = () => {
               <h4 className="font-display font-semibold text-slate-200 text-base">
                 {t.riskAssessment.awaitingSimulation}
               </h4>
-              <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+              <p className="text-sm text-slate-300 max-w-sm leading-relaxed">
                 {t.riskAssessment.awaitingSimulationDesc}
               </p>
             </div>

@@ -460,13 +460,13 @@ export const Network: React.FC = () => {
     <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
         <div>
-          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
             <AegisWordmark size="xs" inline />{t.network.tag}
           </span>
           <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
             {t.network.title}
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          <p className="mt-1 text-sm sm:text-base text-slate-300">
             {t.network.subtitle}
           </p>
         </div>
@@ -505,7 +505,7 @@ export const Network: React.FC = () => {
 
       {/* Pattern Showcase Quick-Select Pills (Horizontally scrollable on mobile) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
-        <span className="flex shrink-0 items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300 mr-1">
+        <span className="flex shrink-0 items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-slate-300 mr-1">
           <Sparkles size={14} className="text-cyan-400" />
           {t.network.patternPresets}
         </span>
@@ -518,7 +518,7 @@ export const Network: React.FC = () => {
               key={sample.id}
               type="button"
               onClick={() => handleSelectSample(sample)}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-medium transition-all interactive-btn ${
+              className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition-all interactive-btn ${
                 isActive
                   ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-sm shadow-cyan-500/20 ring-1 ring-cyan-400/40'
                   : 'border-slate-800 bg-slate-900/90 text-slate-300 hover:border-slate-700 hover:bg-slate-800'
@@ -529,7 +529,7 @@ export const Network: React.FC = () => {
               </span>
               <span>{title}</span>
               <span
-                className={`rounded px-2 py-0.5 text-xs font-semibold border ${sample.badgeColor}`}
+                className={`rounded px-2.5 py-0.5 text-xs sm:text-sm font-semibold border ${sample.badgeColor}`}
               >
                 {sample.type === 'accounts' ? t.network.accountOption : 'TX'}
               </span>
@@ -551,7 +551,7 @@ export const Network: React.FC = () => {
                 <h3 className="mt-2 text-xl sm:text-2xl font-display font-bold tracking-tight text-slate-100">
                   {t.network.choosePatternTitle}
                 </h3>
-                <p className="mx-auto mt-1 max-w-2xl text-xs sm:text-sm text-slate-400">
+                <p className="mx-auto mt-1 max-w-2xl text-sm sm:text-base text-slate-300">
                   {t.network.choosePatternDesc}
                 </p>
               </div>
@@ -574,12 +574,12 @@ export const Network: React.FC = () => {
                       <div>
                         <div className="mb-2.5 flex items-center justify-between gap-2">
                           <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${sample.badgeColor}`}
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs sm:text-sm font-semibold ${sample.badgeColor}`}
                           >
                             {renderSampleIcon(sample.icon, 'w-3 h-3')}
                             {badge}
                           </span>
-                          <span className="font-mono text-xs text-slate-300 group-hover:text-cyan-300">
+                          <span className="font-mono text-sm text-slate-300 group-hover:text-cyan-300">
                             {sample.type === 'accounts' ? t.network.accountOption : t.network.transactionOption}
                           </span>
                         </div>
@@ -589,12 +589,12 @@ export const Network: React.FC = () => {
                         <p className="mt-1 font-mono text-sm text-cyan-400">
                           {sample.id}
                         </p>
-                        <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2">
+                        <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                           {desc}
                         </p>
                       </div>
 
-                      <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs sm:text-sm">
+                      <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-sm">
                         <span className="font-medium text-slate-300">{stats}</span>
                         <span className="flex items-center gap-1 font-semibold text-cyan-400 transition-transform group-hover:translate-x-1">
                           {t.network.exploreBtn} <ArrowRight size={14} />
@@ -643,7 +643,7 @@ export const Network: React.FC = () => {
               <button
                 type="button"
                 onClick={handleClear}
-                className="rounded border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-slate-500 hover:bg-slate-700 hover:text-white interactive-btn"
+                className="rounded border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-sm font-medium text-slate-200 hover:border-slate-500 hover:bg-slate-700 hover:text-white interactive-btn"
               >
                 {t.network.clearView}
               </button>
