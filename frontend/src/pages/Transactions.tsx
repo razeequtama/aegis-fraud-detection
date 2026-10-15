@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight, Sliders, RotateCcw } from 'lucide-react';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { PageGuideButton } from '../components/PageGuideButton';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface Transaction {
@@ -88,20 +89,26 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
-        <div>
-          <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
-            <AegisWordmark size="xs" inline /> {t.transactions.tag}
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-            {t.transactions.title}
-          </h2>
-          <p className="text-sm sm:text-base text-slate-300 mt-1">
-            {t.transactions.subtitle}
-          </p>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
+              <AegisWordmark size="xs" inline /> {t.transactions.tag}
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+              {t.transactions.title}
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 mt-1">
+              {t.transactions.subtitle}
+            </p>
+          </div>
+
+          <div className="lg:hidden shrink-0">
+            <PageGuideButton page="transactions" />
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
           <label htmlFor="transfer-decision-filter" className="sr-only">
             {t.transactions.allDecisions}
           </label>
@@ -130,6 +137,9 @@ export const Transactions: React.FC = () => {
               }}
               className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-64 interactive-input"
             />
+          </div>
+          <div className="hidden lg:block shrink-0">
+            <PageGuideButton page="transactions" />
           </div>
         </div>
       </div>

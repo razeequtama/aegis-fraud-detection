@@ -17,6 +17,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { PageGuideButton } from '../components/PageGuideButton';
 import { useTranslation } from '../i18n/LanguageContext';
 
 type EntityType = 'transactions' | 'accounts';
@@ -462,50 +463,62 @@ export const Network: React.FC = () => {
   return (
     <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
-        <div className="max-w-xl">
-          <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
-            <AegisWordmark size="xs" inline />{t.network.tag}
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-            {t.network.title}
-          </h2>
-          <p className="mt-1 text-sm sm:text-base text-slate-300">
-            {t.network.subtitle}
-          </p>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
-          <label htmlFor="network-entity-type" className="sr-only">
-            Network entity type
-          </label>
-          <select
-            id="network-entity-type"
-            value={entityType}
-            onChange={(event) => setEntityType(event.target.value as EntityType)}
-            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input shrink-0"
-          >
-            <option value="transactions">{t.network.transactionOption}</option>
-            <option value="accounts">{t.network.accountOption}</option>
-          </select>
-          <div className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0">
-            <label htmlFor="network-entity-id" className="sr-only">
-              Transaction or account ID
-            </label>
-            <input
-              id="network-entity-id"
-              value={entityId}
-              onChange={(event) => setEntityId(event.target.value)}
-              placeholder={entityType === 'transactions' ? t.network.txIdPlaceholder : t.network.accIdPlaceholder}
-              className="w-full sm:w-48 md:w-56 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input font-mono"
-            />
-            <button
-              type="submit"
-              className="shrink-0 flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 active:scale-[0.98] transition-all whitespace-nowrap interactive-btn"
-            >
-              <Search size={16} />
-              {t.network.exploreBtn}
-            </button>
+        <div className="flex items-start justify-between gap-3 max-w-xl">
+          <div>
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
+              <AegisWordmark size="xs" inline />{t.network.tag}
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+              {t.network.title}
+            </h2>
+            <p className="mt-1 text-sm sm:text-base text-slate-300">
+              {t.network.subtitle}
+            </p>
           </div>
-        </form>
+
+          <div className="lg:hidden shrink-0">
+            <PageGuideButton page="network" />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
+          <form onSubmit={handleSubmit} className="flex flex-wrap sm:flex-nowrap items-center gap-2 flex-1 sm:flex-initial shrink-0">
+            <label htmlFor="network-entity-type" className="sr-only">
+              Network entity type
+            </label>
+            <select
+              id="network-entity-type"
+              value={entityType}
+              onChange={(event) => setEntityType(event.target.value as EntityType)}
+              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-cyan-500 focus:outline-none interactive-input shrink-0"
+            >
+              <option value="transactions">{t.network.transactionOption}</option>
+              <option value="accounts">{t.network.accountOption}</option>
+            </select>
+            <div className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0">
+              <label htmlFor="network-entity-id" className="sr-only">
+                Transaction or account ID
+              </label>
+              <input
+                id="network-entity-id"
+                value={entityId}
+                onChange={(event) => setEntityId(event.target.value)}
+                placeholder={entityType === 'transactions' ? t.network.txIdPlaceholder : t.network.accIdPlaceholder}
+                className="w-full sm:w-48 md:w-56 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input font-mono"
+              />
+              <button
+                type="submit"
+                className="shrink-0 flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 active:scale-[0.98] transition-all whitespace-nowrap interactive-btn"
+              >
+                <Search size={16} />
+                {t.network.exploreBtn}
+              </button>
+            </div>
+          </form>
+          <div className="hidden lg:block shrink-0">
+            <PageGuideButton page="network" />
+          </div>
+        </div>
       </div>
 
       {/* Pattern Showcase Quick-Select Pills (Horizontally scrollable on mobile) */}

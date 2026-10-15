@@ -3,6 +3,7 @@ import { Send, Loader2, AlertCircle, Sparkles, Database, Search, ShieldCheck, Za
 import { isAxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { PageGuideButton } from '../components/PageGuideButton';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface RiskSignal {
@@ -224,16 +225,20 @@ export const RiskAssessment: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-          <AegisWordmark size="xs" inline />{t.riskAssessment.tag}
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
-          {t.riskAssessment.title}
-        </h2>
-        <p className="text-sm sm:text-base text-slate-300 font-normal">
-          {t.riskAssessment.subtitle}
-        </p>
+      <div className="flex items-start justify-between gap-4 border-b border-slate-800/60 pb-4">
+        <div className="space-y-1">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+            <AegisWordmark size="xs" inline />{t.riskAssessment.tag}
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
+            {t.riskAssessment.title}
+          </h2>
+          <p className="text-sm sm:text-base text-slate-300 font-normal">
+            {t.riskAssessment.subtitle}
+          </p>
+        </div>
+
+        <PageGuideButton page="assessment" />
       </div>
       
       {errorMessage && (

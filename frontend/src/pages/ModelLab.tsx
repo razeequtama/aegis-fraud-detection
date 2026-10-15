@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
+import { PageGuideButton } from '../components/PageGuideButton';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface ReplayMetrics {
@@ -200,7 +201,7 @@ export const ModelLab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
+      <div className="flex items-start justify-between gap-3 border-b border-slate-800/60 pb-4">
         <div>
           <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
             <AegisWordmark size="xs" inline /> {t.modelLab.tag}
@@ -212,6 +213,8 @@ export const ModelLab: React.FC = () => {
             {t.modelLab.subtitle}
           </p>
         </div>
+
+        <PageGuideButton page="modelLab" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
