@@ -17,6 +17,7 @@ import {
 } from 'recharts';
 
 import { apiClient } from '../api/client';
+import { AegisWordmark } from '../components/AegisWordmark';
 
 interface MetricsOverview {
   metrics: {
@@ -197,13 +198,14 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
-              Command Center
-            </h2>
-          </div>
-          <p className="text-sm text-slate-300 mt-1">
-            <strong>Real-time fraud oversight, operational metrics, and activity telemetry</strong>
+          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+            <AegisWordmark size="xs" inline /> // COMMAND CENTER
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+            Real-Time Fraud Oversight
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Operational metrics, review queues, and transactional activity telemetry.
           </p>
         </div>
       </div>
@@ -242,11 +244,11 @@ export const Dashboard: React.FC = () => {
                 className="rounded-xl border border-slate-800 bg-slate-900 p-6 interactive-card hover:border-slate-700 group cursor-default"
               >
                 <div className="flex items-center justify-between text-slate-400">
-                  <span className="text-xs uppercase tracking-wider font-semibold text-slate-300 font-sans">{title}</span>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-slate-300 font-mono">{title}</span>
                   <Icon size={20} className={`${color} transition-transform duration-200 ease-out group-hover:scale-110`} />
                 </div>
-                <p className={`mt-4 text-3xl font-fantasy font-bold ${color}`}>{value}</p>
-                <span className="mt-2 inline-block text-sm text-slate-300 font-sans">
+                <p className={`mt-4 text-3xl font-mono font-bold tracking-tight ${color}`}>{value}</p>
+                <span className="mt-2 inline-block text-xs sm:text-sm text-slate-400 font-sans">
                   {detail}
                 </span>
               </div>
@@ -256,12 +258,12 @@ export const Dashboard: React.FC = () => {
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-6 transition-colors duration-200">
         <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h3 className="font-fantasy text-lg sm:text-xl font-semibold tracking-wide text-slate-100">
+            <h3 className="font-display text-lg sm:text-xl font-semibold tracking-tight text-slate-100">
               Transaction &amp; Suspicious Activity Trend
             </h3>
 
-            <p className="mt-1 text-sm text-slate-300">
-              These are dated from the transactions database.
+            <p className="mt-1 text-xs sm:text-sm text-slate-400">
+              Historical activity timeline derived from transactional records.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">

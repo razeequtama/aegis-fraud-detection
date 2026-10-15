@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Send, Loader2, AlertCircle, Sparkles, Database, Search, ShieldCheck, Zap, Activity } from 'lucide-react';
 import { isAxiosError } from 'axios';
 import { apiClient } from '../api/client';
+import { AegisWordmark } from '../components/AegisWordmark';
 
 interface RiskSignal {
   name: string;
@@ -221,17 +222,16 @@ export const RiskAssessment: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
-              Interactive Risk Assessment
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-slate-300">
-            <strong>Run a transaction simulation through the ML model and behavioral pattern engine. Submitted values are evaluated in real time.</strong>
-          </p>
-        </div>
+      <div className="space-y-1">
+        <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+          <AegisWordmark size="xs" inline /> // INFERENCE LAB
+        </span>
+        <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
+          Interactive Risk Assessment
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-400 font-normal">
+          Simulate transactions against the <AegisWordmark size="xs" inline /> ML inference model and behavioral pattern engine.
+        </p>
       </div>
       
       {errorMessage && (
@@ -245,36 +245,36 @@ export const RiskAssessment: React.FC = () => {
         {/* Form */}
         <div className="space-y-6">
         <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
-          <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Test Transaction Payload</h3>
+          <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">Test Transaction Payload</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Transaction ID</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Transaction ID</label>
               <input
                 type="text"
                 value={formData.transaction_id}
                 onChange={(e) => setFormData({ ...formData, transaction_id: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Account ID</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Account ID</label>
               <input
                 type="text"
                 value={formData.account_id}
                 onChange={(e) => setFormData({ ...formData, account_id: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Transaction Type</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Transaction Type</label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               >
                 <option value="TRANSFER">TRANSFER</option>
                 <option value="CASH_OUT">CASH_OUT</option>
@@ -284,77 +284,77 @@ export const RiskAssessment: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Amount</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Amount (IDR)</label>
               <input
                 type="number"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Origin Old Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Origin Old Balance</label>
               <input
                 type="number"
                 value={formData.oldbalanceOrg}
                 onChange={(e) => setFormData({ ...formData, oldbalanceOrg: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Origin New Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Origin New Balance</label>
               <input
                 type="number"
                 value={formData.newbalanceOrig}
                 onChange={(e) => setFormData({ ...formData, newbalanceOrig: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Destination Old Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Destination Old Balance</label>
               <input
                 type="number"
                 value={formData.oldbalanceDest}
                 onChange={(e) => setFormData({ ...formData, oldbalanceDest: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Destination New Balance</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Destination New Balance</label>
               <input
                 type="number"
                 value={formData.newbalanceDest}
                 onChange={(e) => setFormData({ ...formData, newbalanceDest: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Payment Attempts</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Payment Attempts</label>
               <input
                 type="number"
                 min="1"
                 max="10"
                 value={formData.payment_attempts}
                 onChange={(e) => setFormData({ ...formData, payment_attempts: Math.max(1, Number(e.target.value)) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Device ID</label>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5">Device ID</label>
               <input
                 type="text"
                 value={formData.device_id}
                 onChange={(e) => setFormData({ ...formData, device_id: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 interactive-input"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 transition-all"
               />
             </div>
           </div>
@@ -362,7 +362,7 @@ export const RiskAssessment: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center justify-center gap-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 rounded-lg transition-colors mt-4 disabled:opacity-50 interactive-btn"
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-2.5 text-sm shadow-lg shadow-cyan-950/40 transition-all active:scale-[0.99] disabled:opacity-50 mt-4"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             {loading ? 'Evaluating Model & Graph...' : 'Run Simulation'}
@@ -373,9 +373,9 @@ export const RiskAssessment: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-cyan-400" />
-                <h3 className="font-display text-base sm:text-lg font-semibold tracking-wide text-slate-200">Real Database Presets</h3>
+                <h3 className="font-display text-base sm:text-lg font-semibold tracking-tight text-slate-200">Real Database Presets</h3>
               </div>
-              <p className="mt-1 text-sm text-slate-300">
+              <p className="mt-1 text-xs text-slate-400">
                 Load verified real transactions from the database directly into the simulation model.
               </p>
             </div>
@@ -386,7 +386,7 @@ export const RiskAssessment: React.FC = () => {
 
           {/* Quick Lookup Bar */}
           <form onSubmit={handleLookupTransaction} className="flex flex-col gap-2 bg-slate-950 p-3.5 rounded-lg border border-slate-800">
-            <span className="text-xs sm:text-sm font-medium text-slate-300 flex items-center gap-1.5">
+            <span className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
               <Database size={14} className="text-cyan-400" />
               Load Any Real Transaction from Database
             </span>
@@ -396,12 +396,12 @@ export const RiskAssessment: React.FC = () => {
                 placeholder="e.g. TX-100463, TX-140135, TX-100003..."
                 value={lookupId}
                 onChange={(e) => setLookupId(e.target.value)}
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 font-mono interactive-input"
+                className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/30 font-mono"
               />
               <button
                 type="submit"
                 disabled={lookupLoading || !lookupId.trim()}
-                className="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors disabled:opacity-40 interactive-btn"
+                className="flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 px-3.5 py-2 text-xs sm:text-sm font-semibold transition-colors disabled:opacity-40"
               >
                 {lookupLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
                 Load
@@ -422,13 +422,13 @@ export const RiskAssessment: React.FC = () => {
                   setResult(null);
                   setErrorMessage(null);
                 }}
-                className="interactive-card rounded-lg border border-slate-800 bg-slate-950 p-3.5 text-left transition-colors hover:border-cyan-500/40 hover:bg-slate-900 group"
+                className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-left transition-all hover:border-cyan-500/40 hover:bg-slate-900/90 group"
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="block text-sm font-semibold text-cyan-300 group-hover:underline">{title}</span>
                   {category && (
                     <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded border ${
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
                         category === 'DECLINE'
                           ? 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                           : category === 'REVIEW'
@@ -440,20 +440,19 @@ export const RiskAssessment: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <span className="block text-sm font-mono text-slate-200">
+                <span className="block text-xs font-mono text-slate-300">
                   {payload.transaction_id} · {payload.type}
                 </span>
-                <span className="mt-1 block text-xs sm:text-sm text-slate-300">
+                <span className="mt-1 block text-xs font-mono text-slate-400">
                   Amount: {new Intl.NumberFormat('id-ID').format(payload.amount)}
                 </span>
-                <span className="mt-1 block text-xs sm:text-sm text-slate-300">
-                  Balance: {new Intl.NumberFormat('id-ID').format(payload.oldbalanceOrg)} →{' '}
-                  {new Intl.NumberFormat('id-ID').format(payload.newbalanceOrig)}
+                <span className="mt-0.5 block text-xs font-mono text-slate-500">
+                  Balance: {new Intl.NumberFormat('id-ID').format(payload.oldbalanceOrg)} → {new Intl.NumberFormat('id-ID').format(payload.newbalanceOrig)}
                 </span>
-                <span className="mt-1 block text-xs text-slate-400 font-mono">
+                <span className="mt-0.5 block text-xs text-slate-500 font-mono">
                   Account: {payload.account_id}
                 </span>
-                <span className="mt-2 block text-xs sm:text-sm text-cyan-400 font-medium transition-transform group-hover:translate-x-1">
+                <span className="mt-2 block text-xs text-cyan-400 font-medium group-hover:underline">
                   Select to load payload →
                 </span>
               </button>

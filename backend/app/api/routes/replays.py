@@ -46,6 +46,29 @@ def create_replay(payload: ReplayCreateRequest, background_tasks: BackgroundTask
         "status": new_replay.status,
     }
 
+@router.get("")
+def list_replays(limit: int = 10, db: Session = Depends(get_db)):
+    """List recent replay runs, newest first."""
+    replays = (
+        db.query(ReplayRun)
+        .order_by(ReplayRun.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return [
+        {
+            "job_id": r.id,
+            "replay_id": r.id,
+            "model_version": r.model_version,
+            "threshold": r.threshold,
+            "status": r.status,
+            "metrics_summary": r.metrics_summary,
+            "error_message": r.error_message,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in replays
+    ]
+
 @router.get("/{replay_id}")
 def get_replay_status(replay_id: int, db: Session = Depends(get_db)):
     replay = db.query(ReplayRun).filter(ReplayRun.id == replay_id).first()

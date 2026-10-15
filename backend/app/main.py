@@ -48,6 +48,7 @@ app.include_router(risk.router)
 app.include_router(transactions.router, prefix="/api/v1", tags=["Transactions"])
 
 
+@app.get("/health")
 @app.get("/api/v1/health")
 def health_check(db: Session = Depends(get_db)):
     """Report backend, database pool, and model observability."""

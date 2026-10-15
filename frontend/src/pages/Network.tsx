@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
+import { AegisWordmark } from '../components/AegisWordmark';
 
 type EntityType = 'transactions' | 'accounts';
 
@@ -415,13 +416,14 @@ export const Network: React.FC = () => {
     <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
-              Network Investigation
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-slate-300">
-            <strong>Explore connected accounts, shared devices, and transaction relationships..</strong>
+          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+            <AegisWordmark size="xs" inline /> // GRAPH INTELLIGENCE
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+            Network Graph Explorer
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            Explore connected accounts, shared devices, IP clusters, and transaction relationships in interactive Cytoscape graphs.
           </p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
@@ -500,10 +502,10 @@ export const Network: React.FC = () => {
                   <Sparkles size={14} />
                   Database Pattern Showcase
                 </div>
-                <h3 className="mt-2 text-xl sm:text-2xl font-fantasy font-bold tracking-wide text-slate-100">
+                <h3 className="mt-2 text-xl sm:text-2xl font-display font-bold tracking-tight text-slate-100">
                   Choose a Graph Pattern to Explore
                 </h3>
-                <p className="mx-auto mt-1 max-w-2xl text-sm text-slate-300">
+                <p className="mx-auto mt-1 max-w-2xl text-xs sm:text-sm text-slate-400">
                   Select any curated entity from the live database below to visualize device-sharing rings, emulator syndicates, mule networks, or clean retail baselines in Cytoscape.
                 </p>
               </div>
@@ -528,7 +530,7 @@ export const Network: React.FC = () => {
                           {sample.type === 'accounts' ? 'Account' : 'Transaction'}
                         </span>
                       </div>
-                      <h4 className="font-fantasy text-base font-semibold tracking-wide text-slate-100 group-hover:text-cyan-200">
+                      <h4 className="font-display text-base font-semibold tracking-tight text-slate-100 group-hover:text-cyan-200">
                         {sample.title}
                       </h4>
                       <p className="mt-1 font-mono text-sm text-cyan-400">

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../api/client';
+import { AegisWordmark } from '../components/AegisWordmark';
 
 type FeedbackLabel = 'confirmed_fraud' | 'legitimate' | 'inconclusive';
 
@@ -437,13 +438,14 @@ export const Investigation: React.FC = () => {
         {/* Header & Direct ID Search */}
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
           <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
-                Fraud Investigation Hub
-              </h2>
-            </div>
-            <p className="mt-1 text-sm text-slate-300">
-              <strong>Review case queues, analyze explainable ML signals, and record feedback decisions for retraining.</strong>
+            <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+              <AegisWordmark size="xs" inline /> // CASE OPERATIONS
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+              Fraud Investigation Hub
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-slate-400">
+              Review prioritized case queues, analyze explainable ML signals, and record feedback decisions for retraining.
             </p>
           </div>
 
@@ -845,7 +847,7 @@ export const Investigation: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="h-4 w-1 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
-              <h2 className="font-fantasy text-xl sm:text-2xl font-bold tracking-wide text-slate-100 break-all sm:break-normal">
+              <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-slate-100 break-all sm:break-normal">
                 Case Investigation: <span className="font-mono text-cyan-400 font-semibold">{transaction.transaction_id}</span>
               </h2>
             </div>
@@ -859,12 +861,12 @@ export const Investigation: React.FC = () => {
               {investigationCase?.status ?? 'open'}
             </span>
           </div>
-          <p className="mt-1 text-sm text-slate-300 pl-3">
+          <p className="mt-1 text-xs sm:text-sm text-slate-400 pl-3">
             {transaction.model_version ? (
               `Inference Engine: ${transaction.model_version}`
             ) : (
               <>
-                Live <span className="aegis-text-gradient font-fantasy font-bold">AEGIS</span> Model &amp; Graph Engine
+                Live <AegisWordmark size="xs" inline /> Model &amp; Graph Engine
               </>
             )}
             {investigationCase?.assigned_analyst ? ` • Assigned to ${investigationCase.assigned_analyst}` : ''}

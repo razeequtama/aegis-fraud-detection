@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight, Sliders, RotateCcw } from 'lucide-react';
 import { apiClient } from '../api/client';
+import { AegisWordmark } from '../components/AegisWordmark';
 
 interface Transaction {
   id: string;
@@ -78,13 +79,14 @@ export const Transactions: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2 className="font-fantasy text-2xl sm:text-3xl font-bold tracking-wide text-slate-100">
-              Transaction Explorer
-            </h2>
-          </div>
-          <p className="text-sm text-slate-300 mt-1">
-            Live fraud evaluation records and real-time inference scores
+          <span className="text-[10px] font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+            <AegisWordmark size="xs" inline /> // TRANSACTION EXPLORER
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+            Transaction Ledger &amp; Risk Explorer
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Live fraud evaluation records, real-time inference scores, and precision risk range filtering.
           </p>
         </div>
 
