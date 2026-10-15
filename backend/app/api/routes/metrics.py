@@ -24,6 +24,7 @@ router = APIRouter(prefix="/api/v1/metrics", tags=["Metrics"])
 def get_metrics_overview(
     start_date: date | None = None,
     end_date: date | None = None,
+    interval: str | None = None,
     db: Session = Depends(get_db),
 ):
     if start_date and end_date and start_date > end_date:
@@ -90,28 +91,17 @@ def get_metrics_overview(
     busiest_period = None
     latest_transaction = totals["latest_transaction"]
     earliest_transaction = totals["earliest_transaction"]
+    is_hourly = False
     if (
         timestamp_column is not None
         and latest_transaction is not None
         and earliest_transaction is not None
     ):
-        dialect = db.get_bind().dialect.name
-        if dialect == "postgresql":
-            bucket = func.date_trunc("day", timestamp_column)
-            month_bucket = func.date_trunc("month", timestamp_column)
-        elif dialect == "sqlite":
-            bucket = func.strftime("%Y-%m-%d", timestamp_column)
-            month_bucket = func.strftime("%Y-%m", timestamp_column)
-        else:
-            raise RuntimeError(
-                f"Daily metrics time-series are not supported for database dialect {dialect!r}."
-            )
-
         def as_date(value):
             return (
                 value.date()
                 if isinstance(value, datetime)
-                else date.fromisoformat(value)
+                else date.fromisoformat(str(value)[:10])
             )
 
         available_start = as_date(earliest_transaction)
@@ -123,9 +113,24 @@ def get_metrics_overview(
             "end_date": available_end.isoformat(),
         }
 
-        daily_query = (
+        span_days = (selected_end - selected_start).days
+        is_hourly = interval == "hour" or (interval != "day" and start_date is not None and span_days <= 2)
+
+        dialect = db.get_bind().dialect.name
+        if dialect == "postgresql":
+            bucket = func.date_trunc("hour" if is_hourly else "day", timestamp_column)
+            month_bucket = func.date_trunc("month", timestamp_column)
+        elif dialect == "sqlite":
+            bucket = func.strftime("%Y-%m-%dT%H:00:00" if is_hourly else "%Y-%m-%d", timestamp_column)
+            month_bucket = func.strftime("%Y-%m", timestamp_column)
+        else:
+            raise RuntimeError(
+                f"Daily metrics time-series are not supported for database dialect {dialect!r}."
+            )
+
+        trend_query = (
             select(
-                bucket.label("day"),
+                bucket.label("bucket"),
                 func.count().label("transactions"),
                 func.coalesce(
                     func.sum(case((fraud_condition, 1), else_=0)), 0
@@ -141,24 +146,50 @@ def get_metrics_overview(
             .group_by(bucket)
             .order_by(bucket)
         )
-        rows = db.execute(daily_query).mappings()
+        rows = db.execute(trend_query).mappings().all()
 
-        daily_metrics: dict[date, dict[str, int]] = {}
-        for row in rows:
-            day = as_date(row["day"])
-            daily_metrics[day] = {
-                "transactions": row["transactions"],
-                "suspicious": row["suspicious"],
-            }
+        if is_hourly:
+            hourly_map = {}
+            for row in rows:
+                h = row["bucket"]
+                if isinstance(h, datetime):
+                    key = h.strftime("%Y-%m-%dT%H:00:00")
+                else:
+                    key = str(h)[:19]
+                hourly_map[key] = {
+                    "transactions": row["transactions"],
+                    "suspicious": row["suspicious"],
+                }
 
-        trend = [
-            {
-                "date": day.isoformat(),
-                "transactions": values["transactions"],
-                "suspicious": values["suspicious"],
-            }
-            for day, values in sorted(daily_metrics.items())
-        ]
+            trend = []
+            cur = datetime.combine(selected_start, time.min)
+            end_limit = datetime.combine(selected_end + timedelta(days=1), time.min)
+            while cur < end_limit:
+                k = cur.strftime("%Y-%m-%dT%H:00:00")
+                vals = hourly_map.get(k, {"transactions": 0, "suspicious": 0})
+                trend.append({
+                    "date": k,
+                    "transactions": vals["transactions"],
+                    "suspicious": vals["suspicious"],
+                })
+                cur += timedelta(hours=1)
+        else:
+            daily_metrics: dict[date, dict[str, int]] = {}
+            for row in rows:
+                day = as_date(row["bucket"])
+                daily_metrics[day] = {
+                    "transactions": row["transactions"],
+                    "suspicious": row["suspicious"],
+                }
+
+            trend = [
+                {
+                    "date": day.isoformat(),
+                    "transactions": values["transactions"],
+                    "suspicious": values["suspicious"],
+                }
+                for day, values in sorted(daily_metrics.items())
+            ]
 
         busiest_month_row = db.execute(
             select(
@@ -196,4 +227,5 @@ def get_metrics_overview(
         "trend": trend,
         "available_range": available_range,
         "busiest_period": busiest_period,
+        "granularity": "hourly" if is_hourly else "daily",
     }

@@ -8,7 +8,14 @@ from app.services.graph_analysis import FraudGraphAnalyzer
 router = APIRouter(prefix="/api/v1", tags=["Network Analysis"])
 
 
-def _build_analyzer(db: Session) -> FraudGraphAnalyzer:
+_cached_analyzer: FraudGraphAnalyzer | None = None
+
+
+def _build_analyzer(db: Session, force_reload: bool = False) -> FraudGraphAnalyzer:
+    global _cached_analyzer
+    if _cached_analyzer is not None and not force_reload:
+        return _cached_analyzer
+
     if "transactions" not in inspect(db.get_bind()).get_table_names():
         raise HTTPException(status_code=404, detail="No transaction data is available for graph analysis.")
 
@@ -61,12 +68,80 @@ def _build_analyzer(db: Session) -> FraudGraphAnalyzer:
 
     analyzer = FraudGraphAnalyzer()
     analyzer.build_graph_from_transactions(records)
+    _cached_analyzer = analyzer
     return analyzer
+
+
+@router.get("/network/samples")
+def get_network_samples():
+    """Returns verified graph sample patterns from the database for instant user exploration."""
+    return [
+        {
+            "id": "C376938867",
+            "type": "accounts",
+            "title": "53-Account Fraud Ring",
+            "badge": "Syndicate Ring",
+            "badge_color": "rose",
+            "description": "Central shared emulator (DEV-SIM-995) linking 53 accounts with 17 flagged fraud accounts.",
+            "stats": "56 Nodes · 17 Suspicious · 1 Shared Device",
+            "related_id": "TX-100463",
+        },
+        {
+            "id": "C1387708046",
+            "type": "accounts",
+            "title": "High-Density Device Ring",
+            "badge": "Device Multiplexing",
+            "badge_color": "amber",
+            "description": "Shared device DEV-SIM-236 linking 54 accounts with 19 confirmed fraud nodes.",
+            "stats": "57 Nodes · 19 Suspicious · 1 Shared Device",
+            "related_id": "TX-107781",
+        },
+        {
+            "id": "C1791470904",
+            "type": "accounts",
+            "title": "Mule Account Network",
+            "badge": "Mule Ring",
+            "badge_color": "rose",
+            "description": "Device DEV-SIM-278 connecting 47 accounts with multiple concurrent cash-out transactions.",
+            "stats": "50 Nodes · 17 Suspicious · 1 Shared Device",
+            "related_id": "TX-100033",
+        },
+        {
+            "id": "TX-100463",
+            "type": "transactions",
+            "title": "Fraudulent Cash-Out",
+            "badge": "Flagged Transaction",
+            "badge_color": "rose",
+            "description": "Fraudulent cash-out transaction executed within the DEV-SIM-995 multi-account ring.",
+            "stats": "Linked to Account C376938867 & Device DEV-SIM-995",
+            "related_id": "C376938867",
+        },
+        {
+            "id": "TX-SAMPLE-DECLINE",
+            "type": "transactions",
+            "title": "High-Value Drain (Rp 2M)",
+            "badge": "Decline Cluster",
+            "badge_color": "purple",
+            "description": "Critical Rp 2,000,000 cash out on shared device DEV-888 with confirmed fraud label.",
+            "stats": "Decline Score 0.99 · 100% Drain · 3 Attempts",
+            "related_id": "ACC-DECLINE-001",
+        },
+        {
+            "id": "C1041698296",
+            "type": "accounts",
+            "title": "Clean Retail Customer",
+            "badge": "Normal Baseline",
+            "badge_color": "emerald",
+            "description": "Standard retail customer with normal transactions and zero fraud flags.",
+            "stats": "Legitimate Baseline · Low Risk",
+            "related_id": "TX-149954",
+        },
+    ]
 
 
 @router.get("/transactions/{transaction_id}/network")
 def get_transaction_network(
-    transaction_id: str, radius: int = 2, db: Session = Depends(get_db)
+    transaction_id: str, radius: int = 3, db: Session = Depends(get_db)
 ):
     """
     Retrieves the connected neighborhood graph for a specific transaction.
@@ -79,6 +154,7 @@ def get_transaction_network(
         raise HTTPException(status_code=404, detail="Transaction network not found or empty.")
     
     return network_data
+
 
 @router.get("/accounts/{account_id}/network")
 def get_account_network(

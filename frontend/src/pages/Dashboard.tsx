@@ -41,15 +41,44 @@ interface MetricsOverview {
     end_date: string;
     transactions: number;
   } | null;
+  granularity?: 'hourly' | 'daily';
 }
 
 const numberFormat = new Intl.NumberFormat();
 
-const formatDate = (value: string) =>
-  new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-  });
+const formatTick = (value: string) => {
+  if (value.includes('T')) {
+    const timePart = value.split('T')[1];
+    return timePart.slice(0, 5); // "HH:MM"
+  }
+  const parts = value.split('-');
+  if (parts.length === 3) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    return `${months[m]} ${d}`;
+  }
+  return value;
+};
+
+const formatTooltipLabel = (value: string) => {
+  if (value.includes('T')) {
+    const [d, t] = value.split('T');
+    const dParts = d.split('-');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const m = parseInt(dParts[1], 10) - 1;
+    const day = parseInt(dParts[2], 10);
+    return `${months[m]} ${day}, ${t.slice(0, 5)}`;
+  }
+  const parts = value.split('-');
+  if (parts.length === 3) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    return `${months[m]} ${d}, ${parts[0]}`;
+  }
+  return value;
+};
 
 const formatMonth = (value: string) =>
   new Date(`${value}T00:00:00`).toLocaleDateString(undefined, {
@@ -64,6 +93,20 @@ export const Dashboard: React.FC = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const handleStartDateChange = (val: string) => {
+    setStartDate(val);
+    if (endDate && val > endDate) {
+      setEndDate(val);
+    }
+  };
+
+  const handleEndDateChange = (val: string) => {
+    setEndDate(val);
+    if (startDate && val < startDate) {
+      setStartDate(val);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -80,6 +123,11 @@ export const Dashboard: React.FC = () => {
         });
         if (active) {
           setOverview(response.data);
+          // Set initial date range inputs to busiest period if not yet set
+          if (!startDate && !endDate && response.data.busiest_period) {
+            setStartDate(response.data.busiest_period.start_date);
+            setEndDate(response.data.busiest_period.end_date);
+          }
         }
       } catch (error: unknown) {
         if (active) {
@@ -202,56 +250,83 @@ export const Dashboard: React.FC = () => {
               Transaction &amp; Suspicious Activity Trend
             </h3>
             <p className="mt-1 text-xs text-slate-400">
-              Choose any date range in the recorded transaction history.
+              These are dated from the 50.000 transactions database.
             </p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
-            <label className="grid gap-1 text-xs text-slate-400">
-              From
-              <input
-                aria-label="Trend start date"
-                type="date"
-                min={overview?.available_range?.start_date}
-                max={endDate || overview?.available_range?.end_date}
-                value={startDate || overview?.available_range?.start_date || ''}
-                onChange={(event) => setStartDate(event.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200"
-              />
-            </label>
-            <label className="grid gap-1 text-xs text-slate-400">
-              To
-              <input
-                aria-label="Trend end date"
-                type="date"
-                min={startDate || overview?.available_range?.start_date}
-                max={overview?.available_range?.end_date}
-                value={endDate || overview?.available_range?.end_date || ''}
-                onChange={(event) => setEndDate(event.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200"
-              />
-            </label>
-            <button
-              type="button"
-              disabled={!overview?.busiest_period || loading}
-              onClick={() => {
-                if (!overview?.busiest_period) return;
-                setStartDate(overview.busiest_period.start_date);
-                setEndDate(overview.busiest_period.end_date);
-              }}
-              className="flex items-center gap-2 rounded-lg border border-cyan-500/30 px-3 py-2 text-sm font-medium text-cyan-300 hover:bg-cyan-500/10 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <CalendarDays size={16} />
-              Busiest period
-            </button>
+            <div className="flex flex-wrap items-center gap-1.5 mr-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setStartDate('2026-01-01');
+                  setEndDate('2026-01-01');
+                }}
+                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                  startDate === '2026-01-01' && endDate === '2026-01-01'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                }`}
+              >
+                Jan 1 (Hourly)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStartDate('2026-01-02');
+                  setEndDate('2026-01-02');
+                }}
+                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                  startDate === '2026-01-02' && endDate === '2026-01-02'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                }`}
+              >
+                Jan 2 (Hourly)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStartDate('2026-01-01');
+                  setEndDate('2026-01-07');
+                }}
+                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                  startDate === '2026-01-01' && endDate === '2026-01-07'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                }`}
+              >
+                Jan 1–7
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStartDate('2026-01-01');
+                  setEndDate('2026-01-31');
+                }}
+                className={`px-2.5 py-1.5 text-xs rounded-lg font-medium transition-colors border ${
+                  startDate === '2026-01-01' && endDate === '2026-01-31'
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                }`}
+              >
+                Full Month
+              </button>
+            </div>
           </div>
         </div>
-        <p className="mb-4 text-xs text-slate-400">
-          {startDate || overview?.available_range?.start_date || 'No start date'} –{' '}
-          {endDate || overview?.available_range?.end_date || 'No end date'}
-          {overview?.busiest_period
-            ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
-            : ''}
-        </p>
+        <div className="mb-4 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+          <span>
+            {startDate || overview?.available_range?.start_date || 'No start date'} –{' '}
+            {endDate || overview?.available_range?.end_date || 'No end date'}
+            {overview?.busiest_period
+              ? ` · Busiest month: ${formatMonth(overview.busiest_period.start_date)} (${numberFormat.format(overview.busiest_period.transactions)} transactions)`
+              : ''}
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-cyan-300 text-[11px] font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            {overview?.granularity === 'hourly' ? 'Hourly Timeline (24h View)' : 'Daily Timeline'}
+          </span>
+        </div>
         <div className="h-72 w-full">
           {loading ? (
             <div className="h-full animate-pulse rounded-lg bg-slate-800/50" />
@@ -265,7 +340,7 @@ export const Dashboard: React.FC = () => {
                 <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" />
                 <XAxis
                   dataKey="date"
-                  tickFormatter={formatDate}
+                  tickFormatter={formatTick}
                   stroke="#64748b"
                   tickLine={false}
                   axisLine={false}
@@ -277,7 +352,7 @@ export const Dashboard: React.FC = () => {
                   allowDecimals={false}
                 />
                 <Tooltip
-                  labelFormatter={(value) => formatDate(String(value))}
+                  labelFormatter={(value) => formatTooltipLabel(String(value))}
                   formatter={(value, name) => [
                     numberFormat.format(Number(value)),
                     name === 'Transactions' || name === 'transactions'
