@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD environment variable is required}"
       POSTGRES_DB: "${POSTGRES_DB:-aegis_db}"
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -21,8 +21,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: aegis_redis
-    ports:
-      - "6379:6379"
     networks:
       - aegis_network
     healthcheck:
@@ -45,6 +43,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_HOST=db
+      - DATABASE_PORT=5432
       - "DATABASE_URL=${DATABASE_URL:?Error: DATABASE_URL environment variable is required}"
       - ML_ARTIFACTS_DIR=/ml/artifacts
       - REDIS_HOST=redis

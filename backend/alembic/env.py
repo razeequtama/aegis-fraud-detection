@@ -23,13 +23,24 @@ if not raw_database_url or not raw_database_url.strip():
 
 database_url = raw_database_url.strip()
 
-# Handle optional DATABASE_HOST override only when explicitly provided and differing from current host
+# Handle optional DATABASE_HOST and DATABASE_PORT override only when explicitly provided
 database_host = os.environ.get("DATABASE_HOST")
-if database_host and database_host.strip():
+database_port = os.environ.get("DATABASE_PORT")
+if (database_host and database_host.strip()) or (database_port and database_port.strip()):
     from sqlalchemy.engine import make_url
     url_obj = make_url(database_url)
-    if url_obj.host != database_host.strip():
-        database_url = str(url_obj.set(host=database_host.strip()))
+    updates = {}
+    if database_host and database_host.strip() and url_obj.host != database_host.strip():
+        updates["host"] = database_host.strip()
+    if database_port and database_port.strip():
+        try:
+            port_int = int(database_port.strip())
+            if url_obj.port != port_int:
+                updates["port"] = port_int
+        except ValueError:
+            pass
+    if updates:
+        database_url = url_obj.set(**updates).render_as_string(hide_password=False)
 
 # Safely escape '%' for Alembic's ConfigParser interpolation to handle special characters in credentials
 config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
