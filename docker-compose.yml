@@ -25,27 +25,35 @@ services:
       - "6379:6379"
     networks:
       - aegis_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: aegis_backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    env_file:
-      - ./backend/.env
+    command: sh -c "alembic upgrade head && python -m app.db.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app"
     volumes:
       - ./backend:/app
       - ./ml/artifacts:/ml/artifacts:ro
+      - ./database/seeds:/database/seeds:ro
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_HOST=host.docker.internal
+      - DATABASE_HOST=db
+      - DATABASE_URL=postgresql+psycopg2://aegis_user:aegis_password@db:5432/aegis_db
       - ML_ARTIFACTS_DIR=/ml/artifacts
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
+      db:
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     networks:
       - aegis_network
     healthcheck:
@@ -54,6 +62,25 @@ services:
       timeout: 3s
       retries: 5
       start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aegis_frontend
+    command: npm run dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_BACKEND_URL=http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - aegis_network
 
 volumes:
   postgres_data:

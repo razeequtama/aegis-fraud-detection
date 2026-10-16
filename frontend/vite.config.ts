@@ -1,17 +1,24 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
+const backendUrl = process.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '0.0.0.0',
+    port: 5173,
+    watch: {
+      usePolling: true,
+    },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: backendUrl,
         changeOrigin: true,
       },
       '/health': {
-        target: 'http://127.0.0.1:8000',
+        target: backendUrl,
         changeOrigin: true,
       },
     },

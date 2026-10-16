@@ -463,26 +463,20 @@ export const Network: React.FC = () => {
   return (
     <div className="flex flex-col space-y-4 min-h-[600px] lg:h-[calc(100vh-140px)]">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
-        <div className="flex items-start justify-between gap-3 max-w-xl">
-          <div>
-            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
-              <AegisWordmark size="xs" inline />{t.network.tag}
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-              {t.network.title}
-            </h2>
-            <p className="mt-1 text-sm sm:text-base text-slate-300">
-              {t.network.subtitle}
-            </p>
-          </div>
-
-          <div className="lg:hidden shrink-0">
-            <PageGuideButton page="network" />
-          </div>
+        <div className="max-w-xl">
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
+            <AegisWordmark size="xs" inline />{t.network.tag}
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+            {t.network.title}
+          </h2>
+          <p className="mt-1 text-sm sm:text-base text-slate-300">
+            {t.network.subtitle}
+          </p>
         </div>
 
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
-          <form onSubmit={handleSubmit} className="flex flex-wrap sm:flex-nowrap items-center gap-2 flex-1 sm:flex-initial shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-nowrap">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 shrink-0 flex-nowrap">
             <label htmlFor="network-entity-type" className="sr-only">
               Network entity type
             </label>
@@ -495,7 +489,7 @@ export const Network: React.FC = () => {
               <option value="transactions">{t.network.transactionOption}</option>
               <option value="accounts">{t.network.accountOption}</option>
             </select>
-            <div className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0">
+            <div className="flex items-center gap-2 shrink-0">
               <label htmlFor="network-entity-id" className="sr-only">
                 Transaction or account ID
               </label>
@@ -504,7 +498,7 @@ export const Network: React.FC = () => {
                 value={entityId}
                 onChange={(event) => setEntityId(event.target.value)}
                 placeholder={entityType === 'transactions' ? t.network.txIdPlaceholder : t.network.accIdPlaceholder}
-                className="w-full sm:w-48 md:w-56 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input font-mono"
+                className="w-40 sm:w-48 md:w-56 rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input font-mono"
               />
               <button
                 type="submit"
@@ -515,9 +509,7 @@ export const Network: React.FC = () => {
               </button>
             </div>
           </form>
-          <div className="hidden lg:block shrink-0">
-            <PageGuideButton page="network" />
-          </div>
+          <PageGuideButton page="network" className="shrink-0" />
         </div>
       </div>
 

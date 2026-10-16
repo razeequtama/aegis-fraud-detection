@@ -89,26 +89,20 @@ export const Transactions: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
-              <AegisWordmark size="xs" inline /> {t.transactions.tag}
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-              {t.transactions.title}
-            </h2>
-            <p className="text-sm sm:text-base text-slate-300 mt-1">
-              {t.transactions.subtitle}
-            </p>
-          </div>
-
-          <div className="lg:hidden shrink-0">
-            <PageGuideButton page="transactions" />
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
+        <div>
+          <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
+            <AegisWordmark size="xs" inline /> {t.transactions.tag}
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+            {t.transactions.title}
+          </h2>
+          <p className="text-sm sm:text-base text-slate-300 mt-1">
+            {t.transactions.subtitle}
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+        <div className="flex items-center gap-2.5 shrink-0 flex-nowrap">
           <label htmlFor="transfer-decision-filter" className="sr-only">
             {t.transactions.allDecisions}
           </label>
@@ -119,14 +113,14 @@ export const Transactions: React.FC = () => {
               setTransferDecision(e.target.value as 'ALL' | 'APPROVE' | 'DECLINE');
               setPage(1);
             }}
-            className="flex-1 sm:flex-initial bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-medium interactive-input"
+            className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-medium interactive-input"
           >
             <option value="ALL">{t.transactions.allDecisions}</option>
             <option value="DECLINE">{t.transactions.declinedOnly}</option>
             <option value="APPROVE">{t.transactions.approvedOnly}</option>
           </select>
-          <div className="relative flex-1 sm:flex-initial">
-            <Search className="absolute left-3 top-3 text-slate-500" size={17} />
+          <div className="relative shrink-0">
+            <Search className="absolute left-3 top-2.5 text-slate-500" size={17} />
             <input
               type="text"
               placeholder={t.transactions.searchPlaceholder}
@@ -135,12 +129,10 @@ export const Transactions: React.FC = () => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 w-full sm:w-64 interactive-input"
+              className="bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 w-40 sm:w-56 interactive-input font-mono"
             />
           </div>
-          <div className="hidden lg:block shrink-0">
-            <PageGuideButton page="transactions" />
-          </div>
+          <PageGuideButton page="transactions" className="shrink-0" />
         </div>
       </div>
 

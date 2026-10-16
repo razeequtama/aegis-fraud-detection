@@ -440,46 +440,38 @@ export const Investigation: React.FC = () => {
       <div className="space-y-6">
         {/* Header & Direct ID Search */}
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center border-b border-slate-800/60 pb-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
-                <AegisWordmark size="xs" inline />{t.investigation.hubTag}
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-                {t.investigation.title}
-              </h2>
-              <p className="mt-1 text-sm sm:text-base text-slate-300">
-                {t.investigation.subtitle}
-              </p>
-            </div>
-
-            <div className="lg:hidden shrink-0">
-              <PageGuideButton page="investigation" />
-            </div>
+          <div>
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-cyan-400 font-semibold flex items-center gap-1.5">
+              <AegisWordmark size="xs" inline />{t.investigation.hubTag}
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+              {t.investigation.title}
+            </h2>
+            <p className="mt-1 text-sm sm:text-base text-slate-300">
+              {t.investigation.subtitle}
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
-            <form onSubmit={handleSearchJump} className="flex items-center gap-2 flex-1 sm:flex-initial">
-              <div className="relative flex-1 sm:flex-initial">
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0 flex-nowrap">
+            <form onSubmit={handleSearchJump} className="flex items-center gap-2 flex-1 sm:flex-initial min-w-0 flex-nowrap">
+              <div className="relative flex-1 sm:flex-initial min-w-0">
                 <Search size={15} className="absolute left-3 top-2.5 text-slate-500" />
                 <input
                   type="text"
                   value={searchJumpInput}
                   onChange={(e) => setSearchJumpInput(e.target.value)}
                   placeholder={t.investigation.searchPlaceholder}
-                  className="w-full sm:w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input"
+                  className="w-full sm:w-56 md:w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none interactive-input font-mono"
                 />
               </div>
               <button
                 type="submit"
-                className="shrink-0 flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 sm:px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn"
+                className="shrink-0 flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 sm:px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 interactive-btn whitespace-nowrap"
               >
                 {t.investigation.searchBtn} <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </button>
             </form>
-            <div className="hidden lg:block shrink-0">
-              <PageGuideButton page="investigation" />
-            </div>
+            <PageGuideButton page="investigation" className="shrink-0" />
           </div>
         </div>
 
@@ -860,59 +852,53 @@ export const Investigation: React.FC = () => {
     <div className="space-y-6">
       {/* Top Navigation & Case Status Bar */}
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Link
-                to="/investigation"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-400 hover:underline"
-              >
-                <ArrowLeft size={15} /> {t.investigation.backToQueue}
-              </Link>
-              <span className="text-slate-600">/</span>
-              <span className="text-sm text-slate-300 font-mono">
-                {investigationCase?.case_id ?? t.investigation.autoAssigned}
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="h-4 w-1 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
-                <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-slate-100 break-all sm:break-normal">
-                  {t.investigation.caseInvestigationPrefix} <span className="font-mono text-cyan-400 font-semibold">{transaction.transaction_id}</span>
-                </h2>
-              </div>
-              <span
-                className={`rounded-full px-3 py-0.5 text-sm font-medium capitalize border ${
-                  investigationCase?.status === 'closed'
-                    ? 'border-slate-600 bg-slate-800 text-slate-300'
-                    : 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
-                }`}
-              >
-                {investigationCase?.status === 'closed' ? t.common.closed : t.common.open}
-              </span>
-            </div>
-            <p className="mt-1 text-sm sm:text-base text-slate-300 pl-3">
-              {transaction.model_version ? (
-                `${t.investigation.inferenceEngine} ${transaction.model_version}`
-              ) : (
-                <>
-                  Live <AegisWordmark size="xs" inline /> {t.common.platformSubtitle}
-                </>
-              )}
-              {investigationCase?.assigned_analyst ? ` • ${t.investigation.assignedTo} ${investigationCase.assigned_analyst}` : ''}
-            </p>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Link
+              to="/investigation"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-400 hover:underline"
+            >
+              <ArrowLeft size={15} /> {t.investigation.backToQueue}
+            </Link>
+            <span className="text-slate-600">/</span>
+            <span className="text-sm text-slate-300 font-mono">
+              {investigationCase?.case_id ?? t.investigation.autoAssigned}
+            </span>
           </div>
-
-          <div className="lg:hidden shrink-0">
-            <PageGuideButton page="investigation" />
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
+              <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-slate-100 break-all sm:break-normal">
+                {t.investigation.caseInvestigationPrefix} <span className="font-mono text-cyan-400 font-semibold">{transaction.transaction_id}</span>
+              </h2>
+            </div>
+            <span
+              className={`rounded-full px-3 py-0.5 text-sm font-medium capitalize border ${
+                investigationCase?.status === 'closed'
+                  ? 'border-slate-600 bg-slate-800 text-slate-300'
+                  : 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold'
+              }`}
+            >
+              {investigationCase?.status === 'closed' ? t.common.closed : t.common.open}
+            </span>
           </div>
+          <p className="mt-1 text-sm sm:text-base text-slate-300 pl-3">
+            {transaction.model_version ? (
+              `${t.investigation.inferenceEngine} ${transaction.model_version}`
+            ) : (
+              <>
+                Live <AegisWordmark size="xs" inline /> {t.common.platformSubtitle}
+              </>
+            )}
+            {investigationCase?.assigned_analyst ? ` • ${t.investigation.assignedTo} ${investigationCase.assigned_analyst}` : ''}
+          </p>
         </div>
 
         {/* Action Shortcuts */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0 flex-nowrap">
           <Link
             to={`/network/transactions/${encodeURIComponent(transaction.transaction_id)}`}
-            className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20 interactive-btn"
+            className="flex items-center gap-2 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-sm font-semibold text-cyan-300 transition-colors hover:bg-cyan-500/20 interactive-btn shrink-0 whitespace-nowrap"
           >
             <Network size={16} />
             {t.investigation.exploreInNetwork}
@@ -922,15 +908,13 @@ export const Investigation: React.FC = () => {
               type="button"
               onClick={handleReopenCase}
               disabled={isUpdatingStatus}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50 interactive-btn"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50 interactive-btn shrink-0 whitespace-nowrap"
             >
               <RotateCcw size={14} />
               {t.investigation.reopenCase}
             </button>
           )}
-          <div className="hidden lg:block shrink-0">
-            <PageGuideButton page="investigation" />
-          </div>
+          <PageGuideButton page="investigation" className="shrink-0" />
         </div>
       </div>
 

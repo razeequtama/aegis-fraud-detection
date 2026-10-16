@@ -209,29 +209,23 @@ export const SystemHealth: React.FC = () => {
     <div className="space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/60 pb-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
-                <AegisWordmark size="xs" inline /> {t.systemHealth.tag}
-              </span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
-              {t.systemHealth.title}
-            </h2>
-            <p className="mt-1 text-sm sm:text-base text-slate-300">
-              {t.systemHealth.subtitle}
-            </p>
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-mystic text-cyan-400 font-semibold flex items-center gap-1.5">
+              <AegisWordmark size="xs" inline /> {t.systemHealth.tag}
+            </span>
           </div>
-
-          <div className="sm:hidden shrink-0">
-            <PageGuideButton page="systemHealth" />
-          </div>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-slate-100 mt-1">
+            {t.systemHealth.title}
+          </h2>
+          <p className="mt-1 text-sm sm:text-base text-slate-300">
+            {t.systemHealth.subtitle}
+          </p>
         </div>
 
-        {/* Status indicator & Refresh button */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3.5 py-1.5 text-xs sm:text-sm text-slate-300 font-mono">
+        {/* Status indicator & Refresh button & Guide button */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-nowrap">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/80 px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm text-slate-300 font-mono whitespace-nowrap">
             <span>
               {loading
                 ? (language === 'id' ? 'Menghubungkan ke backend…' : 'Connecting to backend…')
@@ -246,15 +240,13 @@ export const SystemHealth: React.FC = () => {
             onClick={() => void fetchHealth(true)}
             disabled={refreshing || loading}
             title={t.systemHealth.refreshBtn}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 hover:border-cyan-500/40 px-3.5 py-1.5 text-sm font-semibold text-slate-200 transition-colors disabled:opacity-50 interactive-btn"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 hover:border-cyan-500/40 px-3 sm:px-3.5 py-1.5 text-sm font-semibold text-slate-200 transition-colors disabled:opacity-50 interactive-btn shrink-0 whitespace-nowrap"
           >
             <RefreshCw size={13} className={refreshing ? 'animate-spin text-cyan-400' : 'text-slate-400'} />
             <span className="hidden sm:inline">{refreshing ? t.systemHealth.refreshing : t.systemHealth.refreshBtn}</span>
           </button>
 
-          <div className="hidden sm:block shrink-0">
-            <PageGuideButton page="systemHealth" />
-          </div>
+          <PageGuideButton page="systemHealth" className="shrink-0" />
         </div>
       </div>
 
