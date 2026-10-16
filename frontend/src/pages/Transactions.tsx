@@ -16,17 +16,23 @@ interface Transaction {
   decision: 'APPROVE' | 'REVIEW' | 'DECLINE';
 }
 
+type DecisionFilter = 'ALL' | 'APPROVE' | 'REVIEW' | 'DECLINE';
+
 interface TransactionResponse {
+  page: number;
+  limit: number;
+  total: number;
   data: Transaction[];
 }
 
 export const Transactions: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [transferDecision, setTransferDecision] = useState<'ALL' | 'APPROVE' | 'DECLINE'>('ALL');
+  const [transferDecision, setTransferDecision] = useState<DecisionFilter>('ALL');
   const [minRiskScore, setMinRiskScore] = useState<number>(0.0);
   const [maxRiskScore, setMaxRiskScore] = useState<number>(1.0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -43,13 +49,13 @@ export const Transactions: React.FC = () => {
             limit: 10,
             search: searchTerm || undefined,
             decision: transferDecision === 'ALL' ? undefined : transferDecision,
-            type: transferDecision === 'ALL' ? undefined : 'TRANSFER',
             minRiskScore: minRiskScore > 0 ? minRiskScore : undefined,
             maxRiskScore: maxRiskScore < 1 ? maxRiskScore : undefined,
           },
           signal: controller.signal,
         });
         setTransactions(response.data.data);
+        setTotalRecords(response.data.total ?? 0);
       } catch (error) {
         if (!controller.signal.aborted) {
           console.error('Failed to fetch transactions from backend:', error);
@@ -57,6 +63,7 @@ export const Transactions: React.FC = () => {
             error instanceof Error ? error.message : 'Unable to load transactions.'
           );
           setTransactions([]);
+          setTotalRecords(0);
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -110,13 +117,14 @@ export const Transactions: React.FC = () => {
             id="transfer-decision-filter"
             value={transferDecision}
             onChange={(e) => {
-              setTransferDecision(e.target.value as 'ALL' | 'APPROVE' | 'DECLINE');
+              setTransferDecision(e.target.value as DecisionFilter);
               setPage(1);
             }}
             className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-medium interactive-input"
           >
             <option value="ALL">{t.transactions.allDecisions}</option>
             <option value="DECLINE">{t.transactions.declinedOnly}</option>
+            <option value="REVIEW">{t.transactions.reviewOnly}</option>
             <option value="APPROVE">{t.transactions.approvedOnly}</option>
           </select>
           <div className="relative shrink-0">
@@ -370,27 +378,45 @@ export const Transactions: React.FC = () => {
         )}
 
         {/* Pagination Footer */}
-        <div className="p-4 border-t border-slate-800 flex items-center justify-between text-sm text-slate-300">
-          <span>{t.transactions.page} {page}</span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              className="p-2 bg-slate-800 rounded hover:bg-slate-700 disabled:opacity-50 interactive-btn"
-              disabled={page === 1}
-              aria-label={t.transactions.prevPage}
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="px-3 py-1 bg-slate-800 rounded text-slate-200 font-mono font-medium">{page}</span>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className="p-2 bg-slate-800 rounded hover:bg-slate-700 interactive-btn"
-              aria-label={t.transactions.nextPage}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
+        {(() => {
+          const startRecord = totalRecords === 0 ? 0 : (page - 1) * 10 + 1;
+          const endRecord = Math.min(page * 10, totalRecords);
+          const totalPages = Math.max(1, Math.ceil(totalRecords / 10));
+
+          return (
+            <div className="p-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-slate-300">
+              <div className="font-medium text-slate-300">
+                {totalRecords > 0
+                  ? t.transactions.recordsCount
+                      .replace('{start}', startRecord.toLocaleString(language === 'id' ? 'id-ID' : 'en-US'))
+                      .replace('{end}', endRecord.toLocaleString(language === 'id' ? 'id-ID' : 'en-US'))
+                      .replace('{total}', totalRecords.toLocaleString(language === 'id' ? 'id-ID' : 'en-US'))
+                  : t.transactions.recordsCountEmpty}
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <button
+                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                  className="p-2 bg-slate-800 rounded hover:bg-slate-700 disabled:opacity-40 interactive-btn"
+                  disabled={page === 1}
+                  aria-label={t.transactions.prevPage}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="px-3 py-1 bg-slate-800 rounded text-slate-200 font-mono font-medium">
+                  {page} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => p + 1)}
+                  className="p-2 bg-slate-800 rounded hover:bg-slate-700 disabled:opacity-40 interactive-btn"
+                  disabled={page >= totalPages}
+                  aria-label={t.transactions.nextPage}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

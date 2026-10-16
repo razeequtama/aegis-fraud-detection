@@ -479,32 +479,32 @@ export const Investigation: React.FC = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 interactive-card hover:border-slate-700 cursor-default">
             <span className="text-sm font-medium text-slate-300">{t.investigation.totalCasesCard}</span>
-            <div className="mt-2 text-2xl font-bold text-slate-100">
-              {caseSummary ? caseSummary.total_cases : '—'}
+            <div className="mt-2 text-2xl font-bold text-slate-100 font-mono">
+              {caseSummary ? caseSummary.total_cases.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
             <span className="mt-1 block text-sm text-slate-400">{t.investigation.trackedInDb}</span>
           </div>
 
           <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 interactive-card hover:border-cyan-500/50 cursor-default">
             <span className="text-sm font-medium text-cyan-300">{t.investigation.pendingReviewCard}</span>
-            <div className="mt-2 text-2xl font-bold text-cyan-400">
-              {caseSummary ? caseSummary.open + caseSummary.in_review : '—'}
+            <div className="mt-2 text-2xl font-bold text-cyan-400 font-mono">
+              {caseSummary ? (caseSummary.open + caseSummary.in_review).toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
             <span className="mt-1 block text-sm text-cyan-300/90">{t.investigation.requiresAction}</span>
           </div>
 
           <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/20 p-4 interactive-card hover:border-cyan-400/70 cursor-default shadow-sm shadow-cyan-950/30">
             <span className="text-sm font-medium text-cyan-200">{t.investigation.confirmedFraudCard}</span>
-            <div className="mt-2 text-2xl font-bold text-cyan-100">
-              {caseSummary ? caseSummary.confirmed_fraud : '—'}
+            <div className="mt-2 text-2xl font-bold text-cyan-100 font-mono">
+              {caseSummary ? caseSummary.confirmed_fraud.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
             <span className="mt-1 block text-sm text-cyan-200/90">{t.investigation.readyForTraining}</span>
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-4 interactive-card hover:border-slate-600 cursor-default">
             <span className="text-sm font-medium text-slate-300">{t.investigation.clearedLegitimateCard}</span>
-            <div className="mt-2 text-2xl font-bold text-slate-200">
-              {caseSummary ? caseSummary.legitimate : '—'}
+            <div className="mt-2 text-2xl font-bold text-slate-200 font-mono">
+              {caseSummary ? caseSummary.legitimate.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
             <span className="mt-1 block text-sm text-slate-400">{t.investigation.falsePositiveMitigation}</span>
           </div>

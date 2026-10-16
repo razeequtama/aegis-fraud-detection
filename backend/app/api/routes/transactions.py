@@ -302,6 +302,18 @@ def get_transactions(
         normalized_decision = decision.upper()
         if decision_col is not None:
             statement = statement.where(func.upper(cast(decision_col, String)) == normalized_decision)
+        elif risk_score_col is not None:
+            if normalized_decision == "APPROVE":
+                statement = statement.where(risk_score_col < 0.40)
+            elif normalized_decision == "REVIEW":
+                statement = statement.where((risk_score_col >= 0.40) & (risk_score_col < 0.75))
+            elif normalized_decision == "DECLINE":
+                statement = statement.where(risk_score_col >= 0.75)
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Decision must be APPROVE, REVIEW, or DECLINE.",
+                )
         elif normalized_decision == "APPROVE":
             statement = statement.where(~fraud_condition)
         elif normalized_decision == "DECLINE":
@@ -324,6 +336,10 @@ def get_transactions(
             statement = statement.where(fraud_condition)
         elif resolved_max_risk is not None and resolved_max_risk < 0.4:
             statement = statement.where(~fraud_condition)
+
+    # Compute total matching records before pagination
+    total_query = select(func.count()).select_from(statement.order_by(None).subquery())
+    total_count = db.scalar(total_query) or 0
 
     if timestamp_column is not None:
         statement = statement.order_by(timestamp_column.desc().nulls_last())
@@ -387,5 +403,6 @@ def get_transactions(
     return {
         "page": page,
         "limit": limit,
+        "total": total_count,
         "data": formatted_data,
     }

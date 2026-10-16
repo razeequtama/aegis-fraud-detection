@@ -8,11 +8,7 @@ from sqlalchemy import create_engine, text
 
 load_dotenv()
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql+psycopg2://aegis_user:aegis_password@db:5432/aegis_db"
-)
-engine = create_engine(DATABASE_URL)
+from app.db.session import engine
 
 
 def find_seed_csv_path() -> Path | None:
@@ -46,12 +42,6 @@ def find_paysim_csv_path() -> Path | None:
 
 
 def seed_investigation_cases():
-    with engine.connect() as conn:
-        case_count = conn.execute(text("SELECT count(*) FROM investigation_cases")).scalar() or 0
-        if case_count > 0:
-            print(f"investigation_cases already has {case_count} records. Skipping.")
-            return
-
     sample_cases = [
         {
             "case_id": "CASE-100463",
@@ -159,6 +149,24 @@ def seed_investigation_cases():
                 inserted += 1
 
     print(f"Successfully seeded {inserted} investigation cases!")
+
+    print("Populating all review-needed transactions into investigation cases...")
+    with engine.begin() as conn:
+        review_cases_query = text("""
+            INSERT INTO investigation_cases (case_id, transaction_id, assigned_analyst, status, notes, updated_at)
+            SELECT
+                'CASE-' || REPLACE(transaction_id, 'TX-', ''),
+                transaction_id,
+                'Unassigned',
+                'open',
+                'Moderate risk pattern (risk score ' || ROUND(CAST(risk_score AS numeric), 2) || ') flagged for analyst inspection.',
+                COALESCE(timestamp, NOW())
+            FROM transactions
+            WHERE risk_score >= 0.40 AND risk_score < 0.75
+              AND transaction_id NOT IN (SELECT transaction_id FROM investigation_cases WHERE transaction_id IS NOT NULL)
+        """)
+        res = conn.execute(review_cases_query)
+        print(f"Populated {res.rowcount} review-needed transactions into investigation cases.")
 
 
 def seed_database_from_csv(csv_path: str, sample_size: int = 50000):
