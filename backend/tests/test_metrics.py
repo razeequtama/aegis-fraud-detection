@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-
+from datetime import date, datetime, timezone
+from fastapi import HTTPException
 import pytest
 from sqlalchemy import (
     Boolean,
@@ -167,4 +167,129 @@ def test_metrics_overview_filters_trend_to_requested_date_range():
         "end_date": "2026-01-20",
         "transactions": 2,
     }
+    engine.dispose()
+
+
+def test_metrics_overview_rejects_excessive_hourly_span_with_422():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    transactions = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String),
+        Column("timestamp", DateTime(timezone=True)),
+        Column("amount", Float),
+        Column("label", Integer),
+    )
+    metadata.create_all(engine)
+
+    with Session(engine) as db:
+        with pytest.raises(HTTPException) as exc_info:
+            get_metrics_overview(
+                start_date=date(2020, 1, 1),
+                end_date=date(2026, 1, 1),
+                interval="hour",
+                db=db,
+            )
+        assert exc_info.value.status_code == 422
+        assert "Hourly metrics aggregation is limited to a maximum span" in exc_info.value.detail
+    engine.dispose()
+
+
+def test_metrics_overview_rejects_pre_epoch_start_date_with_422():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    transactions = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String),
+        Column("timestamp", DateTime(timezone=True)),
+        Column("amount", Float),
+        Column("label", Integer),
+    )
+    metadata.create_all(engine)
+
+    with Session(engine) as db:
+        with pytest.raises(HTTPException) as exc_info:
+            get_metrics_overview(
+                start_date=date(1990, 1, 1),
+                end_date=date(2026, 1, 1),
+                db=db,
+            )
+        assert exc_info.value.status_code == 422
+        assert "cannot be earlier than 2000-01-01" in exc_info.value.detail
+    engine.dispose()
+
+
+def test_metrics_overview_rejects_invalid_interval_with_422():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    transactions = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String),
+        Column("timestamp", DateTime(timezone=True)),
+        Column("amount", Float),
+        Column("label", Integer),
+    )
+    metadata.create_all(engine)
+
+    with Session(engine) as db:
+        with pytest.raises(HTTPException) as exc_info:
+            get_metrics_overview(
+                interval="second",
+                db=db,
+            )
+        assert exc_info.value.status_code == 422
+        assert "Invalid interval 'second'" in exc_info.value.detail
+    engine.dispose()
+
+
+def test_metrics_overview_allows_valid_hourly_span():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    transactions = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String),
+        Column("timestamp", DateTime(timezone=True)),
+        Column("amount", Float),
+        Column("label", Integer),
+    )
+    metadata.create_all(engine)
+
+    with engine.begin() as connection:
+        connection.execute(
+            transactions.insert(),
+            [
+                {
+                    "transaction_id": "TX-1",
+                    "account_id": "ACC-1",
+                    "timestamp": datetime(2026, 1, 1, 10, 0, tzinfo=timezone.utc),
+                    "amount": 50.0,
+                    "label": 0,
+                },
+                {
+                    "transaction_id": "TX-2",
+                    "account_id": "ACC-2",
+                    "timestamp": datetime(2026, 1, 1, 11, 0, tzinfo=timezone.utc),
+                    "amount": 75.0,
+                    "label": 1,
+                },
+            ],
+        )
+
+    with Session(engine) as db:
+        res = get_metrics_overview(
+            start_date=date(2026, 1, 1),
+            end_date=date(2026, 1, 2),
+            interval="hour",
+            db=db,
+        )
+        assert res["granularity"] == "hourly"
+        assert len(res["trend"]) > 0
     engine.dispose()

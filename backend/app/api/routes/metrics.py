@@ -19,6 +19,10 @@ from app.services.risk_engine import risk_engine
 
 router = APIRouter(prefix="/api/v1/metrics", tags=["Metrics"])
 
+MIN_SYSTEM_DATE = date(2000, 1, 1)
+MAX_HOURLY_SPAN_DAYS = 7
+MAX_DAILY_SPAN_DAYS = 730
+
 
 @router.get("/overview")
 def get_metrics_overview(
@@ -27,10 +31,49 @@ def get_metrics_overview(
     interval: str | None = None,
     db: Session = Depends(get_db),
 ):
-    if start_date and end_date and start_date > end_date:
+    # Validate interval whitelist
+    if interval is not None and interval not in ("hour", "day"):
         raise HTTPException(
-            status_code=422, detail="start_date must be on or before end_date."
+            status_code=422,
+            detail=f"Invalid interval '{interval}'. Valid values are 'hour', 'day', or None.",
         )
+
+    # Validate epoch and sanity boundaries
+    if start_date is not None and start_date < MIN_SYSTEM_DATE:
+        raise HTTPException(
+            status_code=422,
+            detail=f"start_date cannot be earlier than {MIN_SYSTEM_DATE.isoformat()}.",
+        )
+
+    max_future_date = date.today() + timedelta(days=365)
+    if end_date is not None and end_date > max_future_date:
+        raise HTTPException(
+            status_code=422,
+            detail=f"end_date cannot exceed future threshold {max_future_date.isoformat()}.",
+        )
+
+    if start_date and end_date:
+        if start_date > end_date:
+            raise HTTPException(
+                status_code=422, detail="start_date must be on or before end_date."
+            )
+        requested_span = (end_date - start_date).days
+        if interval == "hour" and requested_span > MAX_HOURLY_SPAN_DAYS:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"Hourly metrics aggregation is limited to a maximum span of {MAX_HOURLY_SPAN_DAYS} days "
+                    f"(requested {requested_span} days). Please select a shorter date range or use 'day' interval."
+                ),
+            )
+        if requested_span > MAX_DAILY_SPAN_DAYS:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"Date range span of {requested_span} days exceeds the maximum allowed limit "
+                    f"of {MAX_DAILY_SPAN_DAYS} days (2 years)."
+                ),
+            )
 
     metadata = MetaData()
     transactions = Table("transactions", metadata, autoload_with=db.get_bind())
@@ -114,7 +157,31 @@ def get_metrics_overview(
         }
 
         span_days = (selected_end - selected_start).days
-        is_hourly = interval == "hour" or (interval != "day" and start_date is not None and span_days <= 2)
+        if span_days < 0:
+            raise HTTPException(
+                status_code=422, detail="start_date must be on or before end_date."
+            )
+
+        if interval == "hour":
+            if span_days > MAX_HOURLY_SPAN_DAYS:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        f"Hourly metrics aggregation is limited to a maximum span of {MAX_HOURLY_SPAN_DAYS} days "
+                        f"(requested {span_days} days). Please select a shorter date range or use 'day' interval."
+                    ),
+                )
+            is_hourly = True
+        else:
+            is_hourly = interval != "day" and start_date is not None and span_days <= 2
+            if span_days > MAX_DAILY_SPAN_DAYS:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        f"Date range span of {span_days} days exceeds the maximum allowed limit "
+                        f"of {MAX_DAILY_SPAN_DAYS} days (2 years)."
+                    ),
+                )
 
         dialect = db.get_bind().dialect.name
         if dialect == "postgresql":
