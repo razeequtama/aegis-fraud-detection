@@ -256,7 +256,7 @@ export const Dashboard: React.FC = () => {
                 className="rounded-xl border border-slate-800 bg-slate-900 p-6 interactive-card hover:border-slate-700 group cursor-default"
               >
                 <div className="flex items-center justify-between text-slate-400">
-                  <span className="text-xs sm:text-sm uppercase tracking-wider font-semibold text-slate-300 font-mono">{title}</span>
+                  <span className="text-xs sm:text-sm uppercase tracking-wider font-semibold text-slate-300 font-display">{title}</span>
                   <Icon size={20} className={`${iconColor || color} transition-transform duration-200 ease-out group-hover:scale-110`} />
                 </div>
                 <p className={`mt-4 text-3xl font-mono font-bold tracking-tight ${color}`}>{value}</p>

@@ -18,7 +18,6 @@ import {
   RotateCcw,
   Search,
   ShieldAlert,
-  Sparkles,
   User,
   XCircle,
 } from 'lucide-react';
@@ -233,7 +232,7 @@ export const Investigation: React.FC = () => {
   const [urgentAlerts, setUrgentAlerts] = useState<UrgentAlert[]>([]);
   const [queueLoading, setQueueLoading] = useState(false);
   const [queueError, setQueueError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'in_review' | 'closed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'open' | 'closed'>('open');
   const [searchFilter, setSearchFilter] = useState('');
   const [page, setPage] = useState(1);
   const [totalCases, setTotalCases] = useState(0);
@@ -261,7 +260,7 @@ export const Investigation: React.FC = () => {
           summary: CaseSummary;
         }>('/cases', {
           params: {
-            status: statusFilter === 'all' ? undefined : statusFilter,
+            status: statusFilter,
             search: searchFilter.trim() || undefined,
             page,
             limit: 15,
@@ -350,7 +349,7 @@ export const Investigation: React.FC = () => {
     setFeedbackError(null);
     try {
       await apiClient.patch(`/cases/${encodeURIComponent(details.case.case_id)}`, {
-        status: 'in_review',
+        status: 'open',
       });
       setDetails((prev) =>
         prev && prev.case
@@ -358,12 +357,12 @@ export const Investigation: React.FC = () => {
               ...prev,
               case: {
                 ...prev.case,
-                status: 'in_review',
+                status: 'open',
               },
             }
           : prev
       );
-      setFeedbackMessage('Case reopened for investigation (status: in_review).');
+      setFeedbackMessage('Case reopened for investigation (status: open).');
     } catch (err) {
       setFeedbackError(`Could not reopen case: ${formatError(err)}`);
     } finally {
@@ -383,7 +382,7 @@ export const Investigation: React.FC = () => {
         const caseResponse = await apiClient.post<{ data: InvestigationCase }>('/cases', {
           transaction_id: transactionId,
           assigned_analyst: 'Analyst',
-          initial_status: 'in_review',
+          initial_status: 'open',
         });
         caseId = caseResponse.data.data.case_id;
         if (!caseId) throw new Error('The backend did not return the created case ID.');
@@ -391,7 +390,7 @@ export const Investigation: React.FC = () => {
           current
             ? {
                 ...current,
-                case: { case_id: caseId ?? 'NEW-CASE', transaction_id: transactionId, status: 'in_review' },
+                case: { case_id: caseId ?? 'NEW-CASE', transaction_id: transactionId, status: 'open' },
               }
             : current
         );
@@ -479,7 +478,7 @@ export const Investigation: React.FC = () => {
         {/* KPI Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 interactive-card hover:border-slate-700 cursor-default">
-            <span className="text-sm font-medium text-slate-300">{t.investigation.totalCasesCard}</span>
+            <span className="text-sm font-medium text-slate-300 font-display">{t.investigation.totalCasesCard}</span>
             <div className="mt-2 text-2xl font-bold text-slate-100 font-mono">
               {caseSummary ? caseSummary.total_cases.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
@@ -487,15 +486,15 @@ export const Investigation: React.FC = () => {
           </div>
 
           <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 interactive-card hover:border-cyan-500/50 cursor-default">
-            <span className="text-sm font-medium text-cyan-300">{t.investigation.pendingReviewCard}</span>
+            <span className="text-sm font-medium text-cyan-300 font-display">{t.investigation.pendingReviewCard}</span>
             <div className="mt-2 text-2xl font-bold text-cyan-400 font-mono">
-              {caseSummary ? (caseSummary.open + caseSummary.in_review).toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
+              {caseSummary ? caseSummary.open.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
             <span className="mt-1 block text-sm text-cyan-300/90">{t.investigation.requiresAction}</span>
           </div>
 
           <div className="rounded-xl border border-cyan-400/50 bg-cyan-500/20 p-4 interactive-card hover:border-cyan-400/70 cursor-default shadow-sm shadow-cyan-950/30">
-            <span className="text-sm font-medium text-cyan-200">{t.investigation.confirmedFraudCard}</span>
+            <span className="text-sm font-medium text-cyan-200 font-display">{t.investigation.confirmedFraudCard}</span>
             <div className="mt-2 text-2xl font-bold text-cyan-100 font-mono">
               {caseSummary ? caseSummary.confirmed_fraud.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
@@ -503,7 +502,7 @@ export const Investigation: React.FC = () => {
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-900/90 p-4 interactive-card hover:border-slate-600 cursor-default">
-            <span className="text-sm font-medium text-slate-300">{t.investigation.clearedLegitimateCard}</span>
+            <span className="text-sm font-medium text-slate-300 font-display">{t.investigation.clearedLegitimateCard}</span>
             <div className="mt-2 text-2xl font-bold text-slate-200 font-mono">
               {caseSummary ? caseSummary.legitimate.toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '—'}
             </div>
@@ -515,7 +514,6 @@ export const Investigation: React.FC = () => {
         <div className="rounded-xl border border-slate-800 bg-slate-900/90 p-5">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles size={16} className="text-cyan-400" />
               <h3 className="font-display text-base font-semibold tracking-wide text-slate-200">{t.investigation.curatedPresetsTitle}</h3>
             </div>
             <span className="text-sm text-slate-300">{t.investigation.oneClickPreset}</span>
@@ -537,7 +535,7 @@ export const Investigation: React.FC = () => {
                       {preset.txId}
                     </span>
                   </div>
-                  <h4 className="text-sm sm:text-base font-semibold text-slate-100 group-hover:text-cyan-200 transition-colors">
+                  <h4 className="font-display text-sm sm:text-base font-semibold text-slate-100 group-hover:text-cyan-200 transition-colors">
                     {preset.title}
                   </h4>
                   <p className="mt-1 text-sm text-slate-300 line-clamp-2">
@@ -562,7 +560,7 @@ export const Investigation: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <Filter size={15} className="text-slate-400" />
                   <div className="flex gap-1 rounded-lg bg-slate-950 p-1">
-                    {(['all', 'open', 'in_review', 'closed'] as const).map((st) => (
+                    {(['open', 'closed'] as const).map((st) => (
                       <button
                         key={st}
                         type="button"
@@ -576,13 +574,7 @@ export const Investigation: React.FC = () => {
                             : 'text-slate-400 hover:text-slate-200'
                         }`}
                       >
-                        {st === 'all'
-                          ? t.common.all
-                          : st === 'open'
-                          ? t.common.open
-                          : st === 'in_review'
-                          ? t.common.inReview
-                          : t.common.closed}
+                        {st === 'open' ? t.common.open : t.common.closed}
                       </button>
                     ))}
                   </div>
@@ -671,15 +663,11 @@ export const Investigation: React.FC = () => {
                                 className={`rounded-full px-2.5 py-0.5 text-xs sm:text-sm font-medium capitalize border transition-colors ${
                                   c.status === 'open'
                                     ? 'bg-cyan-500/20 text-cyan-200 border-cyan-400/40 font-semibold'
-                                    : c.status === 'in_review'
-                                    ? 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30'
                                     : 'bg-slate-800 text-slate-300 border-slate-700'
                                 }`}
                               >
                                 {c.status === 'open'
                                   ? t.common.open
-                                  : c.status === 'in_review'
-                                  ? t.common.inReview
                                   : t.common.closed}
                               </span>
                             </td>

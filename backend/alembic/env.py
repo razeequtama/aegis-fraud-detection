@@ -1,14 +1,10 @@
 import os
-from dotenv import load_dotenv
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-
-env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../.env'))
-load_dotenv(env_path)
 
 from app.db.session import Base
 from app.models.models import Transaction, InvestigationCase, TransactionModel, InvestigationCaseModel
@@ -17,9 +13,26 @@ from app.models.replay_run import ReplayRun
 # this is the Alembic Config object...
 config = context.config
 
-database_url = os.getenv("DATABASE_URL")
-if database_url:
-    config.set_main_option("sqlalchemy.url", database_url)
+# Retrieve DATABASE_URL strictly from process environment; fail immediately if missing or empty
+raw_database_url = os.environ.get("DATABASE_URL")
+if not raw_database_url or not raw_database_url.strip():
+    raise RuntimeError(
+        "DATABASE_URL environment variable is missing or empty. "
+        "Alembic migrations require DATABASE_URL to be set in the process environment."
+    )
+
+database_url = raw_database_url.strip()
+
+# Handle optional DATABASE_HOST override only when explicitly provided and differing from current host
+database_host = os.environ.get("DATABASE_HOST")
+if database_host and database_host.strip():
+    from sqlalchemy.engine import make_url
+    url_obj = make_url(database_url)
+    if url_obj.host != database_host.strip():
+        database_url = str(url_obj.set(host=database_host.strip()))
+
+# Safely escape '%' for Alembic's ConfigParser interpolation to handle special characters in credentials
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 if config.config_file_name is not None:

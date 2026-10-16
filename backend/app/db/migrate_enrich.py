@@ -1,20 +1,31 @@
 import os
-from pathlib import Path
-from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 
 from app.services.risk_engine import risk_engine
 
-load_dotenv()
+raw_database_url = os.environ.get("DATABASE_URL")
+if not raw_database_url or not raw_database_url.strip():
+    raise RuntimeError(
+        "DATABASE_URL environment variable is missing or empty. "
+        "Please ensure DATABASE_URL is set in the process environment."
+    )
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:[REDACTED]@localhost:5433/aegis_db")
-engine = create_engine(DATABASE_URL)
+database_url = raw_database_url.strip()
+
+database_host = os.environ.get("DATABASE_HOST")
+if database_host and database_host.strip():
+    url_obj = make_url(database_url)
+    if url_obj.host != database_host.strip():
+        database_url = str(url_obj.set(host=database_host.strip()))
+
+engine = create_engine(database_url)
 
 
 def run_enrichment():
-    print(f"Connecting to database on port 5433...")
+    print("Connecting to database...")
     with engine.begin() as conn:
         print("Ensuring columns exist on transactions table...")
         conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS type VARCHAR(20) DEFAULT 'TRANSFER';"))

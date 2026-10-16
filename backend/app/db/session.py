@@ -2,22 +2,25 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import declarative_base, sessionmaker
-from dotenv import load_dotenv
 
-# Memuat variabel dari file .env
-load_dotenv()
-
-# Mengambil URL dari environment variable dengan fallback aman
-SQLALCHEMY_DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql+psycopg2://aegis_user:aegis_password@db:5432/aegis_db"
-)
-
-database_host = os.getenv("DATABASE_HOST")
-if database_host:
-    SQLALCHEMY_DATABASE_URL = make_url(SQLALCHEMY_DATABASE_URL).set(
-        host=database_host
+# Retrieve DATABASE_URL strictly from process environment; fail immediately if missing or empty
+raw_database_url = os.environ.get("DATABASE_URL")
+if not raw_database_url or not raw_database_url.strip():
+    raise RuntimeError(
+        "DATABASE_URL environment variable is missing or empty. "
+        "Please ensure DATABASE_URL is set in the process environment."
     )
+
+database_url = raw_database_url.strip()
+
+# Handle optional DATABASE_HOST override only when explicitly provided and differing from current host
+database_host = os.environ.get("DATABASE_HOST")
+if database_host and database_host.strip():
+    url_obj = make_url(database_url)
+    if url_obj.host != database_host.strip():
+        database_url = str(url_obj.set(host=database_host.strip()))
+
+SQLALCHEMY_DATABASE_URL = database_url
 
 connect_args = {}
 if str(SQLALCHEMY_DATABASE_URL).startswith("postgresql"):

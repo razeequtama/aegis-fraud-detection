@@ -1,12 +1,9 @@
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, text
-
-load_dotenv()
 
 from app.db.session import engine
 

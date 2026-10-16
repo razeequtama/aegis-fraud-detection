@@ -3,9 +3,9 @@ services:
     image: postgres:15-alpine
     container_name: aegis_postgres
     environment:
-      POSTGRES_USER: aegis_user
-      POSTGRES_PASSWORD: aegis_password
-      POSTGRES_DB: aegis_db
+      POSTGRES_USER: "${POSTGRES_USER:-aegis_user}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD environment variable is required}"
+      POSTGRES_DB: "${POSTGRES_DB:-aegis_db}"
     ports:
       - "5434:5432"
     volumes:
@@ -13,7 +13,7 @@ services:
     networks:
       - aegis_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aegis_user -d aegis_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aegis_user} -d ${POSTGRES_DB:-aegis_db}"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -45,7 +45,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_HOST=db
-      - DATABASE_URL=postgresql+psycopg2://aegis_user:aegis_password@db:5432/aegis_db
+      - "DATABASE_URL=${DATABASE_URL:?Error: DATABASE_URL environment variable is required}"
       - ML_ARTIFACTS_DIR=/ml/artifacts
       - REDIS_HOST=redis
       - REDIS_PORT=6379
