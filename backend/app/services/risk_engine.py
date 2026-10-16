@@ -137,19 +137,28 @@ class RiskEngine:
         return np.round(np.clip(composites, 0.01, 0.99), 4)
 
     def _apply_decision_policy(
-        self, risk_score: float, signals: list[dict]
+        self, risk_score: float, signals: list[dict], lang: str = "en"
     ) -> tuple[str, list[dict]]:
+        is_id = lang == "id"
         if risk_score >= self.DECLINE_THRESHOLD:
             decision = "decline"
             signals.insert(0, {
                 "name": "high_fraud_probability",
-                "description": "Composite risk model predicts a critical probability of fraudulent transaction activity.",
+                "description": (
+                    "Model risiko komposit memprediksi probabilitas kritis dari aktivitas transaksi penipuan."
+                    if is_id
+                    else "Composite risk model predicts a critical probability of fraudulent transaction activity."
+                ),
             })
         elif risk_score >= self.REVIEW_THRESHOLD:
             decision = "review"
             signals.insert(0, {
                 "name": "moderate_risk_pattern",
-                "description": "Transaction exhibits elevated anomaly signals exceeding review threshold; flagged for analyst inspection.",
+                "description": (
+                    "Transaksi menunjukkan peningkatan sinyal anomali melebihi ambang batas peninjauan; ditandai untuk pemeriksaan analis."
+                    if is_id
+                    else "Transaction exhibits elevated anomaly signals exceeding review threshold; flagged for analyst inspection."
+                ),
             })
         else:
             decision = "approve"
@@ -205,6 +214,8 @@ class RiskEngine:
         # Pattern scoring & behavioral factors
         signals: list[dict] = []
         pattern_penalty = 0.0
+        lang = str(tx_data.get("language") or tx_data.get("lang") or "en").lower()
+        is_id = lang == "id"
 
         # 1. Drain ratio
         drain_ratio = (amount / oldbalance_org) if oldbalance_org > 0 else 0.0
@@ -212,19 +223,31 @@ class RiskEngine:
             pattern_penalty += 0.35
             signals.append({
                 "name": "critical_account_drain",
-                "description": f"Near-total account drain detected: {drain_ratio*100:.1f}% of balance withdrawn ({amount:,.2f} from {oldbalance_org:,.2f}).",
+                "description": (
+                    f"Pengurasan saldo akun hampir total terdeteksi: {drain_ratio*100:.1f}% saldo ditarik (Rp {amount:,.2f} dari Rp {oldbalance_org:,.2f})."
+                    if is_id
+                    else f"Near-total account drain detected: {drain_ratio*100:.1f}% of balance withdrawn ({amount:,.2f} from {oldbalance_org:,.2f})."
+                ),
             })
         elif drain_ratio >= 0.70 and amount >= 5000:
             pattern_penalty += 0.20
             signals.append({
                 "name": "elevated_account_drain",
-                "description": f"High account depletion detected: {drain_ratio*100:.1f}% of balance withdrawn.",
+                "description": (
+                    f"Pengurasan saldo akun tingkat tinggi terdeteksi: {drain_ratio*100:.1f}% saldo ditarik."
+                    if is_id
+                    else f"High account depletion detected: {drain_ratio*100:.1f}% of balance withdrawn."
+                ),
             })
         elif drain_ratio >= 0.40 and amount >= 10000:
             pattern_penalty += 0.10
             signals.append({
                 "name": "moderate_account_drain",
-                "description": f"Moderate account depletion: {drain_ratio*100:.1f}% of balance withdrawn.",
+                "description": (
+                    f"Pengurasan saldo akun tingkat sedang: {drain_ratio*100:.1f}% saldo ditarik."
+                    if is_id
+                    else f"Moderate account depletion: {drain_ratio*100:.1f}% of balance withdrawn."
+                ),
             })
 
         # 2. Balance Discrepancies
@@ -233,14 +256,22 @@ class RiskEngine:
             pattern_penalty += disc_penalty
             signals.append({
                 "name": "balance_discrepancy",
-                "description": f"Origin balance mismatch ({error_balance_org:+,.2f}) indicates an anomalous ledger state.",
+                "description": (
+                    f"Ketidakcocokan saldo rekening pengirim ({error_balance_org:+,.2f}) menunjukkan status pembukuan buku besar yang anomali."
+                    if is_id
+                    else f"Origin balance mismatch ({error_balance_org:+,.2f}) indicates an anomalous ledger state."
+                ),
             })
 
         if abs(error_balance_dest) > 1.0 and oldbalance_dest > 0:
             pattern_penalty += 0.10
             signals.append({
                 "name": "dest_balance_discrepancy",
-                "description": f"Destination balance mismatch ({error_balance_dest:+,.2f}) indicates irregular settlement tracking.",
+                "description": (
+                    f"Ketidakcocokan saldo rekening penerima ({error_balance_dest:+,.2f}) menunjukkan pencatatan penyelesaian yang tidak teratur."
+                    if is_id
+                    else f"Destination balance mismatch ({error_balance_dest:+,.2f}) indicates irregular settlement tracking."
+                ),
             })
 
         # 3. Amount Magnitude
@@ -248,13 +279,21 @@ class RiskEngine:
             pattern_penalty += 0.25
             signals.append({
                 "name": "ultra_high_value",
-                "description": f"Transaction amount (Rp {amount:,.2f}) exceeds ultra-high risk threshold.",
+                "description": (
+                    f"Jumlah transaksi (Rp {amount:,.2f}) melampaui batas ambang risiko sangat tinggi."
+                    if is_id
+                    else f"Transaction amount (Rp {amount:,.2f}) exceeds ultra-high risk threshold."
+                ),
             })
         elif amount >= 200_000:
             pattern_penalty += 0.15
             signals.append({
                 "name": "high_value_transaction",
-                "description": f"Transaction amount (Rp {amount:,.2f}) exceeds standard operational threshold.",
+                "description": (
+                    f"Jumlah transaksi (Rp {amount:,.2f}) melampaui ambang batas operasional standar."
+                    if is_id
+                    else f"Transaction amount (Rp {amount:,.2f}) exceeds standard operational threshold."
+                ),
             })
         elif amount >= 50_000:
             pattern_penalty += 0.08
@@ -266,13 +305,21 @@ class RiskEngine:
             pattern_penalty += 0.30
             signals.append({
                 "name": "high_payment_attempts",
-                "description": f"Multiple repeated payment attempts detected ({payment_attempts} attempts).",
+                "description": (
+                    f"Terdeteksi beberapa kali percobaan pembayaran berulang ({payment_attempts} percobaan)."
+                    if is_id
+                    else f"Multiple repeated payment attempts detected ({payment_attempts} attempts)."
+                ),
             })
         elif payment_attempts == 2:
             pattern_penalty += 0.15
             signals.append({
                 "name": "repeated_payment_attempt",
-                "description": "Secondary payment attempt detected after initial failure.",
+                "description": (
+                    "Percobaan pembayaran kedua terdeteksi setelah kegagalan transaksi awal."
+                    if is_id
+                    else "Secondary payment attempt detected after initial failure."
+                ),
             })
 
         # 5. Transaction Type Risk
@@ -291,7 +338,11 @@ class RiskEngine:
                 pattern_penalty += 0.35
                 signals.append({
                     "name": "high_velocity_burst",
-                    "description": f"Unusual velocity burst detected: account initiated {velocity} transactions within 60 seconds.",
+                    "description": (
+                        f"Lonjakan frekuensi transaksi tidak wajar terdeteksi: akun melakukan {velocity} transaksi dalam 60 detik."
+                        if is_id
+                        else f"Unusual velocity burst detected: account initiated {velocity} transactions within 60 seconds."
+                    ),
                 })
 
         # 7. Graph / Network Risk
@@ -302,13 +353,21 @@ class RiskEngine:
             pattern_penalty += 0.20
             signals.append({
                 "name": "shared_device_detected",
-                "description": f"Account shares devices with other entities (shared count: {int(shared_devices)}).",
+                "description": (
+                    f"Akun terdeteksi menggunakan perangkat yang sama dengan entitas lain (jumlah entitas bersama: {int(shared_devices)})."
+                    if is_id
+                    else f"Account shares devices with other entities (shared count: {int(shared_devices)})."
+                ),
             })
         if node_degree > 3:
             pattern_penalty += 0.10
             signals.append({
                 "name": "high_network_degree",
-                "description": f"Account exhibits high connection degree ({int(node_degree)}) in transaction graph.",
+                "description": (
+                    f"Akun menunjukkan derajat koneksi tinggi ({int(node_degree)}) dalam graf jaringan transaksi."
+                    if is_id
+                    else f"Account exhibits high connection degree ({int(node_degree)}) in transaction graph."
+                ),
             })
 
         # Synthesize composite risk score
@@ -320,7 +379,7 @@ class RiskEngine:
 
         risk_score = round(float(min(0.99, max(0.01, composite_score))), 4)
 
-        decision, signals = self._apply_decision_policy(risk_score, signals)
+        decision, signals = self._apply_decision_policy(risk_score, signals, lang=lang)
 
         result = {
             "risk_score": risk_score,

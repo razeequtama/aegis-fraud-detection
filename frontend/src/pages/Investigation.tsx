@@ -27,6 +27,7 @@ import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
 import { PageGuideButton } from '../components/PageGuideButton';
 import { useTranslation } from '../i18n/LanguageContext';
+import { translateRiskSignal } from '../i18n/signals';
 
 type FeedbackLabel = 'confirmed_fraud' | 'legitimate' | 'inconclusive';
 
@@ -1142,20 +1143,24 @@ export const Investigation: React.FC = () => {
             {signals.length ? (
               <div className="space-y-3">
                 {signals.map((signal, index) => {
-                  const name = typeof signal === 'string' ? signal : signal.name ?? 'Risk Signal';
-                  const description =
+                  const rawName = typeof signal === 'string' ? signal : signal.name ?? 'Risk Signal';
+                  const rawDescription =
                     typeof signal === 'string'
                       ? signal
                       : signal.description ?? 'Signal triggered based on behavioral anomaly patterns.';
+                  const localized = translateRiskSignal(
+                    { name: rawName, description: rawDescription },
+                    language
+                  );
                   const isCritical =
-                    name.includes('critical') ||
-                    name.includes('ultra') ||
-                    name.includes('high_fraud') ||
-                    name.includes('burst');
+                    rawName.includes('critical') ||
+                    rawName.includes('ultra') ||
+                    rawName.includes('high_fraud') ||
+                    rawName.includes('burst');
 
                   return (
                     <div
-                      key={`${name}-${index}`}
+                      key={`${rawName}-${index}`}
                       className={`flex items-start gap-3 rounded-lg border p-3.5 text-sm ${
                         isCritical
                           ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-100 font-semibold'
@@ -1165,9 +1170,9 @@ export const Investigation: React.FC = () => {
                       <AlertTriangle className="mt-0.5 shrink-0 text-cyan-400" size={18} />
                       <div>
                         <h4 className="font-bold uppercase tracking-wider text-sm">
-                          {name.replace(/_/g, ' ')}
+                          {localized.title}
                         </h4>
-                        <p className="mt-1 text-slate-200 text-sm leading-relaxed">{description}</p>
+                        <p className="mt-1 text-slate-200 text-sm leading-relaxed">{localized.description}</p>
                       </div>
                     </div>
                   );

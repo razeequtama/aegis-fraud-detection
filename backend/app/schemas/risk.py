@@ -15,11 +15,17 @@ class RiskAssessmentRequest(BaseModel):
     device_id: Optional[str] = Field(None, description="Unique identifier for the device")
     session_id: Optional[str] = Field(None, description="Unique identifier for the browsing session")
     payment_attempts: Optional[int] = Field(1, ge=1, description="Number of payment attempts made")
+    language: Optional[str] = Field("en", description="Preferred language for signal telemetry: 'en' or 'id'")
 
 
 class SignalItem(BaseModel):
     name: str
     description: str
+
+
+class GraphMetricsItem(BaseModel):
+    shared_devices_count: Optional[float] = 0.0
+    node_degree: Optional[float] = 0.0
 
 
 class RiskAssessmentResponse(BaseModel):
@@ -29,3 +35,5 @@ class RiskAssessmentResponse(BaseModel):
     model_version: str
     signals: List[SignalItem]
     latency_ms: float
+    velocity: Optional[int] = 1
+    graph_metrics: Optional[GraphMetricsItem] = None

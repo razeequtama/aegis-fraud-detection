@@ -5,6 +5,7 @@ import { apiClient } from '../api/client';
 import { AegisWordmark } from '../components/AegisWordmark';
 import { PageGuideButton } from '../components/PageGuideButton';
 import { useTranslation } from '../i18n/LanguageContext';
+import { translateRiskSignal } from '../i18n/signals';
 
 interface RiskSignal {
   name: string;
@@ -18,6 +19,11 @@ interface RiskAssessmentResult {
   model_version: string;
   signals: RiskSignal[];
   latency_ms: number;
+  velocity?: number;
+  graph_metrics?: {
+    shared_devices_count?: number;
+    node_degree?: number;
+  };
 }
 
 interface PresetItem {
@@ -110,8 +116,25 @@ const defaultPresets: PresetItem[] = [
 ];
 
 export const RiskAssessment: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [presets, setPresets] = useState<PresetItem[]>(defaultPresets);
+
+  const getPresetTitle = (rawTitle: string) => {
+    const lower = rawTitle.toLowerCase();
+    if (lower.includes('retail') || lower.includes('low risk payment')) {
+      return t.riskAssessment.presetRetail;
+    }
+    if (lower.includes('cash-out') || lower.includes('medium risk transfer')) {
+      return t.riskAssessment.presetMediumCashout;
+    }
+    if (lower.includes('drain') || lower.includes('account drain')) {
+      return t.riskAssessment.presetDrain;
+    }
+    if (lower.includes('syndicate')) {
+      return t.riskAssessment.presetSyndicateTransfer;
+    }
+    return rawTitle;
+  };
   const [formData, setFormData] = useState({
     transaction_id: 'TX-100001',
     account_id: 'C1551703422',
@@ -207,7 +230,10 @@ export const RiskAssessment: React.FC = () => {
     try {
       const response = await apiClient.post<RiskAssessmentResult>(
         '/risk-assessments',
-        formData
+        {
+          ...formData,
+          language,
+        }
       );
       setResult(response.data);
     } catch (error: unknown) {
@@ -432,7 +458,7 @@ export const RiskAssessment: React.FC = () => {
                 className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-left transition-all hover:border-cyan-500/40 hover:bg-slate-900/90 group"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="block text-sm font-semibold text-cyan-300 group-hover:underline">{title}</span>
+                  <span className="block text-sm font-semibold text-cyan-300 group-hover:underline">{getPresetTitle(title)}</span>
                   {category && (
                     <span
                       className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded border ${
@@ -451,13 +477,13 @@ export const RiskAssessment: React.FC = () => {
                   {payload.transaction_id} · {payload.type}
                 </span>
                 <span className="mt-1 block text-sm font-mono text-slate-300">
-                  Amount: {new Intl.NumberFormat('id-ID').format(payload.amount)}
+                  {t.riskAssessment.labelAmount}: {new Intl.NumberFormat(language === 'id' ? 'id-ID' : 'en-US').format(payload.amount)}
                 </span>
                 <span className="mt-0.5 block text-xs sm:text-sm font-mono text-slate-400">
-                  Balance: {new Intl.NumberFormat('id-ID').format(payload.oldbalanceOrg)} → {new Intl.NumberFormat('id-ID').format(payload.newbalanceOrig)}
+                  {t.riskAssessment.labelBalance}: {new Intl.NumberFormat(language === 'id' ? 'id-ID' : 'en-US').format(payload.oldbalanceOrg)} → {new Intl.NumberFormat(language === 'id' ? 'id-ID' : 'en-US').format(payload.newbalanceOrig)}
                 </span>
                 <span className="mt-0.5 block text-xs sm:text-sm text-slate-400 font-mono">
-                  Account: {payload.account_id}
+                  {t.riskAssessment.labelAccount}: {payload.account_id}
                 </span>
                 <span className="mt-2 block text-sm text-cyan-400 font-medium group-hover:underline">
                   {t.riskAssessment.selectToLoad}
@@ -581,28 +607,31 @@ export const RiskAssessment: React.FC = () => {
                     </span>
                   </div>
                   <span className="font-mono text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-800 text-slate-200 border border-slate-700 font-medium">
-                    {result.signals.length} {result.signals.length === 1 ? 'Signal' : 'Signals'}
+                    {result.signals.length} {result.signals.length === 1 ? t.riskAssessment.signalUnitSingular : t.riskAssessment.signalUnitPlural}
                   </span>
                 </div>
 
                 {result.signals.length > 0 ? (
                   <div className="flex-1 min-h-[300px] max-h-[580px] overflow-y-auto space-y-2.5 pr-1.5 scrollbar-thin">
-                    {result.signals.map((sig, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700/80 transition-colors"
-                      >
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <Zap size={14} className="text-cyan-400 shrink-0" />
-                          <strong className="font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300">
-                            {sig.name.replace(/_/g, ' ')}
-                          </strong>
+                    {result.signals.map((sig, idx) => {
+                      const localized = translateRiskSignal(sig, language);
+                      return (
+                        <div
+                          key={idx}
+                          className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700/80 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <Zap size={14} className="text-cyan-400 shrink-0" />
+                            <strong className="font-mono text-sm font-semibold uppercase tracking-wider text-cyan-300">
+                              {localized.title}
+                            </strong>
+                          </div>
+                          <p className="text-sm text-slate-200 leading-relaxed pl-5">
+                            {localized.description}
+                          </p>
                         </div>
-                        <p className="text-sm text-slate-200 leading-relaxed pl-5">
-                          {sig.description}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-950 rounded-xl border border-slate-800/80 text-center">
@@ -613,6 +642,41 @@ export const RiskAssessment: React.FC = () => {
                     <p className="text-sm text-slate-300 mt-1 max-w-xs">
                       {t.riskAssessment.noSignalsDesc}
                     </p>
+                  </div>
+                )}
+
+                {/* Graph Metrics & Network Telemetry Bar */}
+                {(result.graph_metrics || result.velocity !== undefined) && (
+                  <div className="mt-3 pt-3 border-t border-slate-800/80">
+                    <span className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-2">
+                      {t.riskAssessment.graphMetricsTitle}
+                    </span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+                        <span className="text-[11px] font-mono text-slate-400">
+                          {t.riskAssessment.sharedDevicesMetric}
+                        </span>
+                        <span className="mt-1 font-mono text-base font-bold text-cyan-300">
+                          {Math.round(result.graph_metrics?.shared_devices_count ?? 0)}
+                        </span>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+                        <span className="text-[11px] font-mono text-slate-400">
+                          {t.riskAssessment.networkDegreeMetric}
+                        </span>
+                        <span className="mt-1 font-mono text-base font-bold text-cyan-300">
+                          {Math.round(result.graph_metrics?.node_degree ?? 0)}
+                        </span>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 flex flex-col justify-between">
+                        <span className="text-[11px] font-mono text-slate-400">
+                          {t.riskAssessment.velocityMetric}
+                        </span>
+                        <span className="mt-1 font-mono text-base font-bold text-cyan-300">
+                          {result.velocity ?? 1} tx
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

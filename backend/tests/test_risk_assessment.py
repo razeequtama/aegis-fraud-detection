@@ -123,3 +123,39 @@ def test_get_risk_assessment_presets():
             assert not preset["payload"]["transaction_id"].startswith("TX-SAMPLE-")
     engine.dispose()
 
+
+def test_risk_assessment_indonesian_signals():
+    # Test Indonesian signal output
+    result_id = risk_engine.evaluate_transaction({
+        "transaction_id": "TX-ID-TEST",
+        "account_id": "C123456",
+        "amount": 1500000.0,
+        "oldbalanceOrg": 1500000.0,
+        "newbalanceOrig": 0.0,
+        "language": "id",
+    })
+    signals_id = result_id["signals"]
+    assert len(signals_id) > 0
+    # First signal is high_fraud_probability
+    assert signals_id[0]["name"] == "high_fraud_probability"
+    assert "penipuan" in signals_id[0]["description"]
+    # Account drain signal in Indonesian
+    drain_sig = next(s for s in signals_id if s["name"] == "critical_account_drain")
+    assert "Pengurasan saldo akun" in drain_sig["description"]
+
+    # Test English signal output
+    result_en = risk_engine.evaluate_transaction({
+        "transaction_id": "TX-EN-TEST",
+        "account_id": "C123456",
+        "amount": 1500000.0,
+        "oldbalanceOrg": 1500000.0,
+        "newbalanceOrig": 0.0,
+        "language": "en",
+    })
+    signals_en = result_en["signals"]
+    assert signals_en[0]["name"] == "high_fraud_probability"
+    assert "critical probability of fraudulent" in signals_en[0]["description"]
+    drain_sig_en = next(s for s in signals_en if s["name"] == "critical_account_drain")
+    assert "Near-total account drain detected" in drain_sig_en["description"]
+
+
