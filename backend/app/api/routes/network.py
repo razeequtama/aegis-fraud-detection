@@ -72,9 +72,10 @@ def _build_analyzer(db: Session, force_reload: bool = False) -> FraudGraphAnalyz
     return analyzer
 
 
+@router.get("/network/presets")
 @router.get("/network/samples")
-def get_network_samples():
-    """Returns verified graph sample patterns from the database for instant user exploration."""
+def get_network_presets():
+    """Returns verified graph pattern presets from the database for instant user exploration."""
     return [
         {
             "id": "C376938867",

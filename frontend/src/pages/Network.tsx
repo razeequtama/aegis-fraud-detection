@@ -5,13 +5,8 @@ import type { Core, ElementDefinition } from 'cytoscape';
 import {
   AlertTriangle,
   ArrowRight,
-  CheckCircle2,
-  Cpu,
   LoaderCircle,
-  Network as NetworkIcon,
   Search,
-  Share2,
-  ShieldAlert,
   Sparkles,
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,7 +17,7 @@ import { useTranslation } from '../i18n/LanguageContext';
 
 type EntityType = 'transactions' | 'accounts';
 
-export interface NetworkSample {
+export interface NetworkPreset {
   id: string;
   type: EntityType;
   title: string;
@@ -30,10 +25,9 @@ export interface NetworkSample {
   badgeColor: string;
   description: string;
   stats: string;
-  icon: 'syndicate' | 'device' | 'transaction' | 'decline' | 'clean';
 }
 
-export const networkSamples: NetworkSample[] = [
+export const networkPresets: NetworkPreset[] = [
   {
     id: 'C376938867',
     type: 'accounts',
@@ -42,7 +36,6 @@ export const networkSamples: NetworkSample[] = [
     badgeColor: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
     description: 'Shared emulator (DEV-SIM-995) links 53 accounts with 17 flagged fraud nodes.',
     stats: '56 Nodes · 17 Suspicious · 1 Shared Device',
-    icon: 'syndicate',
   },
   {
     id: 'C1387708046',
@@ -52,7 +45,6 @@ export const networkSamples: NetworkSample[] = [
     badgeColor: 'border-cyan-600/40 bg-cyan-950/60 text-cyan-300 font-medium',
     description: 'Shared device DEV-SIM-236 links 54 accounts with 19 confirmed fraud nodes.',
     stats: '57 Nodes · 19 Suspicious · 1 Shared Device',
-    icon: 'device',
   },
   {
     id: 'TX-100463',
@@ -62,7 +54,6 @@ export const networkSamples: NetworkSample[] = [
     badgeColor: 'border-cyan-400/50 bg-cyan-500/20 text-cyan-200 font-semibold',
     description: 'Syndicate transfer executed within the DEV-SIM-995 multi-account ring.',
     stats: 'Linked to C376938867 & DEV-SIM-995',
-    icon: 'transaction',
   },
   {
     id: 'C1791470904',
@@ -72,7 +63,6 @@ export const networkSamples: NetworkSample[] = [
     badgeColor: 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300 font-semibold',
     description: 'Device DEV-SIM-278 connecting 47 accounts with multiple concurrent cash-outs.',
     stats: '50 Nodes · 17 Suspicious · 1 Shared Device',
-    icon: 'syndicate',
   },
   {
     id: 'TX-140135',
@@ -82,7 +72,6 @@ export const networkSamples: NetworkSample[] = [
     badgeColor: 'border-cyan-400/60 bg-cyan-500/25 text-cyan-100 font-bold',
     description: 'Critical Rp 2,988,103 cash out on device DEV-SIM-360 with decline score 0.99.',
     stats: 'Score 0.99 · 100% Drain · DEV-SIM-360',
-    icon: 'decline',
   },
   {
     id: 'C1041698296',
@@ -92,7 +81,6 @@ export const networkSamples: NetworkSample[] = [
     badgeColor: 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium',
     description: 'Standard retail customer with normal transactions and zero fraud flags.',
     stats: 'Legitimate Baseline · Low Risk',
-    icon: 'clean',
   },
 ];
 
@@ -128,23 +116,6 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unable to load network data.';
 }
 
-function renderSampleIcon(icon: NetworkSample['icon'], className = 'w-4 h-4') {
-  switch (icon) {
-    case 'syndicate':
-      return <ShieldAlert className={className} />;
-    case 'device':
-      return <Cpu className={className} />;
-    case 'transaction':
-      return <Share2 className={className} />;
-    case 'decline':
-      return <AlertTriangle className={className} />;
-    case 'clean':
-      return <CheckCircle2 className={className} />;
-    default:
-      return <NetworkIcon className={className} />;
-  }
-}
-
 export const Network: React.FC = () => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -162,7 +133,7 @@ export const Network: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [graphSummary, setGraphSummary] = useState<GraphResponse | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [samples, setSamples] = useState<NetworkSample[]>(networkSamples);
+  const [presets, setPresets] = useState<NetworkPreset[]>(networkPresets);
 
   const localizedPresetMap: Record<
     string,
@@ -219,9 +190,8 @@ export const Network: React.FC = () => {
           badgeColor?: string;
           description: string;
           stats: string;
-          icon?: NetworkSample['icon'];
         }>
-      >('/network/samples')
+      >('/network/presets')
       .then((res) => {
         if (!active || !Array.isArray(res.data) || res.data.length === 0) return;
         const colorMap: Record<string, string> = {
@@ -230,15 +200,7 @@ export const Network: React.FC = () => {
           purple: 'border-cyan-400/50 bg-cyan-500/20 text-cyan-200 font-semibold',
           emerald: 'border-slate-700 bg-slate-800/80 text-slate-300 font-medium',
         };
-        const iconMap: Record<string, NetworkSample['icon']> = {
-          C376938867: 'syndicate',
-          C1387708046: 'device',
-          'TX-100463': 'transaction',
-          C1791470904: 'syndicate',
-          'TX-140135': 'decline',
-          C1041698296: 'clean',
-        };
-        const loaded: NetworkSample[] = res.data.map((item) => ({
+        const loaded: NetworkPreset[] = res.data.map((item) => ({
           id: item.id,
           type: item.type,
           title: item.title,
@@ -250,12 +212,8 @@ export const Network: React.FC = () => {
               : 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300'),
           description: item.description,
           stats: item.stats,
-          icon:
-            item.icon ||
-            iconMap[item.id] ||
-            (item.type === 'transactions' ? 'transaction' : 'syndicate'),
         }));
-        setSamples(loaded);
+        setPresets(loaded);
       })
       .catch(() => {});
     return () => {
@@ -272,11 +230,11 @@ export const Network: React.FC = () => {
     }
   }, [routeEntityType, routeEntityId]);
 
-  const handleSelectSample = (sample: NetworkSample) => {
-    setEntityType(sample.type);
-    setEntityId(sample.id);
+  const handleSelectPreset = (preset: NetworkPreset) => {
+    setEntityType(preset.type);
+    setEntityId(preset.id);
     setErrorMessage(null);
-    navigate(`/network/${sample.type}/${encodeURIComponent(sample.id)}`);
+    navigate(`/network/${preset.type}/${encodeURIComponent(preset.id)}`);
   };
   const requestedType: EntityType | null =
     routeEntityType === 'transactions' || routeEntityType === 'accounts'
@@ -515,33 +473,29 @@ export const Network: React.FC = () => {
 
       {/* Pattern Showcase Quick-Select Pills (Horizontally scrollable on mobile) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full sm:flex-wrap">
-        <span className="flex shrink-0 items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-slate-300 mr-1">
-          <Sparkles size={14} className="text-cyan-400" />
+        <span className="shrink-0 text-sm font-semibold uppercase tracking-wider text-slate-300 mr-1">
           {t.network.patternPresets}
         </span>
-        {samples.map((sample) => {
-          const isActive = requestedId === sample.id && requestedType === sample.type;
-          const loc = localizedPresetMap[sample.id];
-          const title = loc?.title || sample.title;
+        {presets.map((preset) => {
+          const isActive = requestedId === preset.id && requestedType === preset.type;
+          const loc = localizedPresetMap[preset.id];
+          const title = loc?.title || preset.title;
           return (
             <button
-              key={sample.id}
+              key={preset.id}
               type="button"
-              onClick={() => handleSelectSample(sample)}
+              onClick={() => handleSelectPreset(preset)}
               className={`shrink-0 whitespace-nowrap flex items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition-all interactive-btn ${
                 isActive
                   ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-sm shadow-cyan-500/20 ring-1 ring-cyan-400/40'
                   : 'border-slate-800 bg-slate-900/90 text-slate-300 hover:border-slate-700 hover:bg-slate-800'
               }`}
             >
-              <span className={isActive ? 'text-cyan-400' : 'text-slate-400'}>
-                {renderSampleIcon(sample.icon, 'w-3.5 h-3.5')}
-              </span>
               <span>{title}</span>
               <span
-                className={`rounded px-2.5 py-0.5 text-xs sm:text-sm font-semibold border ${sample.badgeColor}`}
+                className={`rounded px-2.5 py-0.5 text-xs sm:text-sm font-semibold border ${preset.badgeColor}`}
               >
-                {sample.type === 'accounts' ? t.network.accountOption : 'TX'}
+                {preset.type === 'accounts' ? t.network.accountOption : 'TX'}
               </span>
             </button>
           );
@@ -567,37 +521,36 @@ export const Network: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {samples.map((sample) => {
-                  const loc = localizedPresetMap[sample.id];
-                  const title = loc?.title || sample.title;
-                  const badge = loc?.badge || sample.badge;
-                  const desc = loc?.description || sample.description;
-                  const stats = loc?.stats || sample.stats;
+                {presets.map((preset) => {
+                  const loc = localizedPresetMap[preset.id];
+                  const title = loc?.title || preset.title;
+                  const badge = loc?.badge || preset.badge;
+                  const desc = loc?.description || preset.description;
+                  const stats = loc?.stats || preset.stats;
 
                   return (
                     <button
-                      key={sample.id}
+                      key={preset.id}
                       type="button"
-                      onClick={() => handleSelectSample(sample)}
+                      onClick={() => handleSelectPreset(preset)}
                       className="interactive-card group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/90 p-4 text-left transition-all hover:border-cyan-500/50 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/10"
                     >
                       <div>
                         <div className="mb-2.5 flex items-center justify-between gap-2">
                           <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs sm:text-sm font-semibold ${sample.badgeColor}`}
+                            className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs sm:text-sm font-semibold ${preset.badgeColor}`}
                           >
-                            {renderSampleIcon(sample.icon, 'w-3 h-3')}
                             {badge}
                           </span>
                           <span className="font-mono text-sm text-slate-300 group-hover:text-cyan-300">
-                            {sample.type === 'accounts' ? t.network.accountOption : t.network.transactionOption}
+                            {preset.type === 'accounts' ? t.network.accountOption : t.network.transactionOption}
                           </span>
                         </div>
                         <h4 className="font-display text-base font-semibold tracking-tight text-slate-100 group-hover:text-cyan-200">
                           {title}
                         </h4>
                         <p className="mt-1 font-mono text-sm text-cyan-400">
-                          {sample.id}
+                          {preset.id}
                         </p>
                         <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                           {desc}
