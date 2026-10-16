@@ -1,8 +1,10 @@
+import asyncio
+import logging
+import time
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-import time
 
 from app.db.session import engine, get_db
 from app.services.risk_engine import risk_engine
@@ -12,8 +14,9 @@ from app.services.observability import (
     record_inference_latency,
 )
 from app.core.redis import is_redis_available, REDIS_HOST, REDIS_PORT
-from app.api.routes import investigation, metrics, network, replays, risk
-from app.api.routes import transactions
+from app.api.routes import auth, investigation, metrics, network, replays, risk, system, transactions
+
+logger = logging.getLogger("aegis.main")
 
 app = FastAPI(
     title="AEGIS Fraud Detection API",
@@ -30,6 +33,27 @@ app.add_middleware(
 )
 
 
+async def schedule_daily_demo_reset():
+    """Background coroutine that resets demonstration state every 24 hours."""
+    while True:
+        try:
+            # 24 hours = 86400 seconds
+            await asyncio.sleep(86400)
+            from app.db.seed import reset_demo_state
+            logger.info("Executing scheduled 24-hour demo sandbox auto-reset...")
+            reset_demo_state()
+            logger.info("Scheduled 24-hour demo sandbox reset completed successfully.")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.error(f"Error during scheduled demo reset: {e}")
+
+
+@app.on_event("startup")
+async def on_startup():
+    asyncio.create_task(schedule_daily_demo_reset())
+
+
 @app.middleware("http")
 async def collect_api_latency(request: Request, call_next):
     start_time = time.perf_counter()
@@ -40,11 +64,13 @@ async def collect_api_latency(request: Request, call_next):
 
 
 # Include API Routers
+app.include_router(auth.router)
 app.include_router(network.router)
 app.include_router(replays.router)
 app.include_router(metrics.router)
 app.include_router(investigation.router)
 app.include_router(risk.router)
+app.include_router(system.router)
 app.include_router(transactions.router, prefix="/api/v1", tags=["Transactions"])
 
 

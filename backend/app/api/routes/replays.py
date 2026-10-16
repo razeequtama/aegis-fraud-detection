@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import Optional
 
+from app.api.deps import require_permission
 from app.db.session import get_db
 from app.models.replay_run import ReplayRun
 from app.services.replay_engine import get_replay_step_range, run_historical_replay
@@ -16,7 +17,20 @@ class ReplayCreateRequest(BaseModel):
     end_step: Optional[int] = None
 
 @router.post("", status_code=201)
-def create_replay(payload: ReplayCreateRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+def create_replay(
+    payload: ReplayCreateRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("run_replay")),
+):
+    # Enforce concurrency limit: reject if another replay is currently running or queued
+    active_replay = db.query(ReplayRun).filter(ReplayRun.status.in_(["RUNNING", "QUEUED"])).first()
+    if active_replay:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Another replay simulation is currently {active_replay.status.lower()} (ID: {active_replay.id}). Please wait for it to complete."
+        )
+
     min_step, max_step = get_replay_step_range(db)
     if min_step is None or max_step is None:
         raise HTTPException(status_code=404, detail="No historical transactions are available for replay.")
@@ -37,7 +51,7 @@ def create_replay(payload: ReplayCreateRequest, background_tasks: BackgroundTask
     db.commit()
     db.refresh(new_replay)
 
-    # Trigger background worker (hanya kirim ID)
+    # Trigger background worker (only send ID)
     background_tasks.add_task(run_historical_replay, new_replay.id)
 
     return {

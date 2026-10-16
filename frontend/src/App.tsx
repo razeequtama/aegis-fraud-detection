@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { AuthProvider } from './context/AuthContext';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Transactions } from './pages/Transactions';
@@ -12,21 +13,23 @@ import { SystemHealth } from './pages/SystemHealth';
 export function App() {
   return (
     <LanguageProvider defaultLanguage="en">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="transactions" element={<Transactions />} />
-            <Route path="investigation" element={<Investigation />} />
-            <Route path="investigation/:transactionId" element={<Investigation />} />
-            <Route path="network" element={<Network />} />
-            <Route path="network/:entityType/:entityId" element={<Network />} />
-            <Route path="assessment" element={<RiskAssessment />} />
-            <Route path="model-lab" element={<ModelLab />} />
-            <Route path="health" element={<SystemHealth />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="transactions" element={<Transactions />} />
+              <Route path="investigation" element={<Investigation />} />
+              <Route path="investigation/:transactionId" element={<Investigation />} />
+              <Route path="network" element={<Network />} />
+              <Route path="network/:entityType/:entityId" element={<Network />} />
+              <Route path="assessment" element={<RiskAssessment />} />
+              <Route path="model-lab" element={<ModelLab />} />
+              <Route path="health" element={<SystemHealth />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </LanguageProvider>
   );
 }

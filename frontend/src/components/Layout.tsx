@@ -15,6 +15,7 @@ import {
 import { AegisWordmark } from './AegisWordmark';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { WelcomeModal } from './WelcomeModal';
+import { PersonaSwitcher } from './PersonaSwitcher';
 import { useTranslation } from '../i18n/LanguageContext';
 
 export const Layout: React.FC = () => {
@@ -117,6 +118,9 @@ export const Layout: React.FC = () => {
           </button>
         </div>
 
+        {/* Demo Persona Switcher & RBAC Context in Desktop Sidebar */}
+        <PersonaSwitcher />
+
         {/* Language Switcher in Desktop Sidebar */}
         <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
           <span className="text-sm text-slate-300 font-medium">{t.common.language}</span>
@@ -209,6 +213,9 @@ export const Layout: React.FC = () => {
             </button>
           </div>
 
+          {/* Demo Persona Switcher & RBAC Context in Mobile Drawer */}
+          <PersonaSwitcher />
+
           {/* Language Switcher in Mobile Drawer */}
           <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60">
             <span className="text-sm text-slate-300 font-medium">{t.common.language}</span>
@@ -230,6 +237,7 @@ export const Layout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <PersonaSwitcher compact />
             <button
               type="button"
               onClick={() => setWelcomeOpen(true)}

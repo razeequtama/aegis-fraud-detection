@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, select
 from app.db.session import get_db
 from app.schemas.investigation import CaseCreateRequest, CaseUpdateRequest, AnalystFeedbackRequest
+from app.api.deps import require_permission
 from app.db.repositories import FraudRepository
 from app.models.models import Transaction, InvestigationCase
 
@@ -93,23 +94,36 @@ def get_case_details(case_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/cases", status_code=201)
-def create_investigation_case(payload: CaseCreateRequest, db: Session = Depends(get_db)):
+def create_investigation_case(
+    payload: CaseCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("edit_case")),
+):
+    user_dict = current_user if isinstance(current_user, dict) else {"name": "Analyst"}
+    assigned = payload.assigned_analyst if payload.assigned_analyst and payload.assigned_analyst != "Unassigned" else user_dict.get("name", "Analyst")
     db_case = FraudRepository.create_case(
         db=db,
         transaction_id=payload.transaction_id,
-        assigned_analyst=payload.assigned_analyst or "Unassigned",
+        assigned_analyst=assigned,
         initial_status=payload.initial_status or "open"
     )
     return {"message": "Investigation case created successfully", "data": db_case}
 
 
 @router.patch("/cases/{case_id}")
-def update_investigation_case(case_id: str, payload: CaseUpdateRequest, db: Session = Depends(get_db)):
+def update_investigation_case(
+    case_id: str,
+    payload: CaseUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("edit_case")),
+):
+    user_dict = current_user if isinstance(current_user, dict) else {"name": "Analyst"}
+    assigned = payload.assigned_analyst or user_dict.get("name")
     updated = FraudRepository.update_case(
         db=db,
         case_id=case_id,
         status=payload.status,
-        assigned_analyst=payload.assigned_analyst,
+        assigned_analyst=assigned,
         notes=payload.notes,
     )
     if not updated:
@@ -118,7 +132,12 @@ def update_investigation_case(case_id: str, payload: CaseUpdateRequest, db: Sess
 
 
 @router.post("/cases/{case_id}/feedback")
-def submit_analyst_feedback(case_id: str, payload: AnalystFeedbackRequest, db: Session = Depends(get_db)):
+def submit_analyst_feedback(
+    case_id: str,
+    payload: AnalystFeedbackRequest,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("label_feedback")),
+):
     updated_case = FraudRepository.update_case_feedback(
         db=db,
         case_id=case_id,

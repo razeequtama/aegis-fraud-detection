@@ -251,5 +251,24 @@ def seed_if_empty():
     print("Warning: Neither seed_transactions.csv.gz nor ps.csv found. Database remains empty.")
 
 
+def reset_demo_state():
+    """
+    Resets dynamic demonstration state back to clean baseline:
+    - Restores investigation cases to initial 9 curated samples and unassigned review cases.
+    - Clears orphaned or failed simulation runs.
+    Preserves all 50,000 transactions and database tables without dropping data.
+    """
+    print("Executing demo state reset...")
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM investigation_cases;"))
+        conn.execute(text("DELETE FROM replay_runs WHERE status IN ('FAILED', 'QUEUED');"))
+    seed_investigation_cases()
+    print("Demo state successfully reset to baseline.")
+
+
 if __name__ == "__main__":
-    seed_if_empty()
+    import sys
+    if "--reset" in sys.argv:
+        reset_demo_state()
+    else:
+        seed_if_empty()
