@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import MetaData, String, Table, cast, func, inspect, literal, select
 from typing import Optional
 
+from app.api.deps import require_permission
 from app.db.session import get_db
 from app.services.risk_engine import risk_engine
 
@@ -48,7 +49,11 @@ def _related_entity(db: Session, table_name: str, key_column: str, entity_id):
 
 
 @router.get("/transactions/{transaction_id}")
-def get_transaction_details(transaction_id: str, db: Session = Depends(get_db)):
+def get_transaction_details(
+    transaction_id: str,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
+):
     table = Table("transactions", MetaData(), autoload_with=db.get_bind())
     if "transaction_id" not in table.c:
         raise HTTPException(status_code=500, detail="The transactions table has no transaction_id column.")
@@ -197,6 +202,7 @@ def get_transactions(
     min_risk: Optional[float] = Query(None, ge=0.0, le=1.0, alias="minRiskScore"),
     max_risk: Optional[float] = Query(None, ge=0.0, le=1.0, alias="maxRiskScore"),
     db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
 ):
     offset = (page - 1) * limit
 

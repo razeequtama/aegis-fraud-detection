@@ -61,4 +61,48 @@ def check_transaction_velocity(account_id: str, window_seconds: int = 60) -> int
         return int(result[0])
     except Exception as exc:
         logger.warning(f"Redis velocity check bypassed: {exc}")
-        return 1
+        return 1
+
+
+_last_reset_time = 0.0
+
+
+def acquire_demo_reset_lock(cooldown_seconds: int = 600) -> tuple[bool, int]:
+    """
+    Acquires an atomic distributed lock for resetting demo state.
+    Returns (allowed: bool, remaining_cooldown_seconds: int).
+    Enforces a global cooldown to prevent concurrent or repetitive database resets.
+    """
+    global _last_reset_time
+    if is_redis_available():
+        try:
+            lock_key = "aegis:system:reset_demo:cooldown"
+            # SET NX EX: atomically sets only if key doesn't exist, expiring in cooldown_seconds
+            acquired = redis_client.set(lock_key, "1", ex=cooldown_seconds, nx=True)
+            if acquired:
+                return True, 0
+            ttl = redis_client.ttl(lock_key)
+            return False, max(1, int(ttl))
+        except Exception as exc:
+            logger.warning(f"Redis reset lock failed, falling back to local memory: {exc}")
+
+    now = time.monotonic()
+    elapsed = now - _last_reset_time
+    if _last_reset_time > 0 and elapsed < cooldown_seconds:
+        remaining = int(cooldown_seconds - elapsed)
+        return False, max(1, remaining)
+
+    _last_reset_time = now
+    return True, 0
+
+
+def clear_demo_reset_lock() -> None:
+    """Clears the reset cooldown lock (primarily used for test cleanup)."""
+    global _last_reset_time
+    _last_reset_time = 0.0
+    if is_redis_available():
+        try:
+            redis_client.delete("aegis:system:reset_demo:cooldown")
+        except Exception:
+            pass
+

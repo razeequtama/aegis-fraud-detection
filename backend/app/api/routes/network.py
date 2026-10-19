@@ -1,7 +1,9 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import MetaData, String, Table, cast, inspect, select
 from sqlalchemy.orm import Session
 
+from app.api.deps import require_permission
 from app.db.session import get_db
 from app.services.graph_analysis import FraudGraphAnalyzer
 
@@ -142,7 +144,10 @@ def get_network_presets():
 
 @router.get("/transactions/{transaction_id}/network")
 def get_transaction_network(
-    transaction_id: str, radius: int = 3, db: Session = Depends(get_db)
+    transaction_id: str,
+    radius: int = 3,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
 ):
     """
     Retrieves the connected neighborhood graph for a specific transaction.
@@ -159,7 +164,10 @@ def get_transaction_network(
 
 @router.get("/accounts/{account_id}/network")
 def get_account_network(
-    account_id: str, radius: int = 2, db: Session = Depends(get_db)
+    account_id: str,
+    radius: int = 2,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
 ):
     """
     Retrieves the connected neighborhood graph for a specific account (shared devices, sessions).

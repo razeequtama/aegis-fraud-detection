@@ -18,6 +18,7 @@ def list_investigation_cases(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
 ):
     resolved_page = int(page) if isinstance(page, (int, float)) or (isinstance(page, str) and page.isdigit()) else 1
     resolved_limit = int(limit) if isinstance(limit, (int, float)) or (isinstance(limit, str) and limit.isdigit()) else 20
@@ -43,7 +44,11 @@ def list_investigation_cases(
 
 
 @router.get("/cases/urgent")
-def get_urgent_alerts(limit: int = Query(6, ge=1, le=20), db: Session = Depends(get_db)):
+def get_urgent_alerts(
+    limit: int = Query(6, ge=1, le=20),
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
+):
     """Returns top high-risk unreviewed alerts needing immediate investigation."""
     resolved_limit = int(limit) if isinstance(limit, (int, float)) or (isinstance(limit, str) and limit.isdigit()) else 6
     closed_txs = select(InvestigationCase.transaction_id).where(
@@ -86,7 +91,11 @@ def get_urgent_alerts(limit: int = Query(6, ge=1, le=20), db: Session = Depends(
 
 
 @router.get("/cases/{case_id}")
-def get_case_details(case_id: str, db: Session = Depends(get_db)):
+def get_case_details(
+    case_id: str,
+    db: Session = Depends(get_db),
+    current_user: Optional[dict] = Depends(require_permission("view")),
+):
     case_obj = FraudRepository.get_case_by_id(db, case_id)
     if not case_obj:
         raise HTTPException(status_code=404, detail="Investigation case not found")

@@ -10,6 +10,7 @@ from app.core.security import (
     get_persona,
 )
 from app.api.deps import require_permission
+from app.core.redis import clear_demo_reset_lock
 
 BASE_URL = "http://127.0.0.1:8000"
 
@@ -152,7 +153,7 @@ def test_live_auth_flow_and_rbac_boundaries():
     assert code == 200
     assert me_data["user"]["role"] == "lead_analyst"
 
-    # 5. SEC-01 Proof: Anonymous request to protected endpoints return 401 Unauthorized
+    # 5. SEC-01 & SEC-02 Proof: Anonymous requests to protected endpoints return 401 Unauthorized
     code, err_data = make_request("POST", "/api/v1/cases/CASE-TEST/feedback", {"label": "confirmed_fraud"})
     assert code == 401, f"Expected 401 Unauthorized without token, got {code}"
 
@@ -161,6 +162,15 @@ def test_live_auth_flow_and_rbac_boundaries():
 
     code, err_data = make_request("POST", "/api/v1/system/reset-demo")
     assert code == 401, f"Expected 401 Unauthorized without token, got {code}"
+
+    code, err_data = make_request("GET", "/api/v1/transactions")
+    assert code == 401, f"Expected 401 Unauthorized for /transactions without token, got {code}"
+
+    code, err_data = make_request("GET", "/api/v1/cases")
+    assert code == 401, f"Expected 401 Unauthorized for /cases without token, got {code}"
+
+    code, err_data = make_request("GET", "/api/v1/transactions/TX-100001/network")
+    assert code == 401, f"Expected 401 Unauthorized for /network without token, got {code}"
 
     # 6. RBAC Proof: Auditor attempting mutations returns 403 Forbidden
     code, err_data = make_request(
@@ -181,7 +191,14 @@ def test_live_auth_flow_and_rbac_boundaries():
     assert "reset_demo" in err_data.get("detail", "")
 
     # 7. Senior Analyst authorized to reset demo state
+    clear_demo_reset_lock()
     code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
     assert code == 200
     assert reset_res["status"] == "success"
+
+    # 8. SEC-03 Proof: Immediate subsequent reset request triggers HTTP 429 Too Many Requests
+    code, throttled_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
+    assert code == 429, f"Expected 429 Too Many Requests on immediate reset attempt, got {code}"
+    assert "recently reset" in throttled_res.get("detail", "")
+
 
