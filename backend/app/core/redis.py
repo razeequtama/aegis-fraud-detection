@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD") or None
 
 # Normalize host to 127.0.0.1 if localhost to avoid Windows IPv6 resolution delay
 _RESOLVED_HOST = "127.0.0.1" if REDIS_HOST.lower() in ("localhost", "127.0.0.1") else REDIS_HOST
@@ -15,6 +16,7 @@ _RESOLVED_HOST = "127.0.0.1" if REDIS_HOST.lower() in ("localhost", "127.0.0.1")
 redis_client = redis.Redis(
     host=_RESOLVED_HOST,
     port=REDIS_PORT,
+    password=REDIS_PASSWORD,
     decode_responses=True,
     socket_timeout=0.5,
     socket_connect_timeout=0.5,
@@ -26,7 +28,7 @@ _cached_availability = False
 
 def is_redis_available(cache_seconds: float = 3.0) -> bool:
     """
-    Check whether the Redis server is reachable via a fast, non-blocking socket probe.
+    Check whether the Redis server is reachable and authenticated.
     Caches the result for cache_seconds to ensure zero latency on repeated calls.
     """
     global _last_probe_time, _cached_availability
@@ -36,9 +38,8 @@ def is_redis_available(cache_seconds: float = 3.0) -> bool:
 
     _last_probe_time = now
     try:
-        with socket.create_connection((_RESOLVED_HOST, REDIS_PORT), timeout=0.15):
-            _cached_availability = True
-    except (OSError, socket.timeout):
+        _cached_availability = bool(redis_client.ping())
+    except (redis.RedisError, OSError, socket.timeout):
         _cached_availability = False
 
     return _cached_availability

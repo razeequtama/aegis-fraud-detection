@@ -21,10 +21,11 @@ services:
   redis:
     image: redis:7-alpine
     container_name: aegis_redis
+    command: redis-server --requirepass "${REDIS_PASSWORD:-aegis_demo_redis_secret_pass_32char}"
     networks:
       - aegis_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"${REDIS_PASSWORD:-aegis_demo_redis_secret_pass_32char}\" ping | grep PONG"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -34,13 +35,14 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: aegis_backend
-    command: sh -c "alembic upgrade head && python -m app.db.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app"
+    command: sh -c "alembic upgrade head && python -m app.db.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4"
     volumes:
       - ./backend:/app
       - ./ml/artifacts:/ml/artifacts:ro
       - ./database/seeds:/database/seeds:ro
     ports:
-      - "8000:8000"
+      # Bound strictly to localhost loopback to prevent direct unauthenticated external exposure
+      - "127.0.0.1:8000:8000"
     environment:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
@@ -49,6 +51,7 @@ services:
       - ML_ARTIFACTS_DIR=/ml/artifacts
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-aegis_demo_redis_secret_pass_32char}
     depends_on:
       db:
         condition: service_healthy
@@ -68,14 +71,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: aegis_frontend
-    command: npm run dev
     ports:
       - "5173:5173"
-    environment:
-      - VITE_BACKEND_URL=http://backend:8000
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     depends_on:
       backend:
         condition: service_healthy

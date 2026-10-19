@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.js";
 
 /* ========================================================================= */
 /* Self-Hosted Fantasy & Modern Typography System (Local WOFF2 Guarantee)   */

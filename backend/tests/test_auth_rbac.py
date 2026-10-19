@@ -194,7 +194,8 @@ def test_live_auth_flow_and_rbac_boundaries():
     clear_demo_reset_lock()
     try:
         import subprocess
-        subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "del", "aegis:system:reset_demo:cooldown"], capture_output=True, timeout=2)
+        redis_pass = "aegis_demo_redis_secret_pass_32char"
+        subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "-a", redis_pass, "del", "aegis:system:reset_demo:cooldown"], capture_output=True, timeout=2)
     except Exception:
         pass
     code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
