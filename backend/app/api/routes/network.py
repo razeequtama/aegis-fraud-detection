@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import MetaData, String, Table, cast, inspect, select
 from sqlalchemy.orm import Session
 
@@ -145,16 +145,17 @@ def get_network_presets():
 @router.get("/transactions/{transaction_id}/network")
 def get_transaction_network(
     transaction_id: str,
-    radius: int = 3,
+    radius: int = Query(2, ge=1, le=3, description="Exploration radius depth (1-3)"),
     db: Session = Depends(get_db),
     current_user: Optional[dict] = Depends(require_permission("view")),
 ):
     """
     Retrieves the connected neighborhood graph for a specific transaction.
     """
+    resolved_radius = radius if isinstance(radius, int) else getattr(radius, "default", 2)
     entity_id = f"Transaction:{transaction_id}"
     analyzer = _build_analyzer(db)
-    network_data = analyzer.get_entity_neighborhood(entity_id, radius=radius)
+    network_data = analyzer.get_entity_neighborhood(entity_id, radius=resolved_radius)
     
     if not network_data["nodes"]:
         raise HTTPException(status_code=404, detail="Transaction network not found or empty.")
@@ -165,16 +166,17 @@ def get_transaction_network(
 @router.get("/accounts/{account_id}/network")
 def get_account_network(
     account_id: str,
-    radius: int = 2,
+    radius: int = Query(2, ge=1, le=3, description="Exploration radius depth (1-3)"),
     db: Session = Depends(get_db),
     current_user: Optional[dict] = Depends(require_permission("view")),
 ):
     """
     Retrieves the connected neighborhood graph for a specific account (shared devices, sessions).
     """
+    resolved_radius = radius if isinstance(radius, int) else getattr(radius, "default", 2)
     entity_id = f"Account:{account_id}"
     analyzer = _build_analyzer(db)
-    network_data = analyzer.get_entity_neighborhood(entity_id, radius=radius)
+    network_data = analyzer.get_entity_neighborhood(entity_id, radius=resolved_radius)
     
     if not network_data["nodes"]:
         raise HTTPException(status_code=404, detail="Account network not found.")

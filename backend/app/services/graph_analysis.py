@@ -72,7 +72,16 @@ class FraudGraphAnalyzer:
         if entity_id not in self.graph:
             return {"nodes": [], "edges": []}
 
-        subgraph = nx.ego_graph(self.graph, entity_id, radius=radius)
+        # Defensive bounds clamping (1-3) to guard against unbounded traversal
+        resolved_radius = (
+            radius if isinstance(radius, int)
+            else getattr(radius, "default", 2)
+            if hasattr(radius, "default") and isinstance(getattr(radius, "default"), int)
+            else 2
+        )
+        safe_radius = min(max(resolved_radius, 1), 3)
+
+        subgraph = nx.ego_graph(self.graph, entity_id, radius=safe_radius)
         
         nodes = []
         for node, attributes in subgraph.nodes(data=True):

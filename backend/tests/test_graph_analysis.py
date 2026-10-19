@@ -29,6 +29,12 @@ def test_graph_building_and_neighborhood():
     assert nodes_by_id["Account:ACC-B"]["suspicious"] is True
     assert nodes_by_id["Device:DEV-XYZ"]["shared"] is True
 
+    # 4. Test defensive radius clamping (radius=10 is clamped to 3, radius=0 is clamped to 1)
+    clamped_large = analyzer.get_entity_neighborhood("Account:ACC-A", radius=10)
+    clamped_small = analyzer.get_entity_neighborhood("Account:ACC-A", radius=0)
+    assert len(clamped_large["nodes"]) > 0
+    assert len(clamped_small["nodes"]) > 0
+
     print("Graph analysis test passed successfully!")
 
 

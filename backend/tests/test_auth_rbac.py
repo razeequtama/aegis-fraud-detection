@@ -201,4 +201,11 @@ def test_live_auth_flow_and_rbac_boundaries():
     assert code == 429, f"Expected 429 Too Many Requests on immediate reset attempt, got {code}"
     assert "recently reset" in throttled_res.get("detail", "")
 
+    # 9. SEC-04 Proof: Out-of-bounds radius queries trigger HTTP 422 Unprocessable Entity
+    code, radius_err = make_request("GET", "/api/v1/transactions/TX-100463/network?radius=4", token=analyst_token)
+    assert code == 422, f"Expected 422 Unprocessable Entity for radius=4, got {code}"
+
+    code, radius_err = make_request("GET", "/api/v1/transactions/TX-100463/network?radius=0", token=analyst_token)
+    assert code == 422, f"Expected 422 Unprocessable Entity for radius=0, got {code}"
+
 
