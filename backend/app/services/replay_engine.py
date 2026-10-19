@@ -1,4 +1,5 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 from sqlalchemy import MetaData, Table, func, inspect, select
 from app.db.session import SessionLocal
@@ -8,6 +9,7 @@ from app.services.risk_engine import risk_engine
 logger = logging.getLogger(__name__)
 
 BASELINE_THRESHOLD = 0.75
+_replay_pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ml_replay_worker")
 
 
 def get_replay_step_range(db):
@@ -174,7 +176,7 @@ def _get_operational_metrics(transactions, threshold: float, scores: list | None
     }
 
 
-def run_historical_replay(replay_id: int):
+def _execute_historical_replay(replay_id: int):
     # Buat sesi database mandiri khusus untuk background worker
     db = SessionLocal()
     try:
@@ -188,6 +190,8 @@ def run_historical_replay(replay_id: int):
         transactions = load_replay_transactions(
             db, replay_job.start_step, replay_job.end_step
         )
+        if len(transactions) > 5000:
+            transactions = transactions[:5000]
 
         scores = _score_transactions_batch(transactions)
         metrics = _get_operational_metrics(transactions, replay_job.threshold, scores=scores)
@@ -226,3 +230,14 @@ def run_historical_replay(replay_id: int):
             pass
     finally:
         db.close()
+
+
+def run_historical_replay(replay_id: int, wait: bool = False):
+    """
+    Submits replay simulation to a dedicated background thread pool to prevent
+    starving ASGI worker event loops.
+    """
+    future = _replay_pool.submit(_execute_historical_replay, replay_id)
+    if wait:
+        return future.result()
+    return future

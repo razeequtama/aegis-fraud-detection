@@ -102,7 +102,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }>('/auth/demo-login', { persona: personaKey });
 
       const { access_token, user: sessionUser } = res.data;
-      localStorage.setItem('aegis_demo_token', access_token);
+      sessionStorage.setItem('aegis_demo_token', access_token);
+      sessionStorage.setItem('aegis_active_persona', personaKey);
+      localStorage.removeItem('aegis_demo_token'); // Clean up any persistent token
       localStorage.setItem('aegis_active_persona', personaKey);
 
       // Attach badge styling from personas list
@@ -161,8 +163,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     async function initAuth() {
       await loadPersonas();
 
-      const savedToken = localStorage.getItem('aegis_demo_token');
-      const savedPersona = localStorage.getItem('aegis_active_persona') || 'senior_analyst';
+      const savedToken =
+        sessionStorage.getItem('aegis_demo_token') ||
+        localStorage.getItem('aegis_demo_token');
+      const savedPersona =
+        sessionStorage.getItem('aegis_active_persona') ||
+        localStorage.getItem('aegis_active_persona') ||
+        'senior_analyst';
 
       if (savedToken) {
         try {
@@ -181,6 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } catch {
           // Token expired or invalid, auto-login below
+          sessionStorage.removeItem('aegis_demo_token');
           localStorage.removeItem('aegis_demo_token');
         }
       }

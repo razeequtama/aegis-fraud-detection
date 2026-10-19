@@ -1,8 +1,13 @@
 # All .csv files
 ps.csv
 
-# Environment Variables
+# Environment Variables & Local Secrets
 .env
+.env.*
+*.env
+backend/.env
+frontend/.env
+!.env.example
 
 # pycache folders
 __pycache__/

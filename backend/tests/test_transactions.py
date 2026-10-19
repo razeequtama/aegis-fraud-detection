@@ -313,3 +313,50 @@ def test_get_transactions_filters_by_risk_score_range():
 
     assert len(res_empty["data"]) == 0
     engine.dispose()
+
+
+def test_get_transactions_escapes_like_wildcards():
+    engine = create_engine("sqlite://")
+    metadata = MetaData()
+    table = Table(
+        "transactions",
+        metadata,
+        Column("transaction_id", String, primary_key=True),
+        Column("account_id", String, nullable=False),
+        Column("amount", Float, nullable=False),
+        Column("type", String),
+        Column("is_fraud", Integer),
+    )
+    metadata.create_all(engine)
+
+    with engine.begin() as conn:
+        conn.execute(
+            table.insert(),
+            [
+                {"transaction_id": "TX-%1", "account_id": "ACC-LITERAL-PCT", "amount": 100.0, "type": "TRANSFER", "is_fraud": 0},
+                {"transaction_id": "TX-100", "account_id": "ACC-STANDARD-1", "amount": 200.0, "type": "TRANSFER", "is_fraud": 0},
+                {"transaction_id": "TX-200", "account_id": "ACC-STANDARD-2", "amount": 300.0, "type": "TRANSFER", "is_fraud": 0},
+            ],
+        )
+
+    with Session(engine) as db:
+        # Searching for literal percent 'TX-%' should only match TX-%1
+        res_pct = get_transactions(search="TX-%", db=db)
+        assert len(res_pct["data"]) == 1
+        assert res_pct["data"][0]["id"] == "TX-%1"
+
+        # Searching for bare '%' should match only literal percent 'TX-%1', NOT all 3 transactions
+        res_bare_pct = get_transactions(search="%", db=db)
+        assert len(res_bare_pct["data"]) == 1
+        assert res_bare_pct["data"][0]["id"] == "TX-%1"
+
+        # Searching for bare '_' should match 0 rows since no row has literal underscore
+        res_underscore = get_transactions(search="_", db=db)
+        assert len(res_underscore["data"]) == 0
+
+        # Normal search for '100' should still match TX-100
+        res_normal = get_transactions(search="100", db=db)
+        assert len(res_normal["data"]) == 1
+        assert res_normal["data"][0]["id"] == "TX-100"
+
+    engine.dispose()

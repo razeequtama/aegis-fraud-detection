@@ -159,3 +159,27 @@ def test_risk_assessment_indonesian_signals():
     assert "Near-total account drain detected" in drain_sig_en["description"]
 
 
+def test_assess_risk_masks_internal_exceptions(monkeypatch):
+    from fastapi import HTTPException
+    monkeypatch.setattr(
+        risk_engine,
+        "evaluate_risk",
+        lambda _payload: (_ for _ in ()).throw(
+            RuntimeError("SensitiveInternalNumPyCrash: shape mismatch at /app/ml/artifacts/scaler.joblib")
+        ),
+    )
+    payload = RiskAssessmentRequest(
+        transaction_id="TX-CRASH-TEST",
+        account_id="ACC-CRASH",
+        amount=500.0,
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        assess_risk(payload)
+
+    assert exc_info.value.status_code == 500
+    assert exc_info.value.detail == "An internal error occurred while evaluating transaction risk."
+    assert "SensitiveInternalNumPyCrash" not in exc_info.value.detail
+    assert "/app/ml/artifacts" not in exc_info.value.detail
+
+

@@ -1,3 +1,4 @@
+import logging
 from time import perf_counter
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -8,6 +9,8 @@ from app.db.session import get_db
 from app.schemas.risk import RiskAssessmentRequest, RiskAssessmentResponse
 from app.services.observability import record_inference_latency
 from app.services.risk_engine import risk_engine
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["Risk Assessment"])
 
@@ -176,5 +179,11 @@ def assess_risk(payload: RiskAssessmentRequest):
             "transaction_id": payload.transaction_id,
             "latency_ms": latency_ms,
         }
+    except HTTPException:
+        raise
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.exception("Risk evaluation failed: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while evaluating transaction risk.",
+        )

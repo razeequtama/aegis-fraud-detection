@@ -6,7 +6,9 @@ import os
 import time
 from typing import Any, Dict, List, Optional
 
-# Secret key for JWT signing; defaults to demo simulation secret if not configured
+# NOTE: DEFAULT_DEMO_SECRET is an intentional mock key used exclusively for zero-friction
+# portfolio simulation/demo evaluation when deployed publicly without manual secrets configuration.
+# For production deployments, define a secure random JWT_SECRET_KEY in the runtime environment.
 DEFAULT_DEMO_SECRET = "aegis-platform-demo-secret-key-32-chars-minimum"
 raw_jwt_secret = os.environ.get("JWT_SECRET_KEY")
 
@@ -20,7 +22,7 @@ elif len(raw_jwt_secret.strip()) < 32:
 else:
     JWT_SECRET_KEY = raw_jwt_secret.strip()
 
-TOKEN_EXPIRATION_SECONDS = int(os.environ.get("JWT_EXPIRATION_SECONDS", 86400 * 7))  # 7 days for demo usability
+TOKEN_EXPIRATION_SECONDS = int(os.environ.get("JWT_EXPIRATION_SECONDS", 86400))  # 24 hours for demo usability
 
 # Demo personas configuration with clear Role-Based Access Control (RBAC) permissions
 DEMO_PERSONAS: Dict[str, Dict[str, Any]] = {

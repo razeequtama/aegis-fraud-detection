@@ -192,6 +192,11 @@ def test_live_auth_flow_and_rbac_boundaries():
 
     # 7. Senior Analyst authorized to reset demo state
     clear_demo_reset_lock()
+    try:
+        import subprocess
+        subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "del", "aegis:system:reset_demo:cooldown"], capture_output=True, timeout=2)
+    except Exception:
+        pass
     code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
     assert code == 200
     assert reset_res["status"] == "success"
@@ -207,5 +212,20 @@ def test_live_auth_flow_and_rbac_boundaries():
 
     code, radius_err = make_request("GET", "/api/v1/transactions/TX-100463/network?radius=0", token=analyst_token)
     assert code == 422, f"Expected 422 Unprocessable Entity for radius=0, got {code}"
+
+    # 10. SEC-10 Proof: Public /health is minimal and authenticated /system/diagnostics contains telemetry
+    code, public_health = make_request("GET", "/api/v1/health")
+    assert code == 200
+    assert public_health["version"] == "1.0.0"
+    assert "database" not in public_health, "Public health endpoint must not expose database pool topology"
+    assert "redis" not in public_health, "Public health endpoint must not expose redis hosts or ports"
+
+    code, unauth_diag = make_request("GET", "/api/v1/system/diagnostics")
+    assert code == 401, f"Expected 401 Unauthorized for anonymous diagnostics query, got {code}"
+
+    code, auth_diag = make_request("GET", "/api/v1/system/diagnostics", token=analyst_token)
+    assert code == 200
+    assert "database" in auth_diag and "pool" in auth_diag["database"]
+    assert "redis" in auth_diag and "host" in auth_diag["redis"]
 
 

@@ -48,6 +48,11 @@ def _related_entity(db: Session, table_name: str, key_column: str, entity_id):
     }
 
 
+def escape_like_pattern(text: str) -> str:
+    """Escapes SQL LIKE wildcard characters (%, _, \\) to prevent pattern injection and full table scans."""
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 @router.get("/transactions/{transaction_id}")
 def get_transaction_details(
     transaction_id: str,
@@ -204,7 +209,9 @@ def get_transactions(
     db: Session = Depends(get_db),
     current_user: Optional[dict] = Depends(require_permission("view")),
 ):
-    offset = (page - 1) * limit
+    page_val = page if isinstance(page, int) else getattr(page, "default", 1)
+    limit_val = limit if isinstance(limit, int) else getattr(limit, "default", 10)
+    offset = (page_val - 1) * limit_val
 
     # Resolve risk score parameters (supporting both snake_case and camelCase aliases)
     resolved_min_risk: Optional[float] = None
@@ -297,11 +304,12 @@ def get_transactions(
             func.upper(cast(type_column, String)) == transaction_type.upper()
         )
 
-    if isinstance(search, str) and search:
-        search_pattern = f"%{search}%"
+    if isinstance(search, str) and search.strip():
+        escaped_search = escape_like_pattern(search.strip())
+        search_pattern = f"%{escaped_search}%"
         statement = statement.where(
-            cast(columns.transaction_id, String).ilike(search_pattern)
-            | cast(account_column, String).ilike(search_pattern)
+            cast(columns.transaction_id, String).ilike(search_pattern, escape="\\")
+            | cast(account_column, String).ilike(search_pattern, escape="\\")
         )
 
     if isinstance(decision, str) and decision:
@@ -349,7 +357,7 @@ def get_transactions(
 
     if timestamp_column is not None:
         statement = statement.order_by(timestamp_column.desc().nulls_last())
-    statement = statement.limit(limit).offset(offset)
+    statement = statement.limit(limit_val).offset(offset)
 
     result = db.execute(statement).mappings().all()
 
@@ -407,8 +415,8 @@ def get_transactions(
         )
 
     return {
-        "page": page,
-        "limit": limit,
+        "page": page_val,
+        "limit": limit_val,
         "total": total_count,
         "data": formatted_data,
     }

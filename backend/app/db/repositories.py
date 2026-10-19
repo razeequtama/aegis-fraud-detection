@@ -6,6 +6,11 @@ from sqlalchemy import func, or_
 from app.models.models import Transaction, InvestigationCase, TransactionModel, InvestigationCaseModel
 
 
+def escape_like_pattern(text: str) -> str:
+    """Escapes SQL LIKE wildcard characters (%, _, \\) to prevent pattern injection and full table scans."""
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 class FraudRepository:
     @staticmethod
     def save_transaction(db: Session, payload: Dict[str, Any], label: Optional[str] = None) -> Transaction:
@@ -88,13 +93,14 @@ class FraudRepository:
             query = query.filter(func.lower(InvestigationCase.status) == status.lower())
 
         if search and search.strip():
-            term = f"%{search.strip()}%"
+            escaped_term = escape_like_pattern(search.strip())
+            term = f"%{escaped_term}%"
             query = query.filter(
                 or_(
-                    InvestigationCase.case_id.ilike(term),
-                    InvestigationCase.transaction_id.ilike(term),
-                    InvestigationCase.assigned_analyst.ilike(term),
-                    InvestigationCase.feedback_label.ilike(term),
+                    InvestigationCase.case_id.ilike(term, escape="\\"),
+                    InvestigationCase.transaction_id.ilike(term, escape="\\"),
+                    InvestigationCase.assigned_analyst.ilike(term, escape="\\"),
+                    InvestigationCase.feedback_label.ilike(term, escape="\\"),
                 )
             )
 

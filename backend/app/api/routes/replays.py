@@ -16,6 +16,9 @@ class ReplayCreateRequest(BaseModel):
     start_step: Optional[int] = None
     end_step: Optional[int] = None
 
+MAX_REPLAY_TRANSACTIONS = 5000
+
+
 @router.post("", status_code=201)
 def create_replay(
     payload: ReplayCreateRequest,
@@ -36,9 +39,21 @@ def create_replay(
         raise HTTPException(status_code=404, detail="No historical transactions are available for replay.")
 
     start_step = payload.start_step if payload.start_step is not None else min_step
-    end_step = payload.end_step if payload.end_step is not None else max_step
+    if payload.end_step is not None:
+        end_step = payload.end_step
+    else:
+        # Default to a safe window of up to MAX_REPLAY_TRANSACTIONS
+        end_step = min(max_step, start_step + MAX_REPLAY_TRANSACTIONS - 1)
+
     if start_step > end_step:
         raise HTTPException(status_code=400, detail="start_step must not be greater than end_step.")
+
+    requested_count = end_step - start_step + 1
+    if requested_count > MAX_REPLAY_TRANSACTIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Replay batch size ({requested_count:,} transactions) exceeds maximum allowed limit of {MAX_REPLAY_TRANSACTIONS:,} to prevent resource starvation."
+        )
 
     new_replay = ReplayRun(
         model_version=payload.model_version,

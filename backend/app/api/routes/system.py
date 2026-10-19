@@ -1,9 +1,14 @@
 import os
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 from app.api.deps import require_permission
-from app.core.redis import acquire_demo_reset_lock
+from app.core.redis import acquire_demo_reset_lock, is_redis_available, REDIS_HOST, REDIS_PORT
 from app.db.seed import reset_demo_state
+from app.db.session import engine, get_db
+from app.services.observability import get_latency_metrics
+from app.services.risk_engine import risk_engine
 
 router = APIRouter(prefix="/api/v1/system", tags=["System & Maintenance"])
 
@@ -36,5 +41,66 @@ def trigger_demo_reset(current_user: dict = Depends(require_permission("reset_de
         "message": "Demo data successfully reset to baseline. Curated investigation cases and review queues restored.",
         "triggered_by": current_user.get("name", "Analyst"),
         "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@router.get("/diagnostics")
+def get_system_diagnostics(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_permission("view")),
+):
+    """
+    Authenticated diagnostics endpoint for system administrators and analysts.
+    Reports connection pool telemetry, internal microservice addresses, and ML metrics.
+    Protected by RBAC ('view' permission).
+    """
+    database_connected = False
+    try:
+        db.execute(text("SELECT 1"))
+        database_connected = True
+    except Exception:
+        database_connected = False
+
+    pool = engine.pool
+    pool_size = pool.size() if hasattr(pool, "size") else None
+    checked_out = pool.checkedout() if hasattr(pool, "checkedout") else None
+    checked_in = pool.checkedin() if hasattr(pool, "checkedin") else None
+    overflow = max(0, pool.overflow()) if hasattr(pool, "overflow") else None
+    max_connections = (
+        pool_size + pool._max_overflow
+        if pool_size is not None and getattr(pool, "_max_overflow", -1) >= 0
+        else None
+    )
+    model_loaded = risk_engine.model is not None and risk_engine.scaler is not None
+    redis_connected = is_redis_available()
+
+    return {
+        "status": (
+            "healthy"
+            if database_connected and model_loaded and redis_connected
+            else "degraded"
+        ),
+        "service": "aegis-backend",
+        "database": {
+            "status": "connected" if database_connected else "unavailable",
+            "pool": {
+                "active_connections": checked_out,
+                "idle_connections": checked_in,
+                "pool_size": pool_size,
+                "overflow_connections": overflow,
+                "max_connections": max_connections,
+            },
+        },
+        "redis": {
+            "status": "connected" if redis_connected else "unavailable",
+            "host": REDIS_HOST,
+            "port": REDIS_PORT,
+        },
+        "inference_engine": {
+            "status": "loaded" if model_loaded else "unavailable",
+            "model_loaded": model_loaded,
+            "model_version": risk_engine.model_version if model_loaded else None,
+        },
+        "latency": get_latency_metrics(),
     }
 

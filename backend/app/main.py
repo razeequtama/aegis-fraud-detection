@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import time
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,9 +25,23 @@ app = FastAPI(
     description="Backend API for real-time risk scoring, transaction analysis, and fraud investigation."
 )
 
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+raw_origins = os.environ.get("ALLOWED_ORIGINS", "")
+allowed_origins = [
+    origin.strip()
+    for origin in raw_origins.split(",")
+    if origin.strip()
+] if raw_origins.strip() else DEFAULT_ALLOWED_ORIGINS
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -60,6 +75,10 @@ async def collect_api_latency(request: Request, call_next):
     response = await call_next(request)
     if request.url.path != "/api/v1/health":
         record_api_latency((time.perf_counter() - start_time) * 1000)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
 
 
@@ -77,7 +96,7 @@ app.include_router(transactions.router, prefix="/api/v1", tags=["Transactions"])
 @app.get("/health")
 @app.get("/api/v1/health")
 def health_check(db: Session = Depends(get_db)):
-    """Report backend, database pool, and model observability."""
+    """Simple public liveness and readiness probe without internal infrastructure disclosures."""
     database_connected = False
     try:
         db.execute(text("SELECT 1"))
@@ -85,16 +104,6 @@ def health_check(db: Session = Depends(get_db)):
     except Exception:
         database_connected = False
 
-    pool = engine.pool
-    pool_size = pool.size() if hasattr(pool, "size") else None
-    checked_out = pool.checkedout() if hasattr(pool, "checkedout") else None
-    checked_in = pool.checkedin() if hasattr(pool, "checkedin") else None
-    overflow = max(0, pool.overflow()) if hasattr(pool, "overflow") else None
-    max_connections = (
-        pool_size + pool._max_overflow
-        if pool_size is not None and getattr(pool, "_max_overflow", -1) >= 0
-        else None
-    )
     model_loaded = risk_engine.model is not None and risk_engine.scaler is not None
     redis_connected = is_redis_available()
 
@@ -105,25 +114,5 @@ def health_check(db: Session = Depends(get_db)):
             else "degraded"
         ),
         "service": "aegis-backend",
-        "database": {
-            "status": "connected" if database_connected else "unavailable",
-            "pool": {
-                "active_connections": checked_out,
-                "idle_connections": checked_in,
-                "pool_size": pool_size,
-                "overflow_connections": overflow,
-                "max_connections": max_connections,
-            },
-        },
-        "redis": {
-            "status": "connected" if redis_connected else "unavailable",
-            "host": REDIS_HOST,
-            "port": REDIS_PORT,
-        },
-        "inference_engine": {
-            "status": "loaded" if model_loaded else "unavailable",
-            "model_loaded": model_loaded,
-            "model_version": risk_engine.model_version if model_loaded else None,
-        },
-        "latency": get_latency_metrics(),
+        "version": "1.0.0",
     }

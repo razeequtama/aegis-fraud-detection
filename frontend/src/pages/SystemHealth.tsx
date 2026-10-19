@@ -76,8 +76,8 @@ export const SystemHealth: React.FC = () => {
     if (isManual) setRefreshing(true);
 
     try {
-      // Direct call to /health via apiClient (which maps to /api/v1/health or /health via backend alias)
-      const response = await apiClient.get<HealthResponse>('/health', {
+      // Authenticated call to /system/diagnostics via apiClient
+      const response = await apiClient.get<HealthResponse>('/system/diagnostics', {
         timeout: 8000,
       });
 
