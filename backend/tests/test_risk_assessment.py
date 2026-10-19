@@ -183,3 +183,32 @@ def test_assess_risk_masks_internal_exceptions(monkeypatch):
     assert "/app/ml/artifacts" not in exc_info.value.detail
 
 
+def test_risk_assessment_rejects_oversized_account_id():
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError) as exc_info:
+        RiskAssessmentRequest(
+            transaction_id="TX-OK",
+            account_id="A" * 65,  # Exceeds max_length=64
+            amount=100.0,
+        )
+
+    errors = exc_info.value.errors()
+    assert any(err["loc"] == ("account_id",) and "string_too_long" in err["type"] for err in errors)
+
+
+def test_investigation_case_create_rejects_oversized_fields():
+    from pydantic import ValidationError
+    from app.schemas.investigation import CaseCreateRequest, CaseUpdateRequest
+
+    with pytest.raises(ValidationError):
+        CaseCreateRequest(
+            transaction_id="TX" * 50,  # 100 chars, exceeds 64
+        )
+
+    with pytest.raises(ValidationError):
+        CaseUpdateRequest(
+            notes="N" * 2001,  # Exceeds 2000 chars
+        )
+
+

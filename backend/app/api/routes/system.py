@@ -1,9 +1,10 @@
 import os
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.api.deps import require_permission
+from app.core.limiter import limiter
 from app.core.redis import acquire_demo_reset_lock, is_redis_available, REDIS_HOST, REDIS_PORT
 from app.db.seed import reset_demo_state
 from app.db.session import engine, get_db
@@ -16,7 +17,11 @@ DEFAULT_RESET_COOLDOWN = int(os.environ.get("DEMO_RESET_COOLDOWN_SECONDS", 600))
 
 
 @router.post("/reset-demo")
-def trigger_demo_reset(current_user: dict = Depends(require_permission("reset_demo"))):
+@limiter.limit("1/15minute")
+def trigger_demo_reset(
+    request: Request,
+    current_user: dict = Depends(require_permission("reset_demo")),
+):
     """
     Resets the demo playground back to pristine baseline.
     Protected by RBAC: requires 'reset_demo' permission (available to Senior Fraud Specialist).

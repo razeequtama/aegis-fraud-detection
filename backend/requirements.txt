@@ -10,3 +10,4 @@ pandas==2.2.1
 scikit-learn==1.8.0
 networkx==3.2.1
 pytest==8.1.1
+slowapi==0.1.10

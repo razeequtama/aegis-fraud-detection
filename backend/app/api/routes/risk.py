@@ -1,10 +1,11 @@
 import logging
 from time import perf_counter
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
+from app.core.limiter import limiter
 from app.db.session import get_db
 from app.schemas.risk import RiskAssessmentRequest, RiskAssessmentResponse
 from app.services.observability import record_inference_latency
@@ -167,7 +168,8 @@ def get_risk_assessment_presets(db: Session = Depends(get_db)):
 
 
 @router.post("/risk-assessments", response_model=RiskAssessmentResponse)
-def assess_risk(payload: RiskAssessmentRequest):
+@limiter.limit("30/minute")
+def assess_risk(payload: RiskAssessmentRequest, request: Request = None):
     try:
         started_at = perf_counter()
         result = risk_engine.evaluate_risk(payload.model_dump())

@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import Optional
 
 from app.api.deps import require_permission
+from app.core.limiter import limiter
 from app.db.session import get_db
 from app.models.replay_run import ReplayRun
 from app.services.replay_engine import get_replay_step_range, run_historical_replay
@@ -20,10 +21,12 @@ MAX_REPLAY_TRANSACTIONS = 5000
 
 
 @router.post("", status_code=201)
+@limiter.limit("2/minute")
 def create_replay(
     payload: ReplayCreateRequest,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    request: Request = None,
     current_user: Optional[dict] = Depends(require_permission("run_replay")),
 ):
     # Enforce concurrency limit: reject if another replay is currently running or queued

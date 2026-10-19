@@ -196,6 +196,7 @@ def test_live_auth_flow_and_rbac_boundaries():
         import subprocess
         redis_pass = "aegis_demo_redis_secret_pass_32char"
         subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "-a", redis_pass, "del", "aegis:system:reset_demo:cooldown"], capture_output=True, timeout=2)
+        subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "-a", redis_pass, "-n", "1", "flushdb"], capture_output=True, timeout=2)
     except Exception:
         pass
     code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
@@ -205,7 +206,8 @@ def test_live_auth_flow_and_rbac_boundaries():
     # 8. SEC-03 Proof: Immediate subsequent reset request triggers HTTP 429 Too Many Requests
     code, throttled_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
     assert code == 429, f"Expected 429 Too Many Requests on immediate reset attempt, got {code}"
-    assert "recently reset" in throttled_res.get("detail", "")
+    detail_msg = throttled_res.get("detail", "") or throttled_res.get("error", "")
+    assert "recently reset" in detail_msg or "Rate limit exceeded" in detail_msg
 
     # 9. SEC-04 Proof: Out-of-bounds radius queries trigger HTTP 422 Unprocessable Entity
     code, radius_err = make_request("GET", "/api/v1/transactions/TX-100463/network?radius=4", token=analyst_token)

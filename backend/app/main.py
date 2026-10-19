@@ -15,6 +15,9 @@ from app.services.observability import (
     record_inference_latency,
 )
 from app.core.redis import is_redis_available, REDIS_HOST, REDIS_PORT
+from app.core.limiter import limiter, rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from app.api.routes import auth, investigation, metrics, network, replays, risk, system, transactions
 
 logger = logging.getLogger("aegis.main")
@@ -24,6 +27,10 @@ app = FastAPI(
     version="1.0.0",
     description="Backend API for real-time risk scoring, transaction analysis, and fraud investigation."
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:5173",

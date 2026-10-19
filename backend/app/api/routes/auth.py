@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication & Personas"])
 class DemoLoginRequest(BaseModel):
     persona: str = Field(
         ...,
+        max_length=64,
         description="Key of the demo persona: 'senior_analyst', 'compliance_officer', or 'auditor_readonly'",
         examples=["senior_analyst"],
     )
