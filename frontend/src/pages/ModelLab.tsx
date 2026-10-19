@@ -109,6 +109,7 @@ function waitForPoll(signal: AbortSignal): Promise<void> {
 
 export const ModelLab: React.FC = () => {
   const { t } = useTranslation();
+  const [modelOptions, setModelOptions] = useState<ModelOption[]>(MODEL_OPTIONS);
   const [threshold, setThreshold] = useState(0.75);
   const [modelVersion, setModelVersion] = useState(MODEL_OPTIONS[0].id);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -116,6 +117,27 @@ export const ModelLab: React.FC = () => {
   const [recentReplays, setRecentReplays] = useState<ReplayStatus[]>([]);
   const [error, setError] = useState<string | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
+
+  // Fetch registered models dynamically from API
+  useEffect(() => {
+    let isMounted = true;
+    apiClient
+      .get<{ models: ModelOption[]; default_model?: string }>('/models')
+      .then((res) => {
+        if (isMounted && res.data?.models && Array.isArray(res.data.models) && res.data.models.length > 0) {
+          setModelOptions(res.data.models);
+          if (res.data.default_model) {
+            setModelVersion((prev) => (prev === MODEL_OPTIONS[0].id ? res.data.default_model! : prev));
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback to static MODEL_OPTIONS if offline or during initial startup
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Fetch recent replays from database
   const loadRecentReplays = useCallback(async () => {
@@ -238,7 +260,7 @@ export const ModelLab: React.FC = () => {
               disabled={isSimulating}
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-cyan-500 focus:outline-none disabled:opacity-60 interactive-input"
             >
-              {MODEL_OPTIONS.map((opt) => (
+              {modelOptions.map((opt) => (
                 <option key={opt.id} value={opt.id}>
                   {opt.label}
                 </option>

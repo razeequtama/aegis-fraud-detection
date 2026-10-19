@@ -1,5 +1,6 @@
-import logging
+from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
+import logging
 import numpy as np
 from sqlalchemy import MetaData, Table, func, inspect, select
 from app.db.session import SessionLocal
@@ -70,12 +71,12 @@ def load_replay_transactions(db, start_step: int, end_step: int):
     statement = select(table)
     if order_columns:
         statement = statement.order_by(*order_columns)
+
+    offset_val = max(0, start_step - 1)
+    limit_val = max(1, end_step - start_step + 1)
+    statement = statement.offset(offset_val).limit(limit_val)
     rows = db.execute(statement).mappings().all()
-    results = [
-        dict(row)
-        for index, row in enumerate(rows, start=1)
-        if start_step <= index <= end_step
-    ]
+    results = [dict(row) for row in rows]
     if fraud_column is not None and "is_fraud" not in table.c:
         for r in results:
             r["is_fraud"] = r.get(fraud_column.name)
@@ -214,6 +215,7 @@ def _execute_historical_replay(replay_id: int):
         )
         replay_job.metrics_summary = metrics
         replay_job.status = "COMPLETED"
+        replay_job.completed_at = datetime.now(timezone.utc)
         db.commit()
 
     except Exception as e:
@@ -225,6 +227,7 @@ def _execute_historical_replay(replay_id: int):
             if replay_job:
                 replay_job.status = "FAILED"
                 replay_job.error_message = str(e)
+                replay_job.completed_at = datetime.now(timezone.utc)
                 db.commit()
         except Exception:
             pass

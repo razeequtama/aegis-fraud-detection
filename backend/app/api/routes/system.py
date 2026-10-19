@@ -24,9 +24,18 @@ def trigger_demo_reset(
 ):
     """
     Resets the demo playground back to pristine baseline.
+    Protected by environment gate: disabled in production environments unless explicitly allowed.
     Protected by RBAC: requires 'reset_demo' permission (available to Senior Fraud Specialist).
     Protected by global cooldown lock to prevent denial of service and data disruption.
     """
+    app_env = os.environ.get("APP_ENV", "production").lower()
+    enable_reset = os.environ.get("ENABLE_DEMO_RESET", "false").lower() in ("true", "1", "yes")
+    if app_env == "production" and not enable_reset:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo sandbox reset is disabled in production environments.",
+        )
+
     allowed, remaining_seconds = acquire_demo_reset_lock(cooldown_seconds=DEFAULT_RESET_COOLDOWN)
     if not allowed:
         remaining_minutes = max(1, (remaining_seconds + 59) // 60)
@@ -108,4 +117,3 @@ def get_system_diagnostics(
         },
         "latency": get_latency_metrics(),
     }
-

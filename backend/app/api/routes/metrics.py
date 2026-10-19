@@ -289,7 +289,7 @@ def get_metrics_overview(
             "review_queue_count": review_queue_count,
             "detected_frauds": totals["detected_frauds"],
             "model_status": "online" if model_loaded else "unavailable",
-            "model_version": "aegis-rf-v1.0" if model_loaded else None,
+            "model_version": risk_engine.model_version if model_loaded else None,
         },
         "trend": trend,
         "available_range": available_range,

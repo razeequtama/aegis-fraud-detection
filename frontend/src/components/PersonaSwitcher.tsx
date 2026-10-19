@@ -10,7 +10,7 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({ compact = fals
   const { user, personas, currentPersonaKey, switchPersona, resetSandbox, isLoading } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [resetNotification, setResetNotification] = useState<string | null>(null);
+  const [resetNotification, setResetNotification] = useState<{ text: string; isError: boolean } | null>(null);
 
   const handleSelect = async (key: string) => {
     setDropdownOpen(false);
@@ -24,10 +24,10 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({ compact = fals
     setResetNotification(null);
     try {
       const msg = await resetSandbox();
-      setResetNotification(msg);
+      setResetNotification({ text: msg, isError: false });
       setTimeout(() => setResetNotification(null), 4000);
     } catch (err: any) {
-      setResetNotification(err.message || 'Reset failed');
+      setResetNotification({ text: err.message || 'Reset failed', isError: true });
       setTimeout(() => setResetNotification(null), 5000);
     } finally {
       setIsResetting(false);
@@ -217,9 +217,18 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({ compact = fals
           </button>
 
           {resetNotification && (
-            <div className="mt-2 p-2 rounded-lg bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[11px] flex items-start gap-1.5 animate-in fade-in">
-              <AlertCircle size={14} className="shrink-0 mt-0.5 text-emerald-400" />
-              <span>{resetNotification}</span>
+            <div
+              className={`mt-2 p-2 rounded-lg border text-[11px] flex items-start gap-1.5 animate-in fade-in ${
+                resetNotification.isError
+                  ? 'bg-rose-950/70 border-rose-500/40 text-rose-300'
+                  : 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
+              }`}
+            >
+              <AlertCircle
+                size={14}
+                className={`shrink-0 mt-0.5 ${resetNotification.isError ? 'text-rose-400' : 'text-emerald-400'}`}
+              />
+              <span>{resetNotification.text}</span>
             </div>
           )}
         </div>

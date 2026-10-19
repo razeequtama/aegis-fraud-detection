@@ -73,3 +73,15 @@ export const useTranslation = (): { t: Translations; language: Language; setLang
   return useLanguage();
 };
 
+export const useOptionalTranslation = (): { t: Translations; language: Language; setLanguage: (lang: Language) => void } => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    return {
+      language: 'en',
+      setLanguage: () => {},
+      t: en,
+    };
+  }
+  return context;
+};
+

@@ -14,11 +14,11 @@ from app.services.observability import (
     record_api_latency,
     record_inference_latency,
 )
-from app.core.redis import is_redis_available, REDIS_HOST, REDIS_PORT
+from app.core.redis import is_redis_available, REDIS_HOST, REDIS_PORT, acquire_demo_reset_lock
 from app.core.limiter import limiter, rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from app.api.routes import auth, investigation, metrics, network, replays, risk, system, transactions
+from app.api.routes import auth, investigation, metrics, models, network, replays, risk, system, transactions
 
 logger = logging.getLogger("aegis.main")
 
@@ -56,11 +56,23 @@ app.add_middleware(
 
 
 async def schedule_daily_demo_reset():
-    """Background coroutine that resets demonstration state every 24 hours."""
+    """Background coroutine that resets demonstration state every 24 hours in demo sandbox environments."""
     while True:
         try:
             # 24 hours = 86400 seconds
             await asyncio.sleep(86400)
+            app_env = os.getenv("APP_ENV", "production").lower()
+            enable_reset = os.getenv("ENABLE_DEMO_RESET", "false").lower() in ("true", "1", "yes")
+            if app_env != "demo" and not enable_reset:
+                logger.info("Demo auto-reset skipped (disabled in APP_ENV=%s).", app_env)
+                continue
+
+            # Global distributed lock ensures only one ASGI worker executes the reset in multi-worker setups
+            allowed, _ = acquire_demo_reset_lock(cooldown_seconds=3600)
+            if not allowed:
+                logger.info("Scheduled demo sandbox auto-reset skipped (already handled by peer worker).")
+                continue
+
             from app.db.seed import reset_demo_state
             logger.info("Executing scheduled 24-hour demo sandbox auto-reset...")
             reset_demo_state()
@@ -73,7 +85,13 @@ async def schedule_daily_demo_reset():
 
 @app.on_event("startup")
 async def on_startup():
-    asyncio.create_task(schedule_daily_demo_reset())
+    app_env = os.getenv("APP_ENV", "production").lower()
+    enable_reset = os.getenv("ENABLE_DEMO_RESET", "false").lower() in ("true", "1", "yes")
+    if app_env == "demo" or (app_env == "development" and enable_reset):
+        logger.info("Automated daily demo sandbox reset task enabled (APP_ENV=%s).", app_env)
+        asyncio.create_task(schedule_daily_demo_reset())
+    else:
+        logger.info("Automated daily demo sandbox reset task disabled (APP_ENV=%s).", app_env)
 
 
 @app.middleware("http")
@@ -91,6 +109,7 @@ async def collect_api_latency(request: Request, call_next):
 
 # Include API Routers
 app.include_router(auth.router)
+app.include_router(models.router)
 app.include_router(network.router)
 app.include_router(replays.router)
 app.include_router(metrics.router)

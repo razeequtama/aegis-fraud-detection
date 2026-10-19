@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from '../i18n/LanguageContext';
+import { useOptionalTranslation } from '../i18n/LanguageContext';
 
 export interface AegisWordmarkProps {
   /**
@@ -38,13 +38,8 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   className = '',
   logoClassName = '',
 }) => {
-  let defaultSubtitle = 'Fraud Detection Platform';
-  try {
-    const { t } = useTranslation();
-    defaultSubtitle = t.common.platformSubtitle;
-  } catch {
-    // rendered outside provider
-  }
+  const { t } = useOptionalTranslation();
+  const defaultSubtitle = t.common.platformSubtitle;
   const activeSubtitle = subtitle ?? defaultSubtitle;
 
   // Balanced sizing: logo height is optically on-par with the main "AEGIS" text height
