@@ -68,6 +68,28 @@ def test_security_tampered_token_rejection():
     assert decode_access_token(tampered_payload) is None
 
 
+def test_jwt_secret_key_mandatory_and_length_enforcement(monkeypatch):
+    import importlib
+    import app.core.security as sec
+
+    # 1. Missing or empty JWT_SECRET_KEY safely falls back to demo simulation secret
+    monkeypatch.setenv("JWT_SECRET_KEY", "")
+    reloaded_demo = importlib.reload(sec)
+    assert reloaded_demo.JWT_SECRET_KEY == sec.DEFAULT_DEMO_SECRET
+
+    # 2. Key shorter than 32 characters must raise RuntimeError
+    monkeypatch.setenv("JWT_SECRET_KEY", "short_secret_under_32_chars!")
+    with pytest.raises(RuntimeError) as exc_short:
+        importlib.reload(sec)
+    assert "shorter than 32 characters" in str(exc_short.value)
+
+    # 3. Valid key with >= 32 characters reloads successfully
+    valid_key = "valid-test-secret-key-that-has-at-least-32-chars!"
+    monkeypatch.setenv("JWT_SECRET_KEY", valid_key)
+    reloaded = importlib.reload(sec)
+    assert reloaded.JWT_SECRET_KEY == valid_key
+
+
 def test_rbac_dependency_permission_enforcement():
     analyst_user = {
         "user_id": "USR-1",

@@ -6,8 +6,20 @@ import os
 import time
 from typing import Any, Dict, List, Optional
 
-# Secret key for JWT signing; defaults to a secure demo secret if not set in process environment
-JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "aegis-platform-demo-secret-key-32-chars-minimum")
+# Secret key for JWT signing; defaults to demo simulation secret if not configured
+DEFAULT_DEMO_SECRET = "aegis-platform-demo-secret-key-32-chars-minimum"
+raw_jwt_secret = os.environ.get("JWT_SECRET_KEY")
+
+if not raw_jwt_secret or not raw_jwt_secret.strip():
+    JWT_SECRET_KEY = DEFAULT_DEMO_SECRET
+elif len(raw_jwt_secret.strip()) < 32:
+    raise RuntimeError(
+        "JWT_SECRET_KEY environment variable is shorter than 32 characters. "
+        "Please provide a strong secret key (minimum 32 characters) or leave unset to use demo simulation mode."
+    )
+else:
+    JWT_SECRET_KEY = raw_jwt_secret.strip()
+
 TOKEN_EXPIRATION_SECONDS = int(os.environ.get("JWT_EXPIRATION_SECONDS", 86400 * 7))  # 7 days for demo usability
 
 # Demo personas configuration with clear Role-Based Access Control (RBAC) permissions

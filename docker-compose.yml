@@ -45,6 +45,7 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - "DATABASE_URL=${DATABASE_URL:?Error: DATABASE_URL environment variable is required}"
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-aegis-platform-demo-secret-key-32-chars-minimum}
       - ML_ARTIFACTS_DIR=/ml/artifacts
       - REDIS_HOST=redis
       - REDIS_PORT=6379
