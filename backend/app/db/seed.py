@@ -251,13 +251,28 @@ def seed_if_empty():
     print("Warning: Neither seed_transactions.csv.gz nor ps.csv found. Database remains empty.")
 
 
-def reset_demo_state():
+def reset_demo_state(force: bool = False):
     """
     Resets dynamic demonstration state back to clean baseline:
     - Restores investigation cases to initial 9 curated samples and unassigned review cases.
     - Clears orphaned or failed simulation runs.
     Preserves all 50,000 transactions and database tables without dropping data.
     """
+    app_env = os.getenv("APP_ENV", "production").lower()
+    enable_reset = os.getenv("ENABLE_DEMO_RESET", "false").lower() in ("true", "1", "yes")
+
+    if app_env == "production" and not force:
+        raise PermissionError(
+            "Demo state reset is strictly forbidden in production environments (APP_ENV=production). "
+            "To prevent data loss, investigation cases and simulation history cannot be wiped."
+        )
+
+    if app_env != "demo" and not enable_reset and not force:
+        raise PermissionError(
+            f"Demo state reset is disabled in environment '{app_env}'. "
+            "Set APP_ENV=demo or ENABLE_DEMO_RESET=true to allow demo resets."
+        )
+
     print("Executing demo state reset...")
     with engine.begin() as conn:
         conn.execute(text("DELETE FROM investigation_cases;"))
@@ -269,6 +284,7 @@ def reset_demo_state():
 if __name__ == "__main__":
     import sys
     if "--reset" in sys.argv:
-        reset_demo_state()
+        force = "--force" in sys.argv
+        reset_demo_state(force=force)
     else:
         seed_if_empty()

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useOptionalTranslation } from '../i18n/LanguageContext';
+import { useTranslation } from '../i18n/LanguageContext';
 
 export interface AegisWordmarkProps {
   /**
@@ -38,7 +38,7 @@ export const AegisWordmark: React.FC<AegisWordmarkProps> = ({
   className = '',
   logoClassName = '',
 }) => {
-  const { t } = useOptionalTranslation();
+  const { t } = useTranslation();
   const defaultSubtitle = t.common.platformSubtitle;
   const activeSubtitle = subtitle ?? defaultSubtitle;
 

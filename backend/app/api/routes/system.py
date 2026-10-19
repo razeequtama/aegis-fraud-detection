@@ -49,7 +49,13 @@ def trigger_demo_reset(
             headers={"Retry-After": str(remaining_seconds)},
         )
 
-    reset_demo_state()
+    try:
+        reset_demo_state()
+    except PermissionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        )
     return {
         "status": "success",
         "message": "Demo data successfully reset to baseline. Curated investigation cases and review queues restored.",

@@ -87,11 +87,17 @@ async def schedule_daily_demo_reset():
 async def on_startup():
     app_env = os.getenv("APP_ENV", "production").lower()
     enable_reset = os.getenv("ENABLE_DEMO_RESET", "false").lower() in ("true", "1", "yes")
-    if app_env == "demo" or (app_env == "development" and enable_reset):
+
+    # In production, automated background state wipe is strictly disabled to prevent data loss
+    if app_env == "production":
+        logger.info("Automated daily demo sandbox reset task strictly disabled in production (APP_ENV=%s).", app_env)
+        return
+
+    if app_env == "demo" and enable_reset:
         logger.info("Automated daily demo sandbox reset task enabled (APP_ENV=%s).", app_env)
         asyncio.create_task(schedule_daily_demo_reset())
     else:
-        logger.info("Automated daily demo sandbox reset task disabled (APP_ENV=%s).", app_env)
+        logger.info("Automated daily demo sandbox reset task disabled (APP_ENV=%s, ENABLE_DEMO_RESET=%s).", app_env, enable_reset)
 
 
 @app.middleware("http")
