@@ -1,6 +1,6 @@
 """Add transaction performance indexes for timestamp desc, type, and is_fraud
 
-Revision ID: 002_add_transaction_performance_indexes
+Revision ID: 002_add_tx_perf_indexes
 Revises: 001_initial_schema
 Create Date: 2026-10-20 07:00:00.000000
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '002_add_transaction_performance_indexes'
+revision: str = '002_add_tx_perf_indexes'
 down_revision: Union[str, Sequence[str], None] = '001_initial_schema'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.api.routes.investigation import (
     create_investigation_case,
     submit_analyst_feedback,
+    get_urgent_alerts,
 )
 from app.db.session import Base
 from app.models.models import TransactionModel
@@ -105,3 +106,119 @@ def test_list_investigation_cases_and_urgent_alerts():
         assert urgent["data"][0]["transaction_id"] == "TX-URGENT-1"
 
     engine.dispose()
+
+
+
+
+def test_perf04_urgent_alerts_eliminates_n_plus_one_queries():
+
+    """
+
+    PERF-04 Verification:
+
+    Ensures get_urgent_alerts fetches cases in a single batch query
+
+    rather than executing an individual query per alert in a loop.
+
+    """
+
+    from sqlalchemy import event
+
+    from app.models.models import InvestigationCase
+
+
+
+    engine = create_engine("sqlite://")
+
+    Base.metadata.create_all(engine)
+
+
+
+    with Session(engine) as db:
+
+        # Seed 10 high-risk transactions
+
+        db.add_all([
+
+            TransactionModel(
+
+                transaction_id=f"TX-PERF04-{i}",
+
+                account_id=f"ACC-PERF04-{i}",
+
+                amount=1000.0 * (i + 1),
+
+                risk_score=0.95,
+
+                is_fraud=1,
+
+            )
+
+            for i in range(10)
+
+        ])
+
+        db.commit()
+
+
+
+        # Seed 3 investigation cases for some of them
+
+        db.add_all([
+
+            InvestigationCase(
+
+                case_id=f"CASE-PERF04-{i}",
+
+                transaction_id=f"TX-PERF04-{i}",
+
+                assigned_analyst="Analyst-Sarah",
+
+                status="open",
+
+            )
+
+            for i in range(3)
+
+        ])
+
+        db.commit()
+
+
+
+        executed_statements = []
+
+
+
+        @event.listens_for(engine, "before_cursor_execute")
+
+        def count_queries(conn, cursor, statement, parameters, context, executemany):
+
+            executed_statements.append(statement)
+
+
+
+        alerts = get_urgent_alerts(limit=10, db=db)
+
+
+
+        # Before fix: 1 initial query + 10 per-item queries = 11 queries.
+
+        # With batch IN (...) query: exactly 2 queries.
+
+        assert len(alerts["data"]) == 10
+
+        assert len(executed_statements) <= 2, f"Expected <= 2 queries, got {len(executed_statements)}"
+
+
+
+        # Verify case association is accurate
+
+        cases_found = [a for a in alerts["data"] if a["case_id"] is not None]
+
+        assert len(cases_found) == 3
+
+
+
+    engine.dispose()
+

@@ -38,7 +38,8 @@ def test_perf02_alembic_migration_002_metadata():
     mig = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mig)
 
-    assert mig.revision == "002_add_transaction_performance_indexes"
+    assert mig.revision == "002_add_tx_perf_indexes"
+    assert len(mig.revision) <= 32
     assert mig.down_revision == "001_initial_schema"
     assert callable(mig.upgrade)
     assert callable(mig.downgrade)

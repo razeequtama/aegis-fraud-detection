@@ -65,17 +65,25 @@ def get_urgent_alerts(
             ~Transaction.transaction_id.in_(closed_txs)
         )
         .order_by(Transaction.risk_score.desc().nulls_last(), Transaction.amount.desc())
-        .limit(limit)
+        .limit(resolved_limit)
         .all()
     )
 
+    if not urgent_txs:
+        return {"data": []}
+
+    # Batch query all existing investigation cases in a single IN (...) trip, eliminating the N+1 query loop
+    tx_ids = [tx.transaction_id for tx in urgent_txs]
+    cases = (
+        db.query(InvestigationCase)
+        .filter(InvestigationCase.transaction_id.in_(tx_ids))
+        .all()
+    )
+    cases_by_tx = {case.transaction_id: case for case in cases}
+
     results = []
     for tx in urgent_txs:
-        existing_case = (
-            db.query(InvestigationCase)
-            .filter(InvestigationCase.transaction_id == tx.transaction_id)
-            .first()
-        )
+        existing_case = cases_by_tx.get(tx.transaction_id)
         results.append({
             "transaction_id": tx.transaction_id,
             "account_id": tx.account_id,
