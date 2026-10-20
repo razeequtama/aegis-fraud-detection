@@ -30,7 +30,11 @@ def is_redis_available(cache_seconds: float = 3.0) -> bool:
     """
     Check whether the Redis server is reachable and authenticated.
     Caches the result for cache_seconds to ensure zero latency on repeated calls.
+    In testing environments without explicit opt-in, short-circuits immediately to prevent socket timeouts.
     """
+    if os.getenv("TESTING") == "1" and os.getenv("ENABLE_TEST_REDIS", "").lower() not in ("1", "true"):
+        return False
+
     global _last_probe_time, _cached_availability
     now = time.monotonic()
     if now - _last_probe_time < cache_seconds:
@@ -106,4 +110,3 @@ def clear_demo_reset_lock() -> None:
             redis_client.delete("aegis:system:reset_demo:cooldown")
         except Exception:
             pass
-
