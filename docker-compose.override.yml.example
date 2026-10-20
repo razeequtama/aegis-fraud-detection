@@ -1,0 +1,12 @@
+# ==============================================================================
+# Optional Docker Compose Override for Local Development Live Reloading
+# ==============================================================================
+# To enable hot-reload and local source mounting, copy this file:
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+# Docker Compose automatically loads docker-compose.override.yml when present.
+
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+

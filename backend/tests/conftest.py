@@ -3,6 +3,11 @@ import httpx
 
 # Ensure safe default environment variables for headless unit testing
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
+os.environ.setdefault("TESTING", "1")
+if os.environ.get("DATABASE_URL", "").startswith("sqlite"):
+    os.environ.pop("DATABASE_HOST", None)
+    os.environ.pop("DATABASE_PORT", None)
+
 os.environ.setdefault(
     "JWT_SECRET_KEY",
     "test-suite-jwt-secret-key-32-chars-minimum-length-for-pytest!",

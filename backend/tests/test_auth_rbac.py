@@ -191,13 +191,15 @@ def test_live_auth_flow_and_rbac_boundaries(monkeypatch):
 
     # 7. Senior Analyst authorized to reset demo state
     clear_demo_reset_lock()
+    from app.core.limiter import limiter
+    limiter.reset()
     try:
-        import subprocess
-        redis_pass = "aegis_demo_redis_secret_pass_32char"
-        subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "-a", redis_pass, "del", "aegis:system:reset_demo:cooldown"], capture_output=True, timeout=2)
-        subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "-a", redis_pass, "-n", "1", "flushdb"], capture_output=True, timeout=2)
+        from app.core.redis import redis_client, is_redis_available
+        if is_redis_available():
+            redis_client.delete("aegis:system:reset_demo:cooldown")
     except Exception:
         pass
+
     with patch("app.api.routes.system.reset_demo_state") as mock_reset:
         code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
         assert code == 200
@@ -236,5 +238,3 @@ def test_live_auth_flow_and_rbac_boundaries(monkeypatch):
     assert code == 200
     assert "database" in auth_diag and "pool" in auth_diag["database"]
     assert "redis" in auth_diag and "host" in auth_diag["redis"]
-
-

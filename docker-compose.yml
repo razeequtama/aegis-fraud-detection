@@ -30,14 +30,38 @@ services:
       timeout: 3s
       retries: 5
 
+  backend-init:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: sh -c "alembic upgrade head && python -m app.db.seed"
+    volumes:
+      - ./ml/artifacts:/ml/artifacts:ro
+      - ./database/seeds:/database/seeds:ro
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - "DATABASE_URL=${DATABASE_URL:?Error: DATABASE_URL environment variable is required}"
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-aegis-platform-demo-secret-key-32-chars-minimum}
+      - ML_ARTIFACTS_DIR=/ml/artifacts
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-aegis_demo_redis_secret_pass_32char}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aegis_network
+    restart: "no"
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: aegis_backend
-    command: sh -c "alembic upgrade head && python -m app.db.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4"
     volumes:
-      - ./backend:/app
       - ./ml/artifacts:/ml/artifacts:ro
       - ./database/seeds:/database/seeds:ro
     ports:
@@ -57,6 +81,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      backend-init:
+        condition: service_completed_successfully
     networks:
       - aegis_network
     healthcheck:

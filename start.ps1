@@ -2,8 +2,29 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " Starting AEGIS Fraud Detection System " -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
+# Ensure .env configuration file exists before container orchestration
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (-not $scriptDir) { $scriptDir = "." }
+$envPath = Join-Path $scriptDir ".env"
+$envExamplePath = Join-Path $scriptDir ".env.example"
+
+if (-not (Test-Path $envPath)) {
+    if (Test-Path $envExamplePath) {
+        Write-Host "Notice: .env file not found. Initializing .env from .env.example..." -ForegroundColor Yellow
+        Copy-Item $envExamplePath $envPath
+        Write-Host "Created .env configuration successfully." -ForegroundColor Green
+    } else {
+        Write-Host "Error: Neither .env nor .env.example was found. Cannot start services." -ForegroundColor Red
+        exit 1
+    }
+}
+
 # Build and start all containers in detached mode
 docker compose up --build -d
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Docker Compose failed to start services (exit code $LASTEXITCODE). Check Docker daemon status." -ForegroundColor Red
+    exit $LASTEXITCODE
+}
 
 # Wait for frontend service to be responsive on http://localhost:5173
 Write-Host "Waiting for frontend to become available on http://localhost:5173..." -ForegroundColor Yellow
@@ -33,4 +54,3 @@ if ($ready) {
 
 Write-Host "Streaming Docker Compose logs (Press Ctrl+C to detach logs)..." -ForegroundColor Cyan
 docker compose logs -f
-
