@@ -157,7 +157,7 @@ export const ModelLab: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    void loadRecentReplays();
+    void Promise.resolve().then(loadRecentReplays);
     return () => {
       controllerRef.current?.abort();
     };

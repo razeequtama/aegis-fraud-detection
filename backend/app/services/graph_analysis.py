@@ -115,10 +115,13 @@ class FraudGraphAnalyzer:
             }
         }
 
-    def populate_from_db(self, db_session=None, limit: int = 50000) -> int:
+    def populate_from_db(self, db_session=None, limit: int = 50000, force: bool = False) -> int:
         """
         Populates graph network using transaction records from the database or seed data.
         """
+        if not force and self.graph.number_of_nodes() > 0:
+            return self.graph.number_of_nodes()
+
         records: List[Dict[str, Any]] = []
 
         # 1. Try querying via provided database session or global engine

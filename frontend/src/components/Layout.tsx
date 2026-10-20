@@ -42,9 +42,15 @@ export const Layout: React.FC = () => {
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
-  // Auto-close mobile drawer and scroll to top on route transition
-  useEffect(() => {
+  // Auto-close mobile drawer on route transition during rendering
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname);
     setMobileMenuOpen(false);
+  }
+
+  // Scroll to top on route transition
+  useEffect(() => {
     scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
 

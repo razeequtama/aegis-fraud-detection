@@ -82,13 +82,25 @@ def get_system_diagnostics(
         database_connected = False
 
     pool = engine.pool
-    pool_size = pool.size() if hasattr(pool, "size") else None
-    checked_out = pool.checkedout() if hasattr(pool, "checkedout") else None
-    checked_in = pool.checkedin() if hasattr(pool, "checkedin") else None
-    overflow = max(0, pool.overflow()) if hasattr(pool, "overflow") else None
+
+    def _safe_pool_val(attr_name):
+        if not hasattr(pool, attr_name):
+            return None
+        val = getattr(pool, attr_name)
+        try:
+            return val() if callable(val) else val
+        except Exception:
+            return None
+
+    pool_size = _safe_pool_val("size")
+    checked_out = _safe_pool_val("checkedout")
+    checked_in = _safe_pool_val("checkedin")
+    raw_overflow = _safe_pool_val("overflow")
+    overflow = max(0, raw_overflow) if raw_overflow is not None else None
+    max_overflow = getattr(pool, "_max_overflow", -1)
     max_connections = (
-        pool_size + pool._max_overflow
-        if pool_size is not None and getattr(pool, "_max_overflow", -1) >= 0
+        pool_size + max_overflow
+        if pool_size is not None and isinstance(max_overflow, int) and max_overflow >= 0
         else None
     )
     model_loaded = risk_engine.model is not None and risk_engine.scaler is not None

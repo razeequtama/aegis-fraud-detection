@@ -1,8 +1,9 @@
 import json
-import urllib.request
-import urllib.error
+from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
+from fastapi.testclient import TestClient
+from app.main import app
 from app.core.security import (
     create_access_token,
     decode_access_token,
@@ -12,28 +13,24 @@ from app.core.security import (
 from app.api.deps import require_permission
 from app.core.redis import clear_demo_reset_lock
 
-BASE_URL = "http://127.0.0.1:8000"
+test_client = TestClient(app, raise_server_exceptions=False)
 
 
 def make_request(method: str, path: str, data: dict = None, token: str = None):
-    url = f"{BASE_URL}{path}"
-    headers = {"Content-Type": "application/json"}
+    headers = {}
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    body = json.dumps(data).encode("utf-8") if data is not None else None
-    req = urllib.request.Request(url, data=body, headers=headers, method=method)
+    response = test_client.request(
+        method=method,
+        url=path,
+        json=data if data is not None else None,
+        headers=headers,
+    )
     try:
-        with urllib.request.urlopen(req) as res:
-            status = res.status
-            content = res.read().decode("utf-8")
-            return status, json.loads(content) if content else {}
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8")
-        try:
-            parsed = json.loads(err_body)
-        except Exception:
-            parsed = {"raw": err_body}
-        return e.code, parsed
+        content = response.json()
+    except Exception:
+        content = {"raw": response.text}
+    return response.status_code, content
 
 
 def test_security_core_token_encoding_and_decoding():
@@ -124,7 +121,9 @@ def test_rbac_dependency_permission_enforcement():
     assert "does not have 'run_replay' permission" in exc_info2.value.detail
 
 
-def test_live_auth_flow_and_rbac_boundaries():
+def test_live_auth_flow_and_rbac_boundaries(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "demo")
+    monkeypatch.setenv("ENABLE_DEMO_RESET", "true")
     # 1. Fetch personas
     code, personas = make_request("GET", "/api/v1/auth/personas")
     assert code == 200
@@ -199,15 +198,22 @@ def test_live_auth_flow_and_rbac_boundaries():
         subprocess.run(["docker", "exec", "aegis_redis", "redis-cli", "-a", redis_pass, "-n", "1", "flushdb"], capture_output=True, timeout=2)
     except Exception:
         pass
-    code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
-    assert code == 200
-    assert reset_res["status"] == "success"
+    with patch("app.api.routes.system.reset_demo_state") as mock_reset:
+        code, reset_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
+        assert code == 200
+        assert reset_res["status"] == "success"
+        mock_reset.assert_called_once()
 
-    # 8. SEC-03 Proof: Immediate subsequent reset request triggers HTTP 429 Too Many Requests
-    code, throttled_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
-    assert code == 429, f"Expected 429 Too Many Requests on immediate reset attempt, got {code}"
-    detail_msg = throttled_res.get("detail", "") or throttled_res.get("error", "")
-    assert "recently reset" in detail_msg or "Rate limit exceeded" in detail_msg
+        # 8. SEC-03 Proof: Immediate subsequent reset request triggers HTTP 429 Too Many Requests
+        code, throttled_res = make_request("POST", "/api/v1/system/reset-demo", token=analyst_token)
+        assert code == 429, f"Expected 429 Too Many Requests on immediate reset attempt, got {code}"
+        detail_msg = throttled_res.get("detail", "") or throttled_res.get("error", "")
+        assert "recently reset" in detail_msg or "Rate limit exceeded" in detail_msg
+
+        # Reset rate limiter state so subsequent unit tests run in isolation
+        from app.core.limiter import limiter
+        limiter.reset()
+        clear_demo_reset_lock()
 
     # 9. SEC-04 Proof: Out-of-bounds radius queries trigger HTTP 422 Unprocessable Entity
     code, radius_err = make_request("GET", "/api/v1/transactions/TX-100463/network?radius=4", token=analyst_token)

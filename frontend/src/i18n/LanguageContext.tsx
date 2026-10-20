@@ -61,6 +61,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (!context) {
@@ -73,6 +74,7 @@ export const useLanguage = (): LanguageContextType => {
   return context;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTranslation = (): { t: Translations; language: Language; setLanguage: (lang: Language) => void } => {
   return useLanguage();
 };

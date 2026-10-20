@@ -99,7 +99,9 @@ export const SystemHealth: React.FC = () => {
 
   useEffect(() => {
     mountedRef.current = true;
-    void fetchHealth();
+    void Promise.resolve().then(() => {
+      void fetchHealth();
+    });
 
     const interval = window.setInterval(() => {
       void fetchHealth();

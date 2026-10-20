@@ -72,7 +72,9 @@ def test_api_system_reset_demo_forbidden_in_production(monkeypatch):
     monkeypatch.delenv("ENABLE_DEMO_RESET", raising=False)
 
     from starlette.requests import Request
-    mock_request = Request({"type": "http", "path": "/api/v1/system/reset-demo", "client": ("127.0.0.1", 12345), "headers": []})
+    from app.core.limiter import limiter
+    limiter.reset()
+    mock_request = Request({"type": "http", "path": "/api/v1/system/reset-demo", "client": ("192.0.2.1", 12345), "headers": []})
     user = {"name": "Sarah Jenkins", "role": "lead_analyst", "permissions": ["reset_demo"]}
 
     with pytest.raises(HTTPException) as exc_info:

@@ -284,7 +284,7 @@ export const Investigation: React.FC = () => {
 
   useEffect(() => {
     if (!transactionId) {
-      void loadCaseQueue();
+      void Promise.resolve().then(loadCaseQueue);
     }
   }, [transactionId, loadCaseQueue]);
 

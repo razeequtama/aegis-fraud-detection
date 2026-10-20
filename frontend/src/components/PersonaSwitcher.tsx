@@ -26,8 +26,9 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({ compact = fals
       const msg = await resetSandbox();
       setResetNotification({ text: msg, isError: false });
       setTimeout(() => setResetNotification(null), 4000);
-    } catch (err: any) {
-      setResetNotification({ text: err.message || 'Reset failed', isError: true });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Reset failed';
+      setResetNotification({ text: message, isError: true });
       setTimeout(() => setResetNotification(null), 5000);
     } finally {
       setIsResetting(false);

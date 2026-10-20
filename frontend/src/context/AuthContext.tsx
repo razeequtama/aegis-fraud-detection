@@ -141,9 +141,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await apiClient.post<{ message: string }>('/system/reset-demo');
       return res.data?.message || 'Demo state reset successfully.';
-    } catch (err: any) {
-      const errMsg = err?.response?.data?.detail || err?.message || 'Failed to reset demo state';
-      throw new Error(errMsg);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } }; message?: string };
+      const errMsg = axiosErr?.response?.data?.detail || axiosErr?.message || 'Failed to reset demo state';
+      throw new Error(errMsg, { cause: err });
     }
   }, []);
 
@@ -223,6 +224,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

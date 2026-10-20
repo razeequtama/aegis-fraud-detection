@@ -27,7 +27,7 @@ export interface NetworkPreset {
   stats: string;
 }
 
-export const networkPresets: NetworkPreset[] = [
+const networkPresets: NetworkPreset[] = [
   {
     id: 'C376938867',
     type: 'accounts',
@@ -221,14 +221,20 @@ export const Network: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
+  // Adjust state on route transition without cascading effect
+  const [prevRouteType, setPrevRouteType] = useState(routeEntityType);
+  const [prevRouteId, setPrevRouteId] = useState(routeEntityId);
+
+  if (prevRouteType !== routeEntityType || prevRouteId !== routeEntityId) {
+    setPrevRouteType(routeEntityType);
+    setPrevRouteId(routeEntityId);
     if (routeEntityType === 'accounts' || routeEntityType === 'transactions') {
       setEntityType(routeEntityType);
     }
     if (routeEntityId !== undefined) {
       setEntityId(routeEntityId);
     }
-  }, [routeEntityType, routeEntityId]);
+  }
 
   const handleSelectPreset = (preset: NetworkPreset) => {
     setEntityType(preset.type);
@@ -306,7 +312,7 @@ export const Network: React.FC = () => {
                 'text-max-width': 130,
                 width: '34px',
                 height: '34px',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'node[type = "account"]',
@@ -315,7 +321,7 @@ export const Network: React.FC = () => {
                 'background-color': '#0369a1',
                 'border-color': '#38bdf8',
                 'border-width': '1.5px',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'node[type = "account"][suspicious = true]',
@@ -323,7 +329,7 @@ export const Network: React.FC = () => {
                 'background-color': '#22d3ee',
                 'border-color': '#ecfeff',
                 'border-width': '3px',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'node[type = "device"]',
@@ -331,7 +337,7 @@ export const Network: React.FC = () => {
                 shape: 'round-rectangle',
                 'background-color': '#0891b2',
                 'border-color': '#67e8f9',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'node[type = "device"][shared = true]',
@@ -339,7 +345,7 @@ export const Network: React.FC = () => {
                 'background-color': '#06b6d4',
                 'border-color': '#a5f3fc',
                 'border-width': '3px',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'node[type = "session"]',
@@ -347,7 +353,7 @@ export const Network: React.FC = () => {
                 shape: 'diamond',
                 'background-color': '#475569',
                 'border-color': '#94a3b8',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'node[type = "transaction"]',
@@ -356,7 +362,7 @@ export const Network: React.FC = () => {
                 'background-color': '#0e7490',
                 'border-color': '#67e8f9',
                 'border-width': '2px',
-              } as any,
+              } as Record<string, string | number>,
             },
             {
               selector: 'edge',
@@ -372,7 +378,7 @@ export const Network: React.FC = () => {
                 'text-background-color': '#0f172a',
                 'text-background-opacity': 0.85,
                 'text-background-padding': '2px',
-              } as any,
+              } as Record<string, string | number>,
             },
           ],
           layout: {
