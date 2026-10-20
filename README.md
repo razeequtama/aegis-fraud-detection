@@ -1,4 +1,4 @@
-# AEGIS — Real-Time Financial Fraud Detection & Graph Intelligence Platform
+# AEGIS: Real-Time Financial Fraud Detection & Graph Intelligence Platform
 
 > **Enterprise-grade transactional fraud detection, behavioral anomaly scoring, entity network graph intelligence, and analyst case management powered by Machine Learning and Redis.**
 
