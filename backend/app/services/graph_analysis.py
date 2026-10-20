@@ -115,31 +115,125 @@ class FraudGraphAnalyzer:
             }
         }
 
-    def extract_graph_features(self, account_id: str) -> Dict[str, float]:
+    def populate_from_db(self, db_session=None, limit: int = 50000) -> int:
+        """
+        Populates graph network using transaction records from the database or seed data.
+        """
+        records: List[Dict[str, Any]] = []
+
+        # 1. Try querying via provided database session or global engine
+        try:
+            from sqlalchemy import text
+            from app.db.session import engine
+
+            query_sql = text(
+                "SELECT transaction_id, account_id, device_id, session_id, is_fraud "
+                "FROM transactions LIMIT :limit"
+            )
+
+            if db_session is not None:
+                rows = db_session.execute(query_sql, {"limit": limit}).mappings().all()
+                records = [dict(r) for r in rows]
+            elif engine is not None:
+                with engine.connect() as conn:
+                    rows = conn.execute(query_sql, {"limit": limit}).mappings().all()
+                    records = [dict(r) for r in rows]
+        except Exception:
+            pass
+
+        # 2. If database is not populated yet or offline, fallback to seed CSV
+        if not records:
+            try:
+                import gzip
+                import csv
+                from app.db.seed import find_seed_csv_path
+
+                seed_path = find_seed_csv_path()
+                if seed_path and seed_path.is_file():
+                    with gzip.open(seed_path, "rt", encoding="utf-8") as f:
+                        reader = csv.DictReader(f)
+                        records = [
+                            {
+                                "transaction_id": row.get("transaction_id"),
+                                "account_id": row.get("account_id"),
+                                "device_id": row.get("device_id"),
+                                "session_id": row.get("session_id"),
+                                "is_fraud": row.get("is_fraud", 0),
+                            }
+                            for idx, row in enumerate(reader)
+                            if idx < limit
+                        ]
+            except Exception:
+                pass
+
+        if records:
+            self.build_graph_from_transactions(records)
+            return len(records)
+        return 0
+
+    def extract_graph_features(
+        self,
+        account_id: str,
+        device_id: str = None,
+        db_session = None,
+    ) -> Dict[str, float]:
         """
         Extracts structural graph features for risk scoring enhancement.
         """
+        # Ensure graph is populated on first extraction if empty
+        if len(self.graph.nodes) == 0:
+            self.populate_from_db(db_session=db_session)
+
         node_key = f"Account:{account_id}"
-        if node_key not in self.graph:
+        dev_key = f"Device:{device_id}" if device_id else None
+
+        # If entity is not in memory graph, check direct SQL if session is available
+        if node_key not in self.graph and dev_key not in self.graph and db_session is not None:
+            try:
+                from sqlalchemy import text
+                query = text("""
+                    SELECT COUNT(DISTINCT t2.account_id)
+                    FROM transactions t1
+                    JOIN transactions t2 ON t1.device_id = t2.device_id
+                    WHERE (t1.account_id = :acc OR (:dev IS NOT NULL AND t1.device_id = :dev))
+                      AND t2.account_id != :acc
+                """)
+                res = db_session.execute(query, {"acc": str(account_id), "dev": device_id}).scalar()
+                if res is not None and res > 0:
+                    return {
+                        "shared_devices_count": float(res),
+                        "node_degree": 1.0,
+                    }
+            except Exception:
+                pass
+
+        if node_key not in self.graph and dev_key not in self.graph:
             return {
                 "shared_devices_count": 0.0,
-                "node_degree": 0.0
+                "node_degree": 0.0,
             }
 
-        # Count how many devices are shared with this account
-        neighbors = list(self.graph.neighbors(node_key))
-        devices = [n for n in neighbors if n.startswith("Device:")]
-        
         shared_devices_count = 0.0
+        devices: list[str] = []
+
+        if node_key in self.graph:
+            neighbors = list(self.graph.neighbors(node_key))
+            devices.extend([n for n in neighbors if n.startswith("Device:")])
+
+        if dev_key and dev_key in self.graph and dev_key not in devices:
+            devices.append(dev_key)
+
         for dev in devices:
-            # Count total accounts connected to this device
             connected_accounts = [n for n in self.graph.neighbors(dev) if n.startswith("Account:")]
-            if len(connected_accounts) > 1:
-                shared_devices_count += len(connected_accounts) - 1
+            other_accounts = [acc for acc in connected_accounts if acc != node_key]
+            if other_accounts:
+                shared_devices_count += len(other_accounts)
+
+        node_degree = float(self.graph.degree(node_key)) if node_key in self.graph else (1.0 if dev_key in self.graph else 0.0)
 
         return {
             "shared_devices_count": float(shared_devices_count),
-            "node_degree": float(self.graph.degree(node_key))
+            "node_degree": node_degree,
         }
 
 # Global instance for dependency injection or service use
@@ -152,9 +246,14 @@ def enrich_with_graph_features(transaction_data: dict, db_session=None) -> dict:
     """
     enriched = transaction_data.copy()
     account_id = enriched.get("account_id")
+    device_id = enriched.get("device_id")
     
     if account_id:
-        features = graph_analyzer.extract_graph_features(str(account_id))
+        features = graph_analyzer.extract_graph_features(
+            str(account_id),
+            device_id=str(device_id) if device_id else None,
+            db_session=db_session,
+        )
         enriched.update(features)
     else:
         enriched["shared_devices_count"] = 0.0

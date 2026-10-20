@@ -1,3 +1,4 @@
+from typing import Any
 import os
 from pathlib import Path
 import joblib
@@ -170,17 +171,23 @@ class RiskEngine:
         tx_data: dict,
         historical_transactions: list | None = None,
         check_velocity: bool = True,
+        db: Any | None = None,
     ) -> dict:
         """Process an incoming transaction using multi-factor pattern scoring and decision policy."""
         if historical_transactions is None:
             historical_transactions = []
 
         account_id = tx_data.get("account_id")
+        device_id = tx_data.get("device_id")
         graph_features = {}
         if account_id:
             if historical_transactions:
                 graph_analyzer.build_graph_from_transactions(historical_transactions)
-            graph_features = graph_analyzer.extract_graph_features(account_id)
+            graph_features = graph_analyzer.extract_graph_features(
+                str(account_id),
+                device_id=str(device_id) if device_id else None,
+                db_session=db,
+            )
 
         amount = float(tx_data.get("amount", 0.0) or 0.0)
         oldbalance_org = float(tx_data.get("oldbalanceOrg", tx_data.get("oldbalance_org", 0.0)) or 0.0)
@@ -399,11 +406,13 @@ class RiskEngine:
         tx_data: dict,
         historical_transactions: list | None = None,
         check_velocity: bool = True,
+        db: Any | None = None,
     ) -> dict:
         return self.evaluate_transaction(
             tx_data,
             historical_transactions=historical_transactions,
             check_velocity=check_velocity,
+            db=db,
         )
 
     def enrich_with_graph_features(self, account_id: str, transaction_history: list) -> dict:

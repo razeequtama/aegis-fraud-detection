@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -6,45 +7,66 @@ from sqlalchemy.engine import make_url
 
 from app.services.risk_engine import risk_engine
 
-raw_database_url = os.environ.get("DATABASE_URL")
-if not raw_database_url or not raw_database_url.strip():
-    raise RuntimeError(
-        "DATABASE_URL environment variable is missing or empty. "
-        "Please ensure DATABASE_URL is set in the process environment."
-    )
 
-database_url = raw_database_url.strip()
+def get_engine():
+    raw_database_url = os.environ.get("DATABASE_URL")
+    if not raw_database_url or not raw_database_url.strip():
+        raise RuntimeError(
+            "DATABASE_URL environment variable is missing or empty. "
+            "Please ensure DATABASE_URL is set in the process environment."
+        )
 
-database_host = os.environ.get("DATABASE_HOST")
-if database_host and database_host.strip():
-    url_obj = make_url(database_url)
-    if url_obj.host != database_host.strip():
-        database_url = str(url_obj.set(host=database_host.strip()))
+    database_url = raw_database_url.strip()
 
-engine = create_engine(database_url)
+    database_host = os.environ.get("DATABASE_HOST")
+    if database_host and database_host.strip():
+        url_obj = make_url(database_url)
+        if url_obj.host != database_host.strip():
+            database_url = str(url_obj.set(host=database_host.strip()))
+
+    return create_engine(database_url)
 
 
-def run_enrichment():
+# Default engine when DATABASE_URL is present at import time
+engine = None
+if os.environ.get("DATABASE_URL"):
+    try:
+        engine = get_engine()
+    except Exception:
+        pass
+
+
+def run_enrichment(target_engine=None):
+    active_engine = target_engine or engine or get_engine()
     print("Connecting to database...")
-    with engine.begin() as conn:
+    with active_engine.begin() as conn:
         print("Ensuring columns exist on transactions table...")
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS type VARCHAR(20) DEFAULT 'TRANSFER';"))
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS oldbalance_org DOUBLE PRECISION DEFAULT 0.0;"))
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS newbalance_orig DOUBLE PRECISION DEFAULT 0.0;"))
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS oldbalance_dest DOUBLE PRECISION DEFAULT 0.0;"))
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS newbalance_dest DOUBLE PRECISION DEFAULT 0.0;"))
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS is_fraud INTEGER DEFAULT 0;"))
-        conn.execute(text("ALTER TABLE transactions ADD COLUMN IF NOT EXISTS risk_score DOUBLE PRECISION DEFAULT NULL;"))
-        conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_risk_score ON transactions (risk_score);"))
-        conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_type ON transactions (type);"))
+        for col_stmt in [
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS type VARCHAR(20) DEFAULT 'TRANSFER';",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS oldbalance_org DOUBLE PRECISION DEFAULT 0.0;",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS newbalance_orig DOUBLE PRECISION DEFAULT 0.0;",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS oldbalance_dest DOUBLE PRECISION DEFAULT 0.0;",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS newbalance_dest DOUBLE PRECISION DEFAULT 0.0;",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS is_fraud INTEGER DEFAULT 0;",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS risk_score DOUBLE PRECISION DEFAULT NULL;",
+            "CREATE INDEX IF NOT EXISTS ix_transactions_risk_score ON transactions (risk_score);",
+            "CREATE INDEX IF NOT EXISTS ix_transactions_type ON transactions (type);",
+            "CREATE TABLE IF NOT EXISTS alembic_version (version_num VARCHAR(32) NOT NULL, CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num));",
+            "DELETE FROM alembic_version;",
+            "INSERT INTO alembic_version (version_num) VALUES ('001_initial_schema');",
+        ]:
+            try:
+                conn.execute(text(col_stmt))
+            except Exception as e:
+                # Catch dialect-specific syntax differences (e.g. SQLite vs PostgreSQL)
+                pass
 
-        # Sync alembic_version to 001_initial_schema
-        conn.execute(text("CREATE TABLE IF NOT EXISTS alembic_version (version_num VARCHAR(32) NOT NULL, CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num));"))
-        conn.execute(text("DELETE FROM alembic_version;"))
-        conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('001_initial_schema');"))
-
-    base_dir = Path(__file__).resolve().parents[3]
-    csv_path = base_dir / "ml" / "data" / "ps.csv"
+    candidates = [
+        Path(__file__).resolve().parents[3] / "ml" / "data" / "ps.csv",
+        Path(__file__).resolve().parents[2] / "ml" / "data" / "ps.csv",
+        Path("/ml/data/ps.csv"),
+    ]
+    csv_path = next((p for p in candidates if p.is_file()), candidates[0])
     print(f"Loading PaySim dataset from {csv_path}...")
     df = pd.read_csv(csv_path)
 
@@ -84,32 +106,36 @@ def run_enrichment():
     ]]
 
     print("Uploading staging data to PostgreSQL...")
-    with engine.begin() as conn:
+    with active_engine.begin() as conn:
         staging_update.to_sql("transactions_staging", con=conn, if_exists="replace", index=False)
         print("Performing bulk update from staging table...")
         conn.execute(text("""
-            UPDATE transactions t
+            UPDATE transactions
             SET 
-                type = s.type,
-                oldbalance_org = s.oldbalance_org,
-                newbalance_orig = s.newbalance_orig,
-                oldbalance_dest = s.oldbalance_dest,
-                newbalance_dest = s.newbalance_dest,
-                is_fraud = s.is_fraud,
-                risk_score = s.risk_score
-            FROM transactions_staging s
-            WHERE t.transaction_id = s.transaction_id;
+                type = transactions_staging.type,
+                oldbalance_org = transactions_staging.oldbalance_org,
+                newbalance_orig = transactions_staging.newbalance_orig,
+                oldbalance_dest = transactions_staging.oldbalance_dest,
+                newbalance_dest = transactions_staging.newbalance_dest,
+                is_fraud = transactions_staging.is_fraud,
+                risk_score = transactions_staging.risk_score
+            FROM transactions_staging
+            WHERE transactions.transaction_id = transactions_staging.transaction_id;
         """))
         conn.execute(text("DROP TABLE transactions_staging;"))
 
         # Clean up any legacy mock samples if present
-        conn.execute(text("""
-            DELETE FROM investigation_cases WHERE transaction_id LIKE '%SAMPLE%' OR transaction_id = 'TX-99901';
-            DELETE FROM transactions WHERE transaction_id LIKE '%SAMPLE%' OR transaction_id = 'TX-99901';
-        """))
+        try:
+            conn.execute(text("DELETE FROM investigation_cases WHERE transaction_id LIKE '%SAMPLE%' OR transaction_id = 'TX-99901';"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("DELETE FROM transactions WHERE transaction_id LIKE '%SAMPLE%' OR transaction_id = 'TX-99901';"))
+        except Exception:
+            pass
 
     print("Data enrichment complete! Verifying database counts...")
-    with engine.connect() as conn:
+    with active_engine.connect() as conn:
         total = conn.execute(text("SELECT count(*) FROM transactions")).scalar()
         low = conn.execute(text("SELECT count(*) FROM transactions WHERE risk_score < 0.40")).scalar()
         med = conn.execute(text("SELECT count(*) FROM transactions WHERE risk_score >= 0.40 AND risk_score <= 0.74")).scalar()

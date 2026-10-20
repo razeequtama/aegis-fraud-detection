@@ -85,6 +85,14 @@ async def schedule_daily_demo_reset():
 
 @app.on_event("startup")
 async def on_startup():
+    # Prime entity graph analyzer for real-time relational scoring
+    try:
+        from app.services.graph_analysis import graph_analyzer
+        record_count = graph_analyzer.populate_from_db()
+        logger.info("Graph analyzer initialized with %d transaction relationship records.", record_count)
+    except Exception as exc:
+        logger.warning("Graph analyzer startup initialization deferred: %s", exc)
+
     app_env = os.getenv("APP_ENV", "production").lower()
     enable_reset = os.getenv("ENABLE_DEMO_RESET", "false").lower() in ("true", "1", "yes")
 

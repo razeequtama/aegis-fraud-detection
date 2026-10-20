@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Integer, DateTime, Text, ForeignKey
+from sqlalchemy import Column, String, Float, Integer, DateTime, Text, ForeignKey, Index, text
 from sqlalchemy.sql import func
 from app.db.session import Base
 
@@ -20,6 +20,12 @@ class Transaction(Base):
     is_fraud = Column(Integer, default=0, nullable=False)
     payment_attempts = Column(Integer, default=1, nullable=True)
     risk_score = Column(Float, nullable=True, index=True)
+
+    __table_args__ = (
+        Index("ix_transactions_timestamp_desc", text("timestamp DESC")),
+        Index("ix_transactions_type", "type"),
+        Index("ix_transactions_is_fraud", "is_fraud"),
+    )
 
     @property
     def label(self):
