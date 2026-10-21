@@ -31,7 +31,7 @@
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
-- [Run This Project Locally!](#run-this-project-locally!)
+- [Run This Project Locally!](#run-this-project-locally)
   - [Prerequisites](#prerequisites)
   - [One-Click Docker Compose Setup](#one-click-docker-compose-setup-recommended)
   - [Bare-Metal Local Development Setup](#bare-metal-local-development-setup)
