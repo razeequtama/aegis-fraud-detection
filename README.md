@@ -31,9 +31,10 @@
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
-- [Run This Project Locally!](#run-this-project-locally)
+- [Run This Project Lcoally!](#run-this-project-locally)
   - [Prerequisites](#prerequisites)
-  - [One-Click Docker Compose Setup](#one-click-docker-compose-setup-recommended)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. One-Click Docker Compose Setup](#2-one-click-docker-compose-setup-recommended)
   - [Bare-Metal Local Development Setup](#bare-metal-local-development-setup)
 - [Database Management & Seeding](#database-management--seeding-mandatory-reference)
 - [Configuration Reference](#configuration-reference)
@@ -207,15 +208,34 @@ flowchart TD
 ### Prerequisites
 
 Ensure the following tools are installed on your host machine:
+- **Git:** `2.30+`
 - **Docker Engine:** `24.0+` or **Docker Desktop:** `4.20+`
 - **Docker Compose:** `v2.20+`
 - *(Optional for bare-metal host development)*: Python `3.11+` and Node.js `20+ LTS` / `22+`.
 
 ---
 
-### One-Click Docker Compose Setup (Recommended)
+### 1. Clone the Repository
 
-The repository provides automated startup scripts that configure environment files, start containers, run database migrations, seed initial data, and wait for the frontend to become healthy.
+Clone the repository to your local machine and navigate into the project directory:
+
+```bash
+git clone https://github.com/razeequtama/aegis-fraud-detection.git
+cd aegis-fraud-detection
+```
+
+> [!TIP]
+> If you already have a local clone, ensure your working tree is clean and pull the latest changes before starting:
+> ```bash
+> git checkout main
+> git pull origin main
+> ```
+
+---
+
+### 2. One-Click Docker Compose Setup (Recommended)
+
+The repository provides automated startup scripts that configure environment files (automatically copying `.env.example` to `.env` if not present), build and start all containers in detached mode, execute database migrations, seed initial data via `backend-init`, and wait for the frontend to become healthy on `http://localhost:5173`.
 
 #### On Windows (PowerShell / Command Prompt):
 ```powershell
@@ -235,11 +255,12 @@ make up
 ```
 
 #### Manual Docker Compose Command:
+If you prefer running standard Docker commands manually:
 ```bash
 # 1. Copy environment template
 cp .env.example .env
 
-# 2. Build and start services in detached mode
+# 2. Build and start services in detached mode (handles migrations + seeding automatically)
 docker compose up --build -d
 ```
 
@@ -271,7 +292,7 @@ make down
 
 ### Bare-Metal Local Development Setup
 
-If you prefer to run services outside Docker on your host machine:
+If you prefer to run services outside Docker on your host machine, clone the repository first (as shown in Step 1) and execute the following steps from the project root:
 
 #### 1. Start External Infrastructure (PostgreSQL & Redis)
 Ensure PostgreSQL is running on port `5432` (or `5434`) and Redis on port `6379`. You can use Docker just for these dependencies:
